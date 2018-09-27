@@ -7,7 +7,7 @@ import com.dokany.java.constants.EnumInteger;
  *
  *  <p>
  *  <b> Attention!</b>
- *  The members of this enum are the kernel flags, not to be confused with the user flags in {@link com.dokany.java.constants.CreationDisposition}.
+ *  The members of this enum are the kernel flags, not to be confused with the user flags in {@link CreationDisposition}.
  *  To convert them, use {@link DokanMapKernelToUserFlags}. The relation between this two is also descriped under this <a href="https://stackoverflow.com/questions/22552697/correspondence-between-procmon-and-createfile-disposition-options#22553544">link</a>.
  *  </p>
  *
@@ -56,10 +56,6 @@ import com.dokany.java.constants.EnumInteger;
  * </tr>
  * </tbody>
  * </table>
- * </p>
- *
- * <p>
- * (kernel) CreateDispostion and the user flags of {@link com.dokany.java.constants.CreationDisposition} is shown in the following table:
  * </p>
  *
  * @see <a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/content/wdm/nf-wdm-zwcreatefile#parameters">Microsoft documentation of ZwCreateFile</a>
