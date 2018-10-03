@@ -3,7 +3,7 @@ package com.dokany.java.structure;
 import java.util.Arrays;
 import java.util.List;
 
-import com.dokany.java.constants.CreationDisposition;
+import com.dokany.java.migrated.constants.CreationDisposition;
 import com.dokany.java.constants.FileAttribute;
 import com.sun.jna.Structure;
 

@@ -1,7 +1,6 @@
 package com.dokany.java.migrated.constants;
 
 import com.dokany.java.DokanyUtils;
-import com.dokany.java.constants.EnumInteger;
 import com.dokany.java.constants.ErrorCode;
 import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.ptr.IntByReference;

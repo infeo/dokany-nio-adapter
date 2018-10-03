@@ -1,14 +1,17 @@
 package com.dokany.java.constants;
 
 import com.dokany.java.DokanyUtils;
+import com.dokany.java.migrated.constants.EnumInteger;
 import com.dokany.java.structure.EnumIntegerSet;
 import com.sun.jna.platform.win32.WinNT;
 
 /**
- * https://msdn.microsoft.com/en-us/library/gg258117(v=vs.85).aspx
+ * Enum of file attributes. They are  metadata values stored by the file system on disk and are used by the system.
+ *
+ * @see <a href="https://docs.microsoft.com/en-us/windows/desktop/FileIO/file-attribute-constants">Microsoft documentation of file attribute constants</a>
  */
 public enum FileAttribute implements EnumInteger {
-    ARCHIVE(WinNT.FILE_ATTRIBUTE_ARCHIVE),
+    FILE_ATTRIBUTE(WinNT.FILE_ATTRIBUTE_ARCHIVE),
     COMPRESSED(WinNT.FILE_ATTRIBUTE_COMPRESSED),
     DEVICE(WinNT.FILE_ATTRIBUTE_DEVICE),
     DIRECTORY(WinNT.FILE_ATTRIBUTE_DIRECTORY),

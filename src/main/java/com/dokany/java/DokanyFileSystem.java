@@ -2,6 +2,7 @@ package com.dokany.java;
 
 import com.dokany.java.constants.FileSystemFeature;
 import com.dokany.java.constants.NtStatus;
+import com.dokany.java.migrated.constants.CreationDisposition;
 import com.dokany.java.structure.ByHandleFileInfo;
 import com.dokany.java.structure.DokanyFileInfo;
 import com.sun.jna.Pointer;
@@ -33,7 +34,7 @@ public interface DokanyFileSystem {
 	 * @param rawFileAttributes Provides attributes for files and directories. (see also in the .NET API <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.fileattributes">System.IO.FileAttributes</a>}
 	 * @param rawShareAccess Type of share access to other threads. Device and intermediate drivers usually set ShareAccess to zero, which gives the caller exclusive access to
 	 * the open file.
-	 * @param rawCreateDisposition Specifies the action to perform if the file does or does not exist. Can be translated into a readable thing via {@link com.dokany.java.constants.CreationDisposition}
+	 * @param rawCreateDisposition Specifies the action to perform if the file does or does not exist. Can be translated into a readable thing via {@link CreationDisposition}
 	 * @param rawCreateOptions Specifies the options to apply when the driver creates or opens the file. (see also in the .NET API <a href="https://docs.microsoft.com/de-de/dotnet/api/system.io.fileoptions">System.IO.FileOptions</a>)
 	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
 	 * @return integer code of a {@link NtStatus}

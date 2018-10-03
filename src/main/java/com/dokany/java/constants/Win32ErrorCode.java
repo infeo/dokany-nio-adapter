@@ -1,6 +1,8 @@
 package com.dokany.java.constants;
 
 
+import com.dokany.java.migrated.constants.EnumInteger;
+
 public enum Win32ErrorCode implements EnumInteger {
 
 	ERROR_SUCCESS(0X00000000, "The operation completed successfully."),

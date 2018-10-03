@@ -1,13 +1,12 @@
 package com.dokany.java;
 
-import com.dokany.java.constants.EnumInteger;
+import com.dokany.java.migrated.constants.EnumInteger;
 import com.dokany.java.constants.ErrorCode;
 import com.dokany.java.constants.NtStatus;
 import com.dokany.java.structure.DokanyFileInfo;
 import com.dokany.java.structure.EnumIntegerSet;
 import com.sun.jna.WString;
 import com.sun.jna.platform.win32.WinBase.FILETIME;
-import com.sun.jna.platform.win32.WinNT.LARGE_INTEGER;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

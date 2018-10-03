@@ -2,6 +2,7 @@
 package com.dokany.java.constants;
 
 import com.dokany.java.DokanyUtils;
+import com.dokany.java.migrated.constants.EnumInteger;
 
 public enum MountError implements EnumInteger {
     SUCCESS(0, "Successfully mounted"),

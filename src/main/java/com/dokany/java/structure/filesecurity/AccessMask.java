@@ -1,6 +1,6 @@
 package com.dokany.java.structure.filesecurity;
 
-import com.dokany.java.constants.EnumInteger;
+import com.dokany.java.migrated.constants.EnumInteger;
 
 /**
  * Enumeration of the possible AccesMask options.

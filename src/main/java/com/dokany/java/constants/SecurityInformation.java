@@ -1,5 +1,6 @@
 package com.dokany.java.constants;
 
+import com.dokany.java.migrated.constants.EnumInteger;
 import com.sun.jna.platform.win32.WinNT;
 
 /**
