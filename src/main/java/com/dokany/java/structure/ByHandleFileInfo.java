@@ -2,7 +2,7 @@
 package com.dokany.java.structure;
 
 import com.dokany.java.DokanyUtils;
-import com.dokany.java.constants.FileAttribute;
+import com.dokany.java.migrated.constants.FileAttribute;
 import com.sun.jna.Structure;
 import com.sun.jna.platform.win32.WinBase.FILETIME;
 import com.sun.jna.platform.win32.WinNT;

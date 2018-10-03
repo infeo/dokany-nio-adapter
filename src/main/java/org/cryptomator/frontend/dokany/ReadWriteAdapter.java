@@ -5,7 +5,7 @@ import com.dokany.java.DokanyOperations;
 import com.dokany.java.DokanyUtils;
 import com.dokany.java.migrated.constants.CreateOptions;
 import com.dokany.java.migrated.constants.CreationDisposition;
-import com.dokany.java.constants.FileAttribute;
+import com.dokany.java.migrated.constants.FileAttribute;
 import com.dokany.java.constants.Win32ErrorCode;
 import com.dokany.java.structure.ByHandleFileInfo;
 import com.dokany.java.structure.DokanyFileInfo;
