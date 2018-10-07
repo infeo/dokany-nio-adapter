@@ -3,7 +3,7 @@ package org.cryptomator.frontend.dokany;
 import com.dokany.java.DokanyFileSystem;
 import com.dokany.java.DokanyOperations;
 import com.dokany.java.DokanyUtils;
-import com.dokany.java.migrated.constants.microsoft.CreateOptions;
+import com.dokany.java.migrated.constants.microsoft.CreateOption;
 import com.dokany.java.migrated.constants.microsoft.CreationDisposition;
 import com.dokany.java.migrated.constants.microsoft.FileAttribute;
 import com.dokany.java.constants.Win32ErrorCode;
@@ -86,9 +86,9 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 		}
 
 		//is the file a directory and if yes, indicated as one?
-		EnumIntegerSet<CreateOptions> createOptions = DokanyUtils.enumSetFromInt(rawCreateOptions, CreateOptions.values());
+		EnumIntegerSet<CreateOption> createOptions = DokanyUtils.enumSetFromInt(rawCreateOptions, CreateOption.values());
 		if (attr.isPresent() && attr.get().isDirectory()) {
-			if ((rawCreateOptions & CreateOptions.FILE_NON_DIRECTORY_FILE.getMask()) == 0) {
+			if ((rawCreateOptions & CreateOption.FILE_NON_DIRECTORY_FILE.getMask()) == 0) {
 				dokanyFileInfo.IsDirectory = 0x01;
 				//TODO: set the share access like in the dokany mirror example
 			} else {
