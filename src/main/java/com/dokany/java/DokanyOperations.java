@@ -3,7 +3,7 @@ package com.dokany.java;
 import java.util.Arrays;
 import java.util.List;
 
-import com.dokany.java.constants.FileSystemFlag;
+import com.dokany.java.migrated.constants.microsoft.FileSystemFlag;
 import com.dokany.java.constants.NtStatus;
 import com.dokany.java.migrated.constants.dokany.MountOption;
 import com.dokany.java.structure.ByHandleFileInfo;

@@ -2,7 +2,7 @@ package org.cryptomator.frontend.dokany;
 
 import com.dokany.java.DokanyDriver;
 import com.dokany.java.DokanyFileSystem;
-import com.dokany.java.constants.FileSystemFlag;
+import com.dokany.java.migrated.constants.microsoft.FileSystemFlag;
 import com.dokany.java.migrated.constants.dokany.MountOption;
 import com.dokany.java.structure.DeviceOptions;
 import com.dokany.java.structure.EnumIntegerSet;

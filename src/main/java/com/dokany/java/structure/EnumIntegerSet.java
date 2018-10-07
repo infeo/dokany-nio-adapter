@@ -5,7 +5,7 @@ import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Objects;
 
-import com.dokany.java.constants.FileSystemFlag;
+import com.dokany.java.migrated.constants.microsoft.FileSystemFlag;
 import com.dokany.java.migrated.constants.EnumInteger;
 import com.dokany.java.migrated.constants.dokany.MountOption;
 

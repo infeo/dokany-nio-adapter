@@ -1,4 +1,4 @@
-package com.dokany.java.constants;
+package com.dokany.java.migrated.constants.microsoft;
 
 import com.dokany.java.DokanyUtils;
 import com.dokany.java.migrated.constants.EnumInteger;
