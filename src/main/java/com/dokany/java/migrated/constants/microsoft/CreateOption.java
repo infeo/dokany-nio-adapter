@@ -10,7 +10,7 @@ import com.dokany.java.structure.EnumIntegerSet;
  * @see <a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/content/wdm/nf-wdm-zwcreatefile">Microsofts documentation of ZwCreateFile</a>
  * @see <a href="https://dokan-dev.github.io/dokany-doc/html/struct_d_o_k_a_n___o_p_e_r_a_t_i_o_n_s.html#a40c2f61e1287237f5fd5c2690e795183">Dokany documentation of ZwCreateFile</a>
  */
-public enum CreateOptions implements EnumInteger {
+public enum CreateOption implements EnumInteger {
 	FILE_DIRECTORY_FILE(0x00000001),
 	FILE_WRITE_THROUGH(0x00000002),
 	FILE_SEQUENTIAL_ONLY(0x00000004),
@@ -32,11 +32,11 @@ public enum CreateOptions implements EnumInteger {
 
 	private final int mask;
 
-	CreateOptions(final int i) {
+	CreateOption(final int i) {
 		mask = i;
 	}
 
-	public static EnumIntegerSet<CreateOptions> fromInt(final int value) {
+	public static EnumIntegerSet<CreateOption> fromInt(final int value) {
 		return DokanyUtils.enumSetFromInt(value, values());
 	}
 

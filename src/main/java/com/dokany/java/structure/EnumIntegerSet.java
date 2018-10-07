@@ -4,11 +4,13 @@ import java.util.AbstractSet;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Objects;
+
+import com.dokany.java.constants.FileSystemFlag;
 import com.dokany.java.migrated.constants.EnumInteger;
 import com.dokany.java.migrated.constants.dokany.MountOption;
 
 /**
- * Used to store multiple enum values such as {@link com.dokany.java.constants.FileSystemFeature} and {@link MountOption}.
+ * Used to store multiple enum values such as {@link FileSystemFlag} and {@link MountOption}.
  *
  * @param <T> Type of enum
  */

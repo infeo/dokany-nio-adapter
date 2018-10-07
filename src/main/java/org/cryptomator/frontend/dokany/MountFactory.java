@@ -2,7 +2,7 @@ package org.cryptomator.frontend.dokany;
 
 import com.dokany.java.DokanyDriver;
 import com.dokany.java.DokanyFileSystem;
-import com.dokany.java.constants.FileSystemFeature;
+import com.dokany.java.constants.FileSystemFlag;
 import com.dokany.java.migrated.constants.dokany.MountOption;
 import com.dokany.java.structure.DeviceOptions;
 import com.dokany.java.structure.EnumIntegerSet;
@@ -29,12 +29,12 @@ public class MountFactory {
 			// MountOption.STD_ERR_OUTPUT, //
 			// MountOption.REMOVABLE_DRIVE, //
 			MountOption.CURRENT_SESSION);
-	private static final EnumIntegerSet<FileSystemFeature> FILE_SYSTEM_FEATURES = new EnumIntegerSet<>( //
-			FileSystemFeature.CASE_PRESERVED_NAMES, //
-			FileSystemFeature.CASE_SENSITIVE_SEARCH, //
+	private static final EnumIntegerSet<FileSystemFlag> FILE_SYSTEM_FEATURES = new EnumIntegerSet<>( //
+			FileSystemFlag.CASE_PRESERVED_NAMES, //
+			FileSystemFlag.CASE_SENSITIVE_SEARCH, //
 			// FileSystemFeature.PERSISTENT_ACLS, //
 			// FileSystemFeature.SUPPORTS_REMOTE_STORAGE, //
-			FileSystemFeature.UNICODE_ON_DISK);
+			FileSystemFlag.UNICODE_ON_DISK);
 	private static final String UNC_NAME = "";
 	private static final int TIMEOUT = 10000;
 	private static final int ALLOC_UNIT_SIZE = 4096;

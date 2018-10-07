@@ -2,7 +2,7 @@ package org.cryptomator.frontend.dokany;
 
 import com.dokany.java.DokanyDriver;
 import com.dokany.java.DokanyFileSystem;
-import com.dokany.java.constants.FileSystemFeature;
+import com.dokany.java.constants.FileSystemFlag;
 import com.dokany.java.migrated.constants.dokany.MountOption;
 import com.dokany.java.structure.DeviceOptions;
 import com.dokany.java.structure.EnumIntegerSet;
@@ -35,9 +35,9 @@ public class MirrorReadOnlyThread implements Runnable {
 
 		devOps = new DeviceOptions(mountPoint.toString(), threadCount, mountOptions, uncName, timeout, allocationUnitSize, sectorSize);
 
-		EnumIntegerSet fsFeatures = new EnumIntegerSet<>(FileSystemFeature.class);
-		fsFeatures.add(FileSystemFeature.CASE_PRESERVED_NAMES, FileSystemFeature.CASE_SENSITIVE_SEARCH,
-				FileSystemFeature.PERSISTENT_ACLS, FileSystemFeature.SUPPORTS_REMOTE_STORAGE, FileSystemFeature.UNICODE_ON_DISK);
+		EnumIntegerSet fsFeatures = new EnumIntegerSet<>(FileSystemFlag.class);
+		fsFeatures.add(FileSystemFlag.CASE_PRESERVED_NAMES, FileSystemFlag.CASE_SENSITIVE_SEARCH,
+				FileSystemFlag.PERSISTENT_ACLS, FileSystemFlag.SUPPORTS_REMOTE_STORAGE, FileSystemFlag.UNICODE_ON_DISK);
 
 		VolumeInformation volumeInfo = new VolumeInformation(VolumeInformation.DEFAULT_MAX_COMPONENT_LENGTH, "Mirror", 0x98765432, "Dokany MirrorFS", fsFeatures);
 

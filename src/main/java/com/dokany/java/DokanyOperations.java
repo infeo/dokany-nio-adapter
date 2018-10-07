@@ -3,7 +3,7 @@ package com.dokany.java;
 import java.util.Arrays;
 import java.util.List;
 
-import com.dokany.java.constants.FileSystemFeature;
+import com.dokany.java.constants.FileSystemFlag;
 import com.dokany.java.constants.NtStatus;
 import com.dokany.java.migrated.constants.dokany.MountOption;
 import com.dokany.java.structure.ByHandleFileInfo;
@@ -522,7 +522,7 @@ public class DokanyOperations extends Structure {
 	 * Neither this method nor {@link DokanyOperations.GetVolumeInformation} save the {@link com.dokany.java.structure.DokanyFileInfo#Context}. Before these methods are called,
 	 * {@link DokanyOperations.ZwCreateFile} may not be called. (ditto @{link DokanyOperations.CloseFile} and @{link DokanyOperations.Cleanup}).
 	 *
-	 * @see {@link FileSystemFeature#READ_ONLY_VOLUME} is automatically added to the <paramref name="features"/> if <see cref="DokanOptions.WriteProtection"/> was specified when
+	 * @see {@link FileSystemFlag#READ_ONLY_VOLUME} is automatically added to the <paramref name="features"/> if <see cref="DokanOptions.WriteProtection"/> was specified when
 	 *      the volume was mounted.
 	 *
 	 *      If {@link NtStatus#NOT_IMPLEMENTED} is returned, the Dokany kernel driver use following settings by default:
