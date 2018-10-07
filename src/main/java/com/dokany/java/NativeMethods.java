@@ -1,5 +1,6 @@
 package com.dokany.java;
 
+import com.dokany.java.migrated.constants.dokany.MountError;
 import com.dokany.java.structure.DeviceOptions;
 import com.dokany.java.structure.DokanyFileInfo;
 import com.sun.jna.Native;
@@ -25,11 +26,11 @@ class NativeMethods {
 	}
 
 	/**
-	 * Mount a new Dokany Volume. This function block until the device is unmount. If the mount fail, it will directly return {@link com.dokany.java.constants.MountError}.
+	 * Mount a new Dokany Volume. This function block until the device is unmount. If the mount fail, it will directly return {@link MountError}.
 	 *
 	 * @param options A {@link com.dokany.java.structure.DeviceOptions} that describe the mount.
 	 * @param operations Instance of {@link DokanyOperations} that will be called for each request made by the kernel.
-	 * @return {@link com.dokany.java.constants.MountError}.
+	 * @return {@link MountError}.
 	 */
 	static native int DokanMain(DeviceOptions options, DokanyOperations operations);
 

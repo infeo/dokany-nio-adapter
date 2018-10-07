@@ -1,6 +1,6 @@
 package com.dokany.java;
 
-import com.dokany.java.constants.MountError;
+import com.dokany.java.migrated.constants.dokany.MountError;
 import com.dokany.java.structure.DeviceOptions;
 import com.sun.jna.WString;
 import org.slf4j.Logger;
