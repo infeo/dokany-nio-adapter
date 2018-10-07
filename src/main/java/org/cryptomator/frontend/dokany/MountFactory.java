@@ -3,12 +3,10 @@ package org.cryptomator.frontend.dokany;
 import com.dokany.java.DokanyDriver;
 import com.dokany.java.DokanyFileSystem;
 import com.dokany.java.constants.FileSystemFeature;
-import com.dokany.java.constants.MountOption;
+import com.dokany.java.migrated.constants.dokany.MountOption;
 import com.dokany.java.structure.DeviceOptions;
 import com.dokany.java.structure.EnumIntegerSet;
 import com.dokany.java.structure.VolumeInformation;
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

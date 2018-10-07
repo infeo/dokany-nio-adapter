@@ -4,7 +4,7 @@ package com.dokany.java.structure;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import com.dokany.java.constants.MountOption;
+import com.dokany.java.migrated.constants.dokany.MountOption;
 import com.sun.jna.Structure;
 import com.sun.jna.WString;
 

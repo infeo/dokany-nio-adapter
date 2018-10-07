@@ -2,6 +2,7 @@ package com.dokany.java;
 
 import com.dokany.java.constants.FileSystemFeature;
 import com.dokany.java.constants.NtStatus;
+import com.dokany.java.migrated.constants.dokany.MountOption;
 import com.dokany.java.migrated.constants.microsoft.CreationDisposition;
 import com.dokany.java.structure.ByHandleFileInfo;
 import com.dokany.java.structure.DokanyFileInfo;
@@ -277,7 +278,7 @@ public interface DokanyFileSystem {
 			DokanyFileInfo dokanyFileInfo);
 
 	/**
-	 * Lock file at a specific offset and data length. This is only used if {@link com.dokany.java.constants.MountOption#FILELOCK_USER_MODE} is enabled.
+	 * Lock file at a specific offset and data length. This is only used if {@link MountOption#FILELOCK_USER_MODE} is enabled.
 	 *
 	 * @param rawPath
 	 * @param rawByteOffset
@@ -292,7 +293,7 @@ public interface DokanyFileSystem {
 			DokanyFileInfo dokanyFileInfo);
 
 	/**
-	 * Unlock file at a specific offset and data length. This is only used if {@link com.dokany.java.constants.MountOption#FILELOCK_USER_MODE} is enabled.
+	 * Unlock file at a specific offset and data length. This is only used if {@link MountOption#FILELOCK_USER_MODE} is enabled.
 	 *
 	 * @param rawPath
 	 * @param rawByteOffset
@@ -331,7 +332,7 @@ public interface DokanyFileSystem {
 	 * Neither this method nor {@link DokanyFileSystem#getVolumeInformation(Pointer, int, IntByReference, IntByReference, IntByReference, Pointer, int, DokanyFileInfo)} save the {@link DokanyFileInfo#Context}. Before these methods are called,
 	 * {@link DokanyFileSystem#zwCreateFile(WString, WinBase.SECURITY_ATTRIBUTES, int, int, int, int, int, DokanyFileInfo)} may not be called. (ditto @{link DokanyOperations.CloseFile} and @{link DokanyOperations.Cleanup}).
 	 *
-	 * {@link FileSystemFeature#READ_ONLY_VOLUME} is automatically added to the features if {@link com.dokany.java.constants.MountOption#WRITE_PROTECTION} was specified during mount.
+	 * {@link FileSystemFeature#READ_ONLY_VOLUME} is automatically added to the features if {@link MountOption#WRITE_PROTECTION} was specified during mount.
 	 * <p>
 	 * If {@link NtStatus#NOT_IMPLEMENTED} is returned, the Dokany kernel driver use following settings by default:
 	 *
@@ -424,7 +425,7 @@ public interface DokanyFileSystem {
 			DokanyFileInfo dokanyFileInfo);
 
 	/**
-	 * Retrieve all NTFS Streams informations on the file. This is only called if {@link com.dokany.java.constants.MountOption#ALT_STREAM} is enabled.
+	 * Retrieve all NTFS Streams informations on the file. This is only called if {@link MountOption#ALT_STREAM} is enabled.
 	 *
 	 * @param rawPath
 	 * @param rawFillFindData
