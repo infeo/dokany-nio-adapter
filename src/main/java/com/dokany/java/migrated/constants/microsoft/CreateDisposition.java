@@ -1,4 +1,6 @@
-package com.dokany.java.migrated.constants;
+package com.dokany.java.migrated.constants.microsoft;
+
+import com.dokany.java.migrated.constants.EnumInteger;
 
 /**
  *  Enum of possible actions to perform on a file when the function {@link com.dokany.java.DokanyOperations.ZwCreateFile} is called.

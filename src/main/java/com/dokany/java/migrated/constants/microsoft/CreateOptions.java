@@ -1,6 +1,7 @@
-package com.dokany.java.migrated.constants;
+package com.dokany.java.migrated.constants.microsoft;
 
 import com.dokany.java.DokanyUtils;
+import com.dokany.java.migrated.constants.EnumInteger;
 import com.dokany.java.structure.EnumIntegerSet;
 
 /**

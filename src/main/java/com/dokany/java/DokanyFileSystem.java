@@ -2,7 +2,7 @@ package com.dokany.java;
 
 import com.dokany.java.constants.FileSystemFeature;
 import com.dokany.java.constants.NtStatus;
-import com.dokany.java.migrated.constants.CreationDisposition;
+import com.dokany.java.migrated.constants.microsoft.CreationDisposition;
 import com.dokany.java.structure.ByHandleFileInfo;
 import com.dokany.java.structure.DokanyFileInfo;
 import com.sun.jna.Pointer;

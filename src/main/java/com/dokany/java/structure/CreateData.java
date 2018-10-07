@@ -3,8 +3,8 @@ package com.dokany.java.structure;
 import java.util.Arrays;
 import java.util.List;
 
-import com.dokany.java.migrated.constants.CreationDisposition;
-import com.dokany.java.migrated.constants.FileAttribute;
+import com.dokany.java.migrated.constants.microsoft.CreationDisposition;
+import com.dokany.java.migrated.constants.microsoft.FileAttribute;
 import com.sun.jna.Structure;
 
 public class CreateData extends Structure {
