@@ -1,7 +1,7 @@
 package com.dokany.java.migrated.constants.microsoft;
 
 import com.dokany.java.DokanyUtils;
-import com.dokany.java.constants.ErrorCode;
+import com.dokany.java.constants.Win32ErrorCode;
 import com.dokany.java.migrated.constants.EnumInteger;
 import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.ptr.IntByReference;
@@ -27,23 +27,23 @@ import com.sun.jna.ptr.IntByReference;
  * <tbody>
  * <tr>
  *   <th scope="row">CREATE_ALWAYS</td>
- *   <td>Overwrite the file and return {@link ErrorCode#ERROR_ALREADY_EXISTS}.</td>
+ *   <td>Overwrite the file and return {@link Win32ErrorCode#ERROR_ALREADY_EXISTS}.</td>
  *   <td>Create the file.</td>
  * </tr>
  * <tr>
  *   <th scope="row">CREATE_NEW</td>
- *   <td>Fail and return {@link ErrorCode#ERROR_ALREADY_EXISTS}.</td>
+ *   <td>Fail and return {@link Win32ErrorCode#ERROR_ALREADY_EXISTS}.</td>
  *   <td>Create the file.</td>
  * </tr>
  * <tr>
  *   <th scope="row">OPEN_ALWAYS</td>
- *   <td>Open the file and return {@link ErrorCode#ERROR_ALREADY_EXISTS}.</td>
+ *   <td>Open the file and return {@link Win32ErrorCode#ERROR_ALREADY_EXISTS}.</td>
  *   <td>Create the file.</td>
  * </tr>
  * <tr>
  *   <th scope="row">OPEN_EXISTING</td>
  *   <td>Open the file.</td>
- *   <td>Fail and return {@link ErrorCode#ERROR_FILE_NOT_FOUND}.</td>
+ *   <td>Fail and return {@link Win32ErrorCode#ERROR_FILE_NOT_FOUND}.</td>
  * </tr>
  * <tr>
  *   <th scope="row">TRUNCATE_EXISTING</td>

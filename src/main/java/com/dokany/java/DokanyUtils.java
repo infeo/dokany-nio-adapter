@@ -1,11 +1,11 @@
 package com.dokany.java;
 
 import com.dokany.java.migrated.constants.EnumInteger;
-import com.dokany.java.constants.ErrorCode;
 import com.dokany.java.migrated.constants.microsoft.NtStatus;
 import com.dokany.java.structure.DokanyFileInfo;
 import com.dokany.java.structure.EnumIntegerSet;
 import com.sun.jna.WString;
+import com.sun.jna.platform.win32.W32Errors;
 import com.sun.jna.platform.win32.WinBase.FILETIME;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -149,10 +149,10 @@ public class DokanyUtils {
 			return ((DokanyException) t).getValue();
 		}
 		if (t instanceof FileNotFoundException) {
-			return ErrorCode.ERROR_FILE_NOT_FOUND.getMask();
+			return W32Errors.ERROR_FILE_NOT_FOUND;
 		}
 		if (t instanceof FileAlreadyExistsException) {
-			return ErrorCode.ERROR_ALREADY_EXISTS.getMask();
+			return W32Errors.ERROR_ALREADY_EXISTS;
 		}
 
 		return defaultCode;

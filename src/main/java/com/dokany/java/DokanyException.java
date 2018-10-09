@@ -1,6 +1,6 @@
 package com.dokany.java;
 
-import com.dokany.java.constants.ErrorCode;
+import com.dokany.java.constants.Win32ErrorCode;
 import com.dokany.java.constants.WinError;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ public final class DokanyException extends RuntimeException {
 		this(errorCode.getMask(), exception);
 	}
 
-	public DokanyException(final ErrorCode errorCode, final IOException exception) {
+	public DokanyException(final Win32ErrorCode errorCode, final IOException exception) {
 		this(errorCode.getMask(), exception);
 	}
 
