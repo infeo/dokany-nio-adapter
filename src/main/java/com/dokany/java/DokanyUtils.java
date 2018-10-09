@@ -2,7 +2,7 @@ package com.dokany.java;
 
 import com.dokany.java.migrated.constants.EnumInteger;
 import com.dokany.java.constants.ErrorCode;
-import com.dokany.java.constants.NtStatus;
+import com.dokany.java.migrated.constants.microsoft.NtStatus;
 import com.dokany.java.structure.DokanyFileInfo;
 import com.dokany.java.structure.EnumIntegerSet;
 import com.sun.jna.WString;

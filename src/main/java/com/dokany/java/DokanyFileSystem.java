@@ -1,7 +1,7 @@
 package com.dokany.java;
 
 import com.dokany.java.migrated.constants.microsoft.FileSystemFlag;
-import com.dokany.java.constants.NtStatus;
+import com.dokany.java.migrated.constants.microsoft.NtStatus;
 import com.dokany.java.migrated.constants.dokany.MountOption;
 import com.dokany.java.migrated.constants.microsoft.CreationDisposition;
 import com.dokany.java.structure.ByHandleFileInfo;

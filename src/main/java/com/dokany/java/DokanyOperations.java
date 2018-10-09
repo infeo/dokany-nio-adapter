@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.dokany.java.migrated.constants.microsoft.FileSystemFlag;
-import com.dokany.java.constants.NtStatus;
+import com.dokany.java.migrated.constants.microsoft.NtStatus;
 import com.dokany.java.migrated.constants.dokany.MountOption;
 import com.dokany.java.structure.ByHandleFileInfo;
 import com.dokany.java.structure.DokanyFileInfo;
@@ -116,7 +116,7 @@ public class DokanyOperations extends Structure {
 		 * @param rawCreateDisposition
 		 * @param rawCreateOptions Represents advanced options for creating a File object. See <a href="https://msdn.microsoft.com/en-us/library/system.io.fileoptions(v=vs.110).aspx">MSDN</a>
 		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
-		 * @return {@link com.dokany.java.constants.NtStatus}
+		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
@@ -182,7 +182,7 @@ public class DokanyOperations extends Structure {
 		 * @param rawReadLength
 		 * @param rawOffset
 		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
-		 * @return {@link com.dokany.java.constants.NtStatus}
+		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
@@ -208,7 +208,7 @@ public class DokanyOperations extends Structure {
 		 * @param rawNumberOfBytesWritten
 		 * @param rawOffset
 		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
-		 * @return {@link com.dokany.java.constants.NtStatus}
+		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
@@ -230,7 +230,7 @@ public class DokanyOperations extends Structure {
 		 *
 		 * @param rawPath
 		 * @param dokanyFileInfo {@link com.dokany.java.structure.DokanyFileInfo} with information about the file or directory.
-		 * @return {@link com.dokany.java.constants.NtStatus}
+		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
@@ -249,7 +249,7 @@ public class DokanyOperations extends Structure {
 		 * @param fileName
 		 * @param handleFileInfo
 		 * @param dokanyFileInfo {@link com.dokany.java.structure.DokanyFileInfo} with information about the file or directory.
-		 * @return {@link com.dokany.java.constants.NtStatus}
+		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString fileName,
@@ -268,7 +268,7 @@ public class DokanyOperations extends Structure {
 		 * @param rawPath
 		 * @param rawFillFindData
 		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
-		 * @return {@link com.dokany.java.constants.NtStatus}
+		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
@@ -289,7 +289,7 @@ public class DokanyOperations extends Structure {
 		 * @param searchPattern
 		 * @param rawFillFindData
 		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
-		 * @return {@link com.dokany.java.constants.NtStatus}
+		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString fileName,
@@ -309,7 +309,7 @@ public class DokanyOperations extends Structure {
 		 * @param rawPath
 		 * @param rawAttributes
 		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
-		 * @return {@link com.dokany.java.constants.NtStatus}
+		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
@@ -330,7 +330,7 @@ public class DokanyOperations extends Structure {
 		 * @param rawLastAccessTime time of last access
 		 * @param rawLastWriteTime time of last modification
 		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
-		 * @return {@link com.dokany.java.constants.NtStatus}
+		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
@@ -361,7 +361,7 @@ public class DokanyOperations extends Structure {
 		 *
 		 * @param rawPath
 		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file.
-		 * @return {@link com.dokany.java.constants.NtStatus}
+		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
@@ -381,7 +381,7 @@ public class DokanyOperations extends Structure {
 		 *
 		 * @param rawPath
 		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the directory.
-		 * @return {@link com.dokany.java.constants.NtStatus}
+		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
@@ -400,7 +400,7 @@ public class DokanyOperations extends Structure {
 		 * @param rawNewFileName
 		 * @param rawReplaceIfExisting
 		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
-		 * @return {@link com.dokany.java.constants.NtStatus}
+		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
@@ -420,7 +420,7 @@ public class DokanyOperations extends Structure {
 		 * @param rawPath
 		 * @param rawByteOffset
 		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
-		 * @return {@link com.dokany.java.constants.NtStatus}
+		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
@@ -439,7 +439,7 @@ public class DokanyOperations extends Structure {
 		 * @param rawPath
 		 * @param rawLength
 		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
-		 * @return {@link com.dokany.java.constants.NtStatus}
+		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
@@ -459,7 +459,7 @@ public class DokanyOperations extends Structure {
 		 * @param rawByteOffset
 		 * @param rawLength
 		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
-		 * @return {@link com.dokany.java.constants.NtStatus}
+		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
@@ -480,7 +480,7 @@ public class DokanyOperations extends Structure {
 		 * @param rawByteOffset
 		 * @param rawLength
 		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
-		 * @return {@link com.dokany.java.constants.NtStatus}
+		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
@@ -506,7 +506,7 @@ public class DokanyOperations extends Structure {
 		 * @param totalNumberOfBytes
 		 * @param totalNumberOfFreeBytes
 		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
-		 * @return {@link com.dokany.java.constants.NtStatus}
+		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          LongByReference freeBytesAvailable,
@@ -546,7 +546,7 @@ public class DokanyOperations extends Structure {
 		 * @param rawFileSystemNameBuffer
 		 * @param rawFileSystemNameSize
 		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
-		 * @return {@link com.dokany.java.constants.NtStatus}
+		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          Pointer rawVolumeNameBuffer,
@@ -595,7 +595,7 @@ public class DokanyOperations extends Structure {
 		 * @param rawSecurityDescriptorLength
 		 * @param rawSecurityDescriptorLengthNeeded
 		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
-		 * @return {@link com.dokany.java.constants.NtStatus}
+		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
@@ -621,7 +621,7 @@ public class DokanyOperations extends Structure {
 		 * @param rawSecurityDescriptor
 		 * @param rawSecurityDescriptorLength
 		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
-		 * @return {@link com.dokany.java.constants.NtStatus}
+		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
@@ -655,7 +655,7 @@ public class DokanyOperations extends Structure {
 		 * @param rawPath
 		 * @param rawFillFindData
 		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
-		 * @return {@link com.dokany.java.constants.NtStatus}
+		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
