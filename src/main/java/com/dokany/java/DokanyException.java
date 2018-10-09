@@ -1,6 +1,6 @@
 package com.dokany.java;
 
-import com.dokany.java.constants.Win32ErrorCode;
+import com.dokany.java.migrated.constants.microsoft.Win32ErrorCode;
 import com.dokany.java.constants.WinError;
 
 import java.io.IOException;

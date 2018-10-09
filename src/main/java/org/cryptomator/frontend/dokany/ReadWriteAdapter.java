@@ -6,7 +6,7 @@ import com.dokany.java.DokanyUtils;
 import com.dokany.java.migrated.constants.microsoft.CreateOption;
 import com.dokany.java.migrated.constants.microsoft.CreationDisposition;
 import com.dokany.java.migrated.constants.microsoft.FileAttribute;
-import com.dokany.java.constants.Win32ErrorCode;
+import com.dokany.java.migrated.constants.microsoft.Win32ErrorCode;
 import com.dokany.java.structure.ByHandleFileInfo;
 import com.dokany.java.structure.DokanyFileInfo;
 import com.dokany.java.structure.EnumIntegerSet;
