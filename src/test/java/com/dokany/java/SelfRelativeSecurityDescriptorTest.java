@@ -1,5 +1,6 @@
 package com.dokany.java;
 
+import com.dokany.java.migrated.constants.microsoft.AccessMask;
 import com.dokany.java.structure.EnumIntegerSet;
 import com.dokany.java.structure.filesecurity.*;
 import org.junit.Assert;
@@ -64,7 +65,7 @@ public class SelfRelativeSecurityDescriptorTest {
 		flags.add(AccessControlEntryFlag.CONTAINER_INHERIT_ACE, AccessControlEntryFlag.OBJECT_INHERIT_ACE);
 		//set the mask
 		EnumIntegerSet<AccessMask> mask = new EnumIntegerSet<>(AccessMask.class);
-		mask.add(AccessMask.GA);
+		mask.add(AccessMask.GENERIC_ALL);
 		//set the sid to world sid resp. everyone
 		SecurityIdentifier sid = SecurityIdentifier.fromString("S-1-1-0");// everyone sid
 		//create ace
@@ -92,7 +93,7 @@ public class SelfRelativeSecurityDescriptorTest {
 		flags.add(AccessControlEntryFlag.CONTAINER_INHERIT_ACE, AccessControlEntryFlag.OBJECT_INHERIT_ACE);
 		//set the mask
 		EnumIntegerSet<AccessMask> mask = new EnumIntegerSet<>(AccessMask.class);
-		mask.add(AccessMask.GA);
+		mask.add(AccessMask.GENERIC_ALL);
 		//set the sid to world sid resp. everyone
 		SecurityIdentifier sid = SecurityIdentifier.fromString("S-1-1-0");
 		//create ace
@@ -147,7 +148,7 @@ public class SelfRelativeSecurityDescriptorTest {
 		flags.add(AccessControlEntryFlag.CONTAINER_INHERIT_ACE, AccessControlEntryFlag.OBJECT_INHERIT_ACE);
 		//set the mask
 		EnumIntegerSet<AccessMask> mask = new EnumIntegerSet<>(AccessMask.class);
-		mask.add(AccessMask.GA);
+		mask.add(AccessMask.GENERIC_ALL);
 		//create ace
 		AccessControlList daclRev2WithAccessAllow = AccessControlList.createDaclRevision2(Collections.singletonList(new AccessAllowedACE(flags, oSid, mask)));
 
