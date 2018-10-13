@@ -8,6 +8,7 @@ import com.sun.jna.platform.win32.WinBase.FILETIME;
 import com.sun.jna.platform.win32.WinBase.WIN32_FIND_DATA;
 
 import java.io.FileNotFoundException;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 /**
@@ -36,7 +37,7 @@ public class FullFileInformation extends ByHandleFileInformation {
 
 	public FullFileInformation(final String path, final long index, final EnumIntegerSet<FileAttribute> attributes, final int volumeSerialNumber, final FILETIME creationTime, final FILETIME lastAccessTime, final FILETIME lastWriteTime) throws FileNotFoundException {
 		super(creationTime, lastAccessTime, lastWriteTime);
-		filePath = Objects.requireNonNull(path);
+		filePath = Paths.get(path);
 		setIndexExplicit(index);
 		setAttributes(attributes);
 		dwVolumeSerialNumber = volumeSerialNumber;
@@ -57,7 +58,7 @@ public class FullFileInformation extends ByHandleFileInformation {
 	 */
 
 	public WIN32_FIND_DATA toWin32FindData() {
-		final char[] cFileName = DokanyUtils.trimFrontSeparator(DokanyUtils.trimStrToSize(filePath, 260)).toCharArray();
+		final char[] cFileName = DokanyUtils.trimFrontSeparator(DokanyUtils.trimStrToSize(filePath.toString(), 260)).toCharArray();
 		final char[] cAlternateFileName = new char[14];
 		// val cAlternateFileName = Utils.trimFrontSlash(Utils.trimStrToSize(path, 14)).toCharArray();
 		// TODO: Why does setting alternate name cause file name to show up twice??

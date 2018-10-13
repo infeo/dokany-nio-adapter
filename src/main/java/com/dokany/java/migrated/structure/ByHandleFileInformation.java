@@ -87,9 +87,9 @@ public class ByHandleFileInformation extends Structure implements Structure.ByRe
 	 */
 	public int nNumberOfLinks = 1;
 
-	private Path filePath;
-	private long fileIndex;
-	private long fileSize;
+	protected Path filePath;
+	protected long fileIndex;
+	protected long fileSize;
 
 	public ByHandleFileInformation(final FILETIME creationTime, final FILETIME lastAccessTime, final FILETIME lastWriteTime) {
 		setTimes(creationTime, lastAccessTime, lastWriteTime);
