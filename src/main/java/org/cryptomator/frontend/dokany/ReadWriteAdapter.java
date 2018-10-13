@@ -7,10 +7,10 @@ import com.dokany.java.migrated.constants.microsoft.CreateOption;
 import com.dokany.java.migrated.constants.microsoft.CreationDisposition;
 import com.dokany.java.migrated.constants.microsoft.FileAttribute;
 import com.dokany.java.migrated.constants.microsoft.Win32ErrorCode;
-import com.dokany.java.structure.ByHandleFileInfo;
+import com.dokany.java.migrated.structure.ByHandleFileInformation;
 import com.dokany.java.structure.DokanyFileInfo;
 import com.dokany.java.structure.EnumIntegerSet;
-import com.dokany.java.structure.FullFileInfo;
+import com.dokany.java.structure.FullFileInformation;
 import com.dokany.java.structure.VolumeInformation;
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.Sets;
@@ -447,7 +447,7 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 	 * @return
 	 */
 	@Override
-	public int getFileInformation(WString fileName, ByHandleFileInfo handleFileInfo, DokanyFileInfo dokanyFileInfo) {
+	public int getFileInformation(WString fileName, ByHandleFileInformation handleFileInfo, DokanyFileInfo dokanyFileInfo) {
 		Path path = getRootedPath(fileName);
 		LOG.debug("({}) getFileInformation() is called for {}.", dokanyFileInfo.Context, path.toString());
 		if (dokanyFileInfo.Context == 0) {
@@ -455,7 +455,7 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 			return Win32ErrorCode.ERROR_INVALID_HANDLE.getMask();
 		} else {
 			try {
-				FullFileInfo data = getFileInformation(path, dokanyFileInfo);
+				FullFileInformation data = getFileInformation(path, dokanyFileInfo);
 				data.copyTo(handleFileInfo);
 				LOG.trace("({}) File Information successful read from {}.", dokanyFileInfo.Context, path.toString());
 				return Win32ErrorCode.ERROR_SUCCESS.getMask();
@@ -470,14 +470,14 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 		}
 	}
 
-	private FullFileInfo getFileInformation(Path p, DokanyFileInfo dokanyFileInfo) throws IOException {
+	private FullFileInformation getFileInformation(Path p, DokanyFileInfo dokanyFileInfo) throws IOException {
 		DosFileAttributes attr = Files.readAttributes(p, DosFileAttributes.class);
 		long index = 0;
 		if (attr.fileKey() != null) {
 			index = (long) attr.fileKey();
 		}
 		Path filename = p.getFileName();
-		FullFileInfo data = new FullFileInfo(filename != null ? filename.toString() : "", //case distinction necessary, because the root has no name!
+		FullFileInformation data = new FullFileInformation(filename != null ? filename.toString() : "", //case distinction necessary, because the root has no name!
 				index,
 				FileUtil.dosAttributesToEnumIntegerSet(attr),
 				0, //currently just a stub

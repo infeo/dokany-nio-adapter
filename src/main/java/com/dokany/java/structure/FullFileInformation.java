@@ -3,6 +3,7 @@ package com.dokany.java.structure;
 
 import com.dokany.java.DokanyUtils;
 import com.dokany.java.migrated.constants.microsoft.FileAttribute;
+import com.dokany.java.migrated.structure.ByHandleFileInformation;
 import com.sun.jna.platform.win32.WinBase.FILETIME;
 import com.sun.jna.platform.win32.WinBase.WIN32_FIND_DATA;
 
@@ -10,9 +11,9 @@ import java.io.FileNotFoundException;
 import java.util.Objects;
 
 /**
- * Combines {@link FullFileInfo} and {@link WIN32_FIND_DATA}. This object will be stored in the Xodus fileInfo store.
+ * Combines {@link FullFileInformation} and {@link WIN32_FIND_DATA}. This object will be stored in the Xodus fileInfo store.
  */
-public class FullFileInfo extends ByHandleFileInfo {
+public class FullFileInformation extends ByHandleFileInformation {
 
 	/**
 	 * If the dwFileAttributes member includes the FILE_ATTRIBUTE_REPARSE_POINT attribute, this member specifies the reparse point tag. Otherwise, this value is undefined and
@@ -28,15 +29,15 @@ public class FullFileInfo extends ByHandleFileInfo {
 	 */
 	private int dwReserved1 = 0;
 
-	public FullFileInfo(final String path, final long index, final EnumIntegerSet<FileAttribute> attributes, final int volumeSerialNumber) throws FileNotFoundException {
+	public FullFileInformation(final String path, final long index, final EnumIntegerSet<FileAttribute> attributes, final int volumeSerialNumber) throws FileNotFoundException {
 		// times automatically set to now by ByHandleFileInfo constructors
 		this(path, index, attributes, volumeSerialNumber, null, null, null);
 	}
 
-	public FullFileInfo(final String path, final long index, final EnumIntegerSet<FileAttribute> attributes, final int volumeSerialNumber, final FILETIME creationTime, final FILETIME lastAccessTime, final FILETIME lastWriteTime) throws FileNotFoundException {
+	public FullFileInformation(final String path, final long index, final EnumIntegerSet<FileAttribute> attributes, final int volumeSerialNumber, final FILETIME creationTime, final FILETIME lastAccessTime, final FILETIME lastWriteTime) throws FileNotFoundException {
 		super(creationTime, lastAccessTime, lastWriteTime);
 		filePath = Objects.requireNonNull(path);
-		setIndex(index);
+		setIndexExplicit(index);
 		setAttributes(attributes);
 		dwVolumeSerialNumber = volumeSerialNumber;
 	}
@@ -47,7 +48,7 @@ public class FullFileInfo extends ByHandleFileInfo {
 	 * @return this (cast as ByHandleFileInfo)
 	 */
 
-	public ByHandleFileInfo toByHandleFileInfo() {
+	public ByHandleFileInformation toByHandleFileInfo() {
 		return this;
 	}
 

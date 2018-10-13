@@ -6,7 +6,7 @@ import java.util.List;
 import com.dokany.java.migrated.constants.microsoft.FileSystemFlag;
 import com.dokany.java.migrated.constants.microsoft.NtStatus;
 import com.dokany.java.migrated.constants.dokany.MountOption;
-import com.dokany.java.structure.ByHandleFileInfo;
+import com.dokany.java.migrated.structure.ByHandleFileInformation;
 import com.dokany.java.structure.DokanyFileInfo;
 import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
@@ -253,7 +253,7 @@ public class DokanyOperations extends Structure {
 		 */
 		long callback(
 		          WString fileName,
-		          ByHandleFileInfo handleFileInfo,
+		          ByHandleFileInformation handleFileInfo,
 		          DokanyFileInfo dokanyFileInfo);
 	}
 
