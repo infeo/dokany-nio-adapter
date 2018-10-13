@@ -1,4 +1,4 @@
-package com.dokany.java.legacy;
+package com.dokany.java.legacy.constants;
 
 import com.dokany.java.migrated.constants.EnumInteger;
 
