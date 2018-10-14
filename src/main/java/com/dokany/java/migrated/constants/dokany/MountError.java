@@ -2,10 +2,10 @@ package com.dokany.java.migrated.constants.dokany;
 
 import com.dokany.java.DokanyOperations;
 import com.dokany.java.migrated.constants.EnumInteger;
-import com.dokany.java.structure.DeviceOptions;
+import com.dokany.java.structure.DokanOptions;
 
 /**
- * Return Values of {@link com.dokany.java.NativeMethods#DokanMain(DeviceOptions, DokanyOperations)}
+ * Return Values of {@link com.dokany.java.NativeMethods#DokanMain(DokanOptions, DokanyOperations)}
  *
  * @see <a href="https://dokan-dev.github.io/dokany-doc/html/group___dokan_main_result.html#ga39e6334f1cca7437400660e123c7d98f">Dokany documentation</a>
  */

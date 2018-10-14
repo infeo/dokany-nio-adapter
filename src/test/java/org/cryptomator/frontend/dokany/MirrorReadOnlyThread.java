@@ -4,7 +4,7 @@ import com.dokany.java.DokanyDriver;
 import com.dokany.java.DokanyFileSystem;
 import com.dokany.java.migrated.constants.microsoft.FileSystemFlag;
 import com.dokany.java.migrated.constants.dokany.MountOption;
-import com.dokany.java.structure.DeviceOptions;
+import com.dokany.java.structure.DokanOptions;
 import com.dokany.java.migrated.structure.EnumIntegerSet;
 import com.dokany.java.structure.VolumeInformation;
 
@@ -17,7 +17,7 @@ public class MirrorReadOnlyThread implements Runnable {
 
 	private final Path mountPoint;
 	private final Path dirToMirror;
-	private final DeviceOptions devOps;
+	private final DokanOptions devOps;
 	private final DokanyDriver dokany;
 
 	public MirrorReadOnlyThread(Path dirToMirror, Path mountPoint) {
@@ -33,7 +33,7 @@ public class MirrorReadOnlyThread implements Runnable {
 		int allocationUnitSize = 4096;
 		int sectorSize = 4096;
 
-		devOps = new DeviceOptions(mountPoint.toString(), threadCount, mountOptions, uncName, timeout, allocationUnitSize, sectorSize);
+		devOps = new DokanOptions(mountPoint.toString(), threadCount, mountOptions, uncName, timeout, allocationUnitSize, sectorSize);
 
 		EnumIntegerSet fsFeatures = new EnumIntegerSet<>(FileSystemFlag.class);
 		fsFeatures.add(FileSystemFlag.CASE_PRESERVED_NAMES, FileSystemFlag.CASE_SENSITIVE_SEARCH,

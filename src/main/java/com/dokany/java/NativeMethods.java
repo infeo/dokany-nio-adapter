@@ -1,7 +1,7 @@
 package com.dokany.java;
 
 import com.dokany.java.migrated.constants.dokany.MountError;
-import com.dokany.java.structure.DeviceOptions;
+import com.dokany.java.structure.DokanOptions;
 import com.dokany.java.migrated.structure.DokanFileInfo;
 import com.sun.jna.Native;
 import com.sun.jna.WString;
@@ -28,11 +28,11 @@ class NativeMethods {
 	/**
 	 * Mount a new Dokany Volume. This function block until the device is unmount. If the mount fail, it will directly return {@link MountError}.
 	 *
-	 * @param options A {@link com.dokany.java.structure.DeviceOptions} that describe the mount.
+	 * @param options A {@link DokanOptions} that describe the mount.
 	 * @param operations Instance of {@link DokanyOperations} that will be called for each request made by the kernel.
 	 * @return {@link MountError}.
 	 */
-	static native int DokanMain(DeviceOptions options, DokanyOperations operations);
+	static native int DokanMain(DokanOptions options, DokanyOperations operations);
 
 	/**
 	 * Get the version of Dokan.

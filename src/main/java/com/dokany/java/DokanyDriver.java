@@ -1,7 +1,7 @@
 package com.dokany.java;
 
 import com.dokany.java.migrated.constants.dokany.MountError;
-import com.dokany.java.structure.DeviceOptions;
+import com.dokany.java.structure.DokanOptions;
 import com.sun.jna.WString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,12 +12,12 @@ import org.slf4j.LoggerFactory;
 public final class DokanyDriver {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DokanyDriver.class);
-	private final DeviceOptions deviceOptions;
+	private final DokanOptions dokanOptions;
 	private final DokanyFileSystem fileSystem;
 
-	public DokanyDriver(final DeviceOptions deviceOptions, final DokanyFileSystem fileSystem) {
+	public DokanyDriver(final DokanOptions dokanOptions, final DokanyFileSystem fileSystem) {
 
-		this.deviceOptions = deviceOptions;
+		this.dokanOptions = dokanOptions;
 		this.fileSystem = fileSystem;
 
 		LOG.info("Dokany version: {}", getVersion());
@@ -55,11 +55,11 @@ public final class DokanyDriver {
 	}
 
 	/**
-	 * Calls {@link NativeMethods#DokanMain(DeviceOptions, DokanyOperations)}. Has {@link java.lang.Runtime#addShutdownHook(Thread)} which calls {@link #shutdown()}
+	 * Calls {@link NativeMethods#DokanMain(DokanOptions, DokanyOperations)}. Has {@link java.lang.Runtime#addShutdownHook(Thread)} which calls {@link #shutdown()}
 	 */
 	public void start() {
 		try {
-			int mountStatus = NativeMethods.DokanMain(deviceOptions, new DokanyOperationsProxy(fileSystem));
+			int mountStatus = NativeMethods.DokanMain(dokanOptions, new DokanyOperationsProxy(fileSystem));
 
 			if (mountStatus < 0) {
 				throw new IllegalStateException(MountError.fromInt(mountStatus).getDescription());
@@ -84,7 +84,7 @@ public final class DokanyDriver {
 	 * Calls {@link #stop(String)}.
 	 */
 	public void shutdown() {
-		stop(deviceOptions.MountPoint.toString());
+		stop(dokanOptions.MountPoint.toString());
 	}
 
 	/**

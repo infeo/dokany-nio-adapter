@@ -8,6 +8,7 @@ import com.dokany.java.migrated.constants.microsoft.NtStatus;
 import com.dokany.java.migrated.constants.dokany.MountOption;
 import com.dokany.java.migrated.structure.ByHandleFileInformation;
 import com.dokany.java.migrated.structure.DokanFileInfo;
+import com.dokany.java.structure.DokanOptions;
 import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
@@ -522,7 +523,7 @@ public class DokanyOperations extends Structure {
 	 * Neither this method nor {@link DokanyOperations.GetVolumeInformation} save the {@link DokanFileInfo#Context}. Before these methods are called,
 	 * {@link DokanyOperations.ZwCreateFile} may not be called. (ditto @{link DokanyOperations.CloseFile} and @{link DokanyOperations.Cleanup}).
 	 *
-	 * @see {@link FileSystemFlag#READ_ONLY_VOLUME} is automatically added to the <paramref name="features"/> if <see cref="DokanOptions.WriteProtection"/> was specified when
+	 * @see {@link FileSystemFlag#READ_ONLY_VOLUME} is automatically added to the <paramref name="features"/> if <see cref="DokanOpts.WriteProtection"/> was specified when
 	 *      the volume was mounted.
 	 *
 	 *      If {@link NtStatus#NOT_IMPLEMENTED} is returned, the Dokany kernel driver use following settings by default:
@@ -583,7 +584,7 @@ public class DokanyOperations extends Structure {
 	 *
 	 * Get specified information about the security of a file or directory.
 	 *
-	 * Supported since version 0.6.0. You must specify the version in {@link com.dokany.java.structure.DeviceOptions#Version}.
+	 * Supported since version 0.6.0. You must specify the version in {@link DokanOptions#Version}.
 	 */
 	@FunctionalInterface
 	interface GetFileSecurity extends Callback {
@@ -610,7 +611,7 @@ public class DokanyOperations extends Structure {
 	 *
 	 * Sets the security of a file or directory object.
 	 *
-	 * Supported since version 0.6.0. You must specify the version in {@link com.dokany.java.structure.DeviceOptions#Version}.
+	 * Supported since version 0.6.0. You must specify the version in {@link DokanOptions#Version}.
 	 */
 	@FunctionalInterface
 	interface SetFileSecurity extends Callback {

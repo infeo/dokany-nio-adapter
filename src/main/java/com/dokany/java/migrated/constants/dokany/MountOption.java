@@ -2,9 +2,10 @@ package com.dokany.java.migrated.constants.dokany;
 
 import com.dokany.java.migrated.constants.EnumInteger;
 import com.dokany.java.migrated.structure.EnumIntegerSet;
+import com.dokany.java.structure.DokanOptions;
 
 /**
- * Enumeration of features that can be enabled for a mount. Part of {@link com.dokany.java.structure.DeviceOptions}
+ * Enumeration of features that can be enabled for a mount. Part of {@link DokanOptions}
  *
  * @see <a href="https://dokan-dev.github.io/dokany-doc/html/group___d_o_k_a_n___o_p_t_i_o_n.html">Dokany documentation</a>
  */

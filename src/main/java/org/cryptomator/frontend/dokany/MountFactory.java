@@ -4,7 +4,7 @@ import com.dokany.java.DokanyDriver;
 import com.dokany.java.DokanyFileSystem;
 import com.dokany.java.migrated.constants.microsoft.FileSystemFlag;
 import com.dokany.java.migrated.constants.dokany.MountOption;
-import com.dokany.java.structure.DeviceOptions;
+import com.dokany.java.structure.DokanOptions;
 import com.dokany.java.migrated.structure.EnumIntegerSet;
 import com.dokany.java.structure.VolumeInformation;
 import org.slf4j.Logger;
@@ -59,11 +59,11 @@ public class MountFactory {
 	 */
 	public Mount mount(Path fileSystemRoot, Path mountPoint, String volumeName, String fileSystemName) throws MountFailedException {
 		Path absMountPoint = mountPoint.toAbsolutePath();
-		DeviceOptions deviceOptions = new DeviceOptions(absMountPoint.toString(), THREAD_COUNT, MOUNT_OPTIONS, UNC_NAME, TIMEOUT, ALLOC_UNIT_SIZE, SECTOR_SIZE);
+		DokanOptions dokanOptions = new DokanOptions(absMountPoint.toString(), THREAD_COUNT, MOUNT_OPTIONS, UNC_NAME, TIMEOUT, ALLOC_UNIT_SIZE, SECTOR_SIZE);
 		VolumeInformation volumeInfo = new VolumeInformation(VolumeInformation.DEFAULT_MAX_COMPONENT_LENGTH, volumeName, 0x98765432, fileSystemName, FILE_SYSTEM_FEATURES);
 		CompletableFuture<Void> mountDidSucceed = new CompletableFuture<>();
 		DokanyFileSystem dokanyFs = new ReadWriteAdapter(fileSystemRoot, volumeInfo, mountDidSucceed);
-		DokanyDriver dokanyDriver = new DokanyDriver(deviceOptions, dokanyFs);
+		DokanyDriver dokanyDriver = new DokanyDriver(dokanOptions, dokanyFs);
 		LOG.debug("Mounting on {}: ...", absMountPoint);
 		Mount mount = new Mount(absMountPoint, dokanyDriver);
 		try {

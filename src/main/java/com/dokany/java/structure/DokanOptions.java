@@ -12,7 +12,7 @@ import com.sun.jna.WString;
 /**
  * Dokany mount options used to describe Dokany device behavior. This is the same structure as PDOKAN_OPTIONS (dokan.h) in the C++ version of Dokany.
  */
-public class DeviceOptions extends Structure implements Structure.ByReference {
+public class DokanOptions extends Structure implements Structure.ByReference {
 	/**
 	 * Version of the Dokany features requested (version "123" is equal to Dokany version 1.2.3). Currently is 100.
 	 */
@@ -53,10 +53,10 @@ public class DeviceOptions extends Structure implements Structure.ByReference {
 	 */
 	public long SectorSize;
 
-	public DeviceOptions() {
+	public DokanOptions() {
 	}
 
-	public DeviceOptions(final String mountPoint, final short threadCount, final EnumIntegerSet<MountOption> mountOptions, final String uncName, final long timeout, final long allocationUnitSize, final long sectorSize) {
+	public DokanOptions(final String mountPoint, final short threadCount, final EnumIntegerSet<MountOption> mountOptions, final String uncName, final long timeout, final long allocationUnitSize, final long sectorSize) {
 		MountPoint = new WString(mountPoint);
 		ThreadCount = threadCount;
 		this.mountOptions = mountOptions;

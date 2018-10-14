@@ -6,6 +6,7 @@ import com.dokany.java.migrated.constants.dokany.MountOption;
 import com.dokany.java.migrated.constants.microsoft.CreationDisposition;
 import com.dokany.java.migrated.structure.ByHandleFileInformation;
 import com.dokany.java.migrated.structure.DokanFileInfo;
+import com.dokany.java.structure.DokanOptions;
 import com.sun.jna.Pointer;
 import com.sun.jna.WString;
 import com.sun.jna.platform.win32.WinBase;
@@ -378,7 +379,7 @@ public interface DokanyFileSystem {
 	/**
 	 * Get specified information about the security of a file or directory.
 	 * <p>
-	 * Supported since version 0.6.0. You must specify the version in {@link com.dokany.java.structure.DeviceOptions#Version}.
+	 * Supported since version 0.6.0. You must specify the version in {@link DokanOptions#Version}.
 	 *
 	 * @param rawPath
 	 * @param rawSecurityInformation
@@ -399,7 +400,7 @@ public interface DokanyFileSystem {
 	/**
 	 * Sets the security of a file or directory object.
 	 * <p>
-	 * Supported since version 0.6.0. You must specify the version in {@link com.dokany.java.structure.DeviceOptions#Version}.
+	 * Supported since version 0.6.0. You must specify the version in {@link DokanOptions#Version}.
 	 *
 	 * @param rawPath
 	 * @param rawSecurityInformation

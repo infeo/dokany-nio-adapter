@@ -4,7 +4,7 @@ import com.dokany.java.DokanyDriver;
 import com.dokany.java.DokanyFileSystem;
 import com.dokany.java.migrated.constants.microsoft.FileSystemFlag;
 import com.dokany.java.migrated.constants.dokany.MountOption;
-import com.dokany.java.structure.DeviceOptions;
+import com.dokany.java.structure.DokanOptions;
 import com.dokany.java.migrated.structure.EnumIntegerSet;
 import com.dokany.java.structure.VolumeInformation;
 
@@ -31,7 +31,7 @@ public class ReadOnlyMirrorTest {
 		int allocationUnitSize = 4096;
 		int sectorSize = 4096;
 
-		DeviceOptions deviceOptions = new DeviceOptions(mountPoint, threadCount, mountOptions, uncName, timeout, allocationUnitSize, sectorSize);
+		DokanOptions dokanOptions = new DokanOptions(mountPoint, threadCount, mountOptions, uncName, timeout, allocationUnitSize, sectorSize);
 
 		EnumIntegerSet fsFeatures = new EnumIntegerSet<>(FileSystemFlag.class);
 		fsFeatures.add(FileSystemFlag.CASE_PRESERVED_NAMES, FileSystemFlag.CASE_SENSITIVE_SEARCH,
@@ -40,7 +40,7 @@ public class ReadOnlyMirrorTest {
 		VolumeInformation volumeInfo = new VolumeInformation(VolumeInformation.DEFAULT_MAX_COMPONENT_LENGTH, "Mirror", 0x98765432, "Dokany MirrorFS", fsFeatures);
 
 		DokanyFileSystem myFs = new ReadWriteAdapter(Paths.get("Y:\\test"), volumeInfo, new CompletableFuture());
-		DokanyDriver dokanyDriver = new DokanyDriver(deviceOptions, myFs);
+		DokanyDriver dokanyDriver = new DokanyDriver(dokanOptions, myFs);
 
 		int res;
 		try {
