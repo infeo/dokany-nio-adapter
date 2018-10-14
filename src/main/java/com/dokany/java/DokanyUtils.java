@@ -172,14 +172,4 @@ public class DokanyUtils {
 			dokanyFileInfo.DeleteOnClose = 1;
 		}
 	}
-
-	/**
-	 * Returns String representation of WString.
-	 *
-	 * @param wStr .
-	 * @return if wStr is null, method will return null
-	 */
-	public static String wStrToStr(final WString wStr) {
-		return Objects.nonNull(wStr) ? wStr.toString() : null;
-	}
 }
