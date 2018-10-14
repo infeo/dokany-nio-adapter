@@ -1,19 +1,17 @@
 package com.dokany.java.structure;
 
+import com.dokany.java.migrated.constants.EnumInteger;
+import com.dokany.java.migrated.constants.dokany.MountOption;
+import com.dokany.java.migrated.constants.microsoft.FileSystemFlag;
+
 import java.util.AbstractSet;
 import java.util.EnumSet;
 import java.util.Iterator;
-import java.util.Objects;
-
-import com.dokany.java.migrated.constants.microsoft.AccessMask;
-import com.dokany.java.migrated.constants.microsoft.FileSystemFlag;
-import com.dokany.java.migrated.constants.EnumInteger;
-import com.dokany.java.migrated.constants.dokany.MountOption;
 
 /**
- * Used to store multiple enum values such as {@link FileSystemFlag} and {@link MountOption}.
+ * Used to store multiple {@link EnumInteger} values such as {@link FileSystemFlag} and {@link MountOption}.
  *
- * @param <T> Type of enum
+ * @param <T> Type of {@link EnumInteger}
  */
 public final class EnumIntegerSet<T extends Enum<T> & EnumInteger> extends AbstractSet<T> {
 	private final EnumSet<T> elements;
@@ -27,15 +25,15 @@ public final class EnumIntegerSet<T extends Enum<T> & EnumInteger> extends Abstr
 	}
 
 	/**
-	 * Will return an
+	 * Creates a set of enumInteger objects which corresponds to the bit flag given as an integer.
 	 *
-	 * @param value
-	 * @param allEnumValues
-	 * @return
+	 * @param intValue the integer value of the combined bitflag
+	 * @param allEnumValues all possible values of this enumInteger
+	 * @return a set of enumInteger values whose mask were actie in the intValue
 	 */
-	public static <T extends Enum<T> & EnumInteger> EnumIntegerSet<T> enumSetFromInt(final int value, final T[] allEnumValues) {
+	public static <T extends Enum<T> & EnumInteger> EnumIntegerSet<T> enumSetFromInt(final int intValue, final T[] allEnumValues) {
 		EnumIntegerSet<T> elements = new EnumIntegerSet<>(allEnumValues[0].getDeclaringClass());
-		int remainingValues = value;
+		int remainingValues = intValue;
 		for (T current : allEnumValues) {
 			int mask = current.getMask();
 
@@ -48,13 +46,14 @@ public final class EnumIntegerSet<T extends Enum<T> & EnumInteger> extends Abstr
 	}
 
 	public final void add(T item, T... items) {
-		//TODO: add checks for item
-		if (Objects.isNull(items) || (items.length < 1)) {
-			throw new IllegalArgumentException("items array cannot be empty");
-		}
-		for (final T item : items) {
-			if (Objects.nonNull(item)) {
-				elements.add(item);
+		if (item == null) {
+			throw new IllegalArgumentException("Adding null is not allowed.");
+		} else {
+			elements.add(item);
+			for (final T it : items) {
+				if(it != null){
+					elements.add(it);
+				}
 			}
 		}
 	}
@@ -62,9 +61,7 @@ public final class EnumIntegerSet<T extends Enum<T> & EnumInteger> extends Abstr
 	public int toInt() {
 		int toReturn = 0;
 		for (final T current : elements) {
-			// Already checked (in constructor) to ensure only objects which implement EnumInteger are stored in values
-			final EnumInteger enumInt = (EnumInteger) current;
-			toReturn |= enumInt.getMask();
+			toReturn |= current.getMask();
 		}
 		return toReturn;
 	}
@@ -85,7 +82,6 @@ public final class EnumIntegerSet<T extends Enum<T> & EnumInteger> extends Abstr
 	}
 
 	@Override
-	@SuppressWarnings("all")
 	public String toString() {
 		return "EnumIntegerSet(elements=" + this.elements + ")";
 	}
