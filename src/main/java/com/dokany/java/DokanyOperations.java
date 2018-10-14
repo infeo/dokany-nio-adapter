@@ -8,7 +8,7 @@ import com.dokany.java.migrated.constants.microsoft.NtStatus;
 import com.dokany.java.migrated.constants.dokany.MountOption;
 import com.dokany.java.migrated.structure.ByHandleFileInformation;
 import com.dokany.java.migrated.structure.DokanFileInfo;
-import com.dokany.java.structure.DokanOptions;
+import com.dokany.java.migrated.structure.DokanOptions;
 import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;

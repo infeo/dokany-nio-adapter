@@ -1,7 +1,7 @@
 package com.dokany.java;
 
 import com.dokany.java.migrated.constants.dokany.MountError;
-import com.dokany.java.structure.DokanOptions;
+import com.dokany.java.migrated.structure.DokanOptions;
 import com.sun.jna.WString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

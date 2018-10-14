@@ -2,7 +2,7 @@ package com.dokany.java.migrated.constants.dokany;
 
 import com.dokany.java.DokanyOperations;
 import com.dokany.java.migrated.constants.EnumInteger;
-import com.dokany.java.structure.DokanOptions;
+import com.dokany.java.migrated.structure.DokanOptions;
 
 /**
  * Return Values of {@link com.dokany.java.NativeMethods#DokanMain(DokanOptions, DokanyOperations)}
