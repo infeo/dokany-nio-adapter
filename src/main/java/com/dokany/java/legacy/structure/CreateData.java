@@ -1,4 +1,4 @@
-package com.dokany.java.structure;
+package com.dokany.java.legacy.structure;
 
 import java.util.Arrays;
 import java.util.List;

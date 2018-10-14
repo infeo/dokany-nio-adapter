@@ -10,7 +10,6 @@ import com.dokany.java.migrated.constants.microsoft.Win32ErrorCode;
 import com.dokany.java.migrated.structure.ByHandleFileInformation;
 import com.dokany.java.migrated.structure.DokanFileInfo;
 import com.dokany.java.migrated.structure.EnumIntegerSet;
-import com.dokany.java.structure.FullFileInformation;
 import com.dokany.java.structure.VolumeInformation;
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.Sets;
@@ -455,7 +454,7 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 			return Win32ErrorCode.ERROR_INVALID_HANDLE.getMask();
 		} else {
 			try {
-				FullFileInformation data = getFileInformation(path, dokanFileInfo);
+				ByHandleFileInformation data = getFileInformation(path, dokanFileInfo);
 				data.copyTo(handleFileInfo);
 				LOG.trace("({}) File Information successful read from {}.", dokanFileInfo.Context, path.toString());
 				return Win32ErrorCode.ERROR_SUCCESS.getMask();
@@ -470,26 +469,20 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 		}
 	}
 
-	private FullFileInformation getFileInformation(Path p, DokanFileInfo dokanFileInfo) throws IOException {
+	private ByHandleFileInformation getFileInformation(Path p, DokanFileInfo dokanFileInfo) throws IOException {
 		DosFileAttributes attr = Files.readAttributes(p, DosFileAttributes.class);
 		long index = 0;
 		if (attr.fileKey() != null) {
 			index = (long) attr.fileKey();
 		}
-		Path filename = p.getFileName();
-		FullFileInformation data = new FullFileInformation(filename != null ? filename.toString() : "", //case distinction necessary, because the root has no name!
-				index,
+		ByHandleFileInformation data = new ByHandleFileInformation(p,
 				FileUtil.dosAttributesToEnumIntegerSet(attr),
-				0, //currently just a stub
-				DokanyUtils.getTime(attr.creationTime().toMillis()),
-				DokanyUtils.getTime(attr.lastAccessTime().toMillis()),
-				DokanyUtils.getTime(attr.lastModifiedTime().toMillis()));
-		try {
-			data.setSize(attr.size());
-		} catch (IllegalArgumentException e) {
-			LOG.warn("({}) getFileInformation(): Wrong ciphertext file size of {} . Displayed cleartext file size is set to zero.", dokanFileInfo.Context, p.toString());
-			data.setSize(0);
-		}
+				attr.creationTime(),
+				attr.lastAccessTime(),
+				attr.lastModifiedTime(),
+				this.volumeInformation.getSerialNumber(),
+				attr.size(),
+				index);
 		return data;
 	}
 
@@ -519,7 +512,7 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 				}
 				filteredStream.map(p -> {
 					try {
-						return getFileInformation(path.resolve(p), dokanFileInfo).toWin32FindData();
+						return DokanyUtils.win32FindDataStructureFromByHandleFileInformation(getFileInformation(path.resolve(p), dokanFileInfo));
 					} catch (IOException e) {
 						LOG.warn("({}) findFilesWithPatter(): IO error accessing {}. Will be ignored in file listing.", dokanFileInfo.Context, p.toString());
 						return null;

@@ -8,6 +8,7 @@ import com.sun.jna.platform.win32.WinBase.FILETIME;
 import com.sun.jna.platform.win32.WinNT;
 
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -86,9 +87,22 @@ public class ByHandleFileInformation extends Structure implements Structure.ByRe
 	 */
 	public int nNumberOfLinks = 1;
 
-	protected Path filePath;
-	protected long fileIndex;
-	protected long fileSize;
+	private Path filePath;
+	private long fileIndex;
+	private long fileSize;
+
+	public ByHandleFileInformation() {
+		this(null, null, null);
+	}
+
+	public ByHandleFileInformation(Path filePath, EnumIntegerSet<FileAttribute> attrs, FileTime creationTime, FileTime lastAccessTime, FileTime lastWriteTime, int volumeSerialNumber, long fileSize, long fileIndex){
+		this.filePath=filePath;
+		this.dwFileAttributes = attrs.toInt();
+		this.setTimes(creationTime.toMillis(), lastAccessTime.toMillis(), lastWriteTime.toMillis());
+		this.setIndex(fileIndex);
+		this.setFileSize(fileSize);
+		this.dwVolumeSerialNumber=volumeSerialNumber;
+	}
 
 	public ByHandleFileInformation(final FILETIME creationTime, final FILETIME lastAccessTime, final FILETIME lastWriteTime) {
 		setTimes(creationTime, lastAccessTime, lastWriteTime);
@@ -98,9 +112,6 @@ public class ByHandleFileInformation extends Structure implements Structure.ByRe
 		setTimes(creationTime, lastAccessTime, lastWriteTime);
 	}
 
-	public ByHandleFileInformation() {
-		this(null, null, null);
-	}
 
 	public void copyTo(final ByHandleFileInformation infoToReceive) {
 		if (Objects.isNull(infoToReceive)) {
@@ -167,7 +178,7 @@ public class ByHandleFileInformation extends Structure implements Structure.ByRe
 	 *
 	 * @param sizeToSet
 	 */
-	public void setSize(final long sizeToSet) {
+	public void setFileSize(final long sizeToSet) {
 		this.fileSize = sizeToSet;
 		final WinNT.LARGE_INTEGER largeInt = new WinNT.LARGE_INTEGER(sizeToSet);
 		this.nFileSizeHigh = largeInt.getHigh().intValue();
@@ -184,7 +195,7 @@ public class ByHandleFileInformation extends Structure implements Structure.ByRe
 		return this.fileSize;
 	}
 
-	public void setIndexExplicit(final long index) {
+	public void setIndex(final long index) {
 		this.fileIndex = index;
 		final WinNT.LARGE_INTEGER largeInt = new WinNT.LARGE_INTEGER(index);
 		this.nFileIndexHigh = largeInt.getHigh().intValue();
@@ -195,6 +206,18 @@ public class ByHandleFileInformation extends Structure implements Structure.ByRe
 		this.fileIndex = index;
 		this.nFileIndexHigh = indexHigh;
 		this.nFileIndexLow = indexLow;
+	}
+
+	public Path getFilePath(){
+		return filePath;
+	}
+
+	public long getFileSize(){
+		return fileSize;
+	}
+
+	public long getFileIndex(){
+		return fileIndex;
 	}
 
 	@Override

@@ -1,17 +1,18 @@
 package com.dokany.java;
 
+import com.dokany.java.migrated.structure.ByHandleFileInformation;
 import com.dokany.java.migrated.structure.DokanFileInfo;
 import com.sun.jna.WString;
+import com.sun.jna.platform.win32.WinBase;
+import com.sun.jna.platform.win32.WinBase.WIN32_FIND_DATA;
 import com.sun.jna.platform.win32.WinBase.FILETIME;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.FileTime;
 import java.util.Date;
 
@@ -142,22 +143,28 @@ public class DokanyUtils {
 	}
 
 	/**
-	 * @param path
-	 * @return
+	 * Creates a {@link WIN32_FIND_DATA} structure from {@link ByHandleFileInformation}.
+	 * TODO: computation of dwReserved 0 is unfinished. REPARSEPOINTS are not handled.
+	 * @param fileInformation the ByHandleFileInformation object providing the needed information.
+	 * @return a {@link WIN32_FIND_DATA} object containing the information of ByHandleFileInformation
 	 */
-	public static BasicFileAttributeView getBasicAttributes(final String path) {
-		return getBasicAttributes(Paths.get(path));
+	public static WIN32_FIND_DATA win32FindDataStructureFromByHandleFileInformation(ByHandleFileInformation fileInformation){
+		final char[] cFileName = trimStrToSize(fileInformation.getFilePath().toString(),WinBase.MAX_PATH).toCharArray(); //trimFrontSeparator(DokanyUtils.trimStrToSize(filePath.toString(), 260)).toCharArray();
+		final char[] cAlternateFileName = new char[14];
+		int dwReserved0 = 0x0;
+		int dwReserved1 = 0x0;
+		return new WIN32_FIND_DATA(fileInformation.dwFileAttributes,
+				fileInformation.ftCreationTime,
+				fileInformation.ftLastAccessTime,
+				fileInformation.ftLastWriteTime,
+				fileInformation.nFileSizeHigh,
+				fileInformation.nFileSizeLow,
+				dwReserved0,
+				dwReserved1,
+				cFileName,
+				cAlternateFileName);
+
 	}
-
-	/**
-	 * @param path
-	 * @return
-	 */
-	public static BasicFileAttributeView getBasicAttributes(final Path path) {
-		return Files.getFileAttributeView(path, BasicFileAttributeView.class);
-	}
-
-
 	/**
 	 * Set DokanyFileInfo.DeleteOnClose based on whether file or directory can be deleted.
 	 *
