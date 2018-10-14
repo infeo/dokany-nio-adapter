@@ -1,6 +1,6 @@
 package com.dokany.java;
 
-import com.dokany.java.structure.DokanyFileInfo;
+import com.dokany.java.migrated.structure.DokanyFileInfo;
 import com.sun.jna.WString;
 import com.sun.jna.platform.win32.WinBase.FILETIME;
 import org.apache.commons.io.FilenameUtils;
@@ -14,7 +14,6 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.FileTime;
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * Utilities to do various operations.

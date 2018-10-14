@@ -2,7 +2,7 @@ package com.dokany.java;
 
 import com.dokany.java.migrated.constants.dokany.MountError;
 import com.dokany.java.structure.DeviceOptions;
-import com.dokany.java.structure.DokanyFileInfo;
+import com.dokany.java.migrated.structure.DokanyFileInfo;
 import com.sun.jna.Native;
 import com.sun.jna.WString;
 import com.sun.jna.ptr.IntByReference;
@@ -74,7 +74,7 @@ class NativeMethods {
 	 * Extends the time out of the current IO operation in driver.
 	 *
 	 * @param timeout Extended time in milliseconds requested.
-	 * @param dokanyFileInfo {@link com.dokany.java.structure.DokanyFileInfo} of the operation to extend.
+	 * @param dokanyFileInfo {@link DokanyFileInfo} of the operation to extend.
 	 * @return if the operation was successful or not.
 	 */
 	static native boolean DokanResetTimeout(long timeout, DokanyFileInfo dokanyFileInfo);
@@ -82,7 +82,7 @@ class NativeMethods {
 	/**
 	 * Get the handle to Access Token.
 	 *
-	 * @param dokanyFileInfo {@link com.dokany.java.structure.DokanyFileInfo} of the operation.
+	 * @param dokanyFileInfo {@link DokanyFileInfo} of the operation.
 	 * @return A handle to the account token for the user on whose behalf the code is running.
 	 */
 	static native IntByReference DokanOpenRequestorToken(DokanyFileInfo dokanyFileInfo);

@@ -8,7 +8,7 @@ import com.dokany.java.migrated.constants.microsoft.CreationDisposition;
 import com.dokany.java.migrated.constants.microsoft.FileAttribute;
 import com.dokany.java.migrated.constants.microsoft.Win32ErrorCode;
 import com.dokany.java.migrated.structure.ByHandleFileInformation;
-import com.dokany.java.structure.DokanyFileInfo;
+import com.dokany.java.migrated.structure.DokanyFileInfo;
 import com.dokany.java.migrated.structure.EnumIntegerSet;
 import com.dokany.java.structure.FullFileInformation;
 import com.dokany.java.structure.VolumeInformation;

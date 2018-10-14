@@ -7,7 +7,7 @@ import com.dokany.java.migrated.constants.microsoft.FileSystemFlag;
 import com.dokany.java.migrated.constants.microsoft.NtStatus;
 import com.dokany.java.migrated.constants.dokany.MountOption;
 import com.dokany.java.migrated.structure.ByHandleFileInformation;
-import com.dokany.java.structure.DokanyFileInfo;
+import com.dokany.java.migrated.structure.DokanyFileInfo;
 import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
@@ -99,7 +99,7 @@ public class DokanyOperations extends Structure {
 	 * CreateFile is called each time a request is made on a file system object.
 	 *
 	 * If the file is a directory, this method is also called. In this case, the method should return {@link NtStatus#SUCCESS} when that directory can be opened and
-	 * {@link com.dokany.java.structure.DokanyFileInfo#IsDirectory} has to be set to <i>true</i>. {@link com.dokany.java.structure.DokanyFileInfo#Context} can be used to store
+	 * {@link DokanyFileInfo#IsDirectory} has to be set to <i>true</i>. {@link DokanyFileInfo#Context} can be used to store
 	 * data FileStream that can be retrieved in all other request related to the context.
 	 *
 	 * @see <a href="https://msdn.microsoft.com/en-us/library/windows/hardware/ff566424(v=vs.85).aspx">MSDN for more information about the parameters of this callback.</a>
@@ -152,7 +152,7 @@ public class DokanyOperations extends Structure {
 	 * CloseFile is called at the end of the life of the context. Receipt of this request indicates that the last handle of the file object that is associated with the target
 	 * device object has been closed and released. All outstanding I/O requests have been completed or canceled.
 	 *
-	 * CloseFile is requested after {@link DokanyOperations.Cleanup} is called. Anything remaining in {@link com.dokany.java.structure.DokanyFileInfo#Context} has to be cleared
+	 * CloseFile is requested after {@link DokanyOperations.Cleanup} is called. Anything remaining in {@link DokanyFileInfo#Context} has to be cleared
 	 * before return.
 	 *
 	 */
@@ -229,7 +229,7 @@ public class DokanyOperations extends Structure {
 		/**
 		 *
 		 * @param rawPath
-		 * @param dokanyFileInfo {@link com.dokany.java.structure.DokanyFileInfo} with information about the file or directory.
+		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
 		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
@@ -248,7 +248,7 @@ public class DokanyOperations extends Structure {
 		 *
 		 * @param fileName
 		 * @param handleFileInfo
-		 * @param dokanyFileInfo {@link com.dokany.java.structure.DokanyFileInfo} with information about the file or directory.
+		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
 		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
@@ -494,7 +494,7 @@ public class DokanyOperations extends Structure {
 	 * Retrieves information about the amount of space that is available on a disk volume, which is the total amount of space, the total amount of free space, and the total amount
 	 * of free space available to the user that is associated with the calling thread.
 	 *
-	 * Neither this method nor {@link DokanyOperations.GetVolumeInformation} save the {@link com.dokany.java.structure.DokanyFileInfo#Context}. Before these methods are called,
+	 * Neither this method nor {@link DokanyOperations.GetVolumeInformation} save the {@link DokanyFileInfo#Context}. Before these methods are called,
 	 * {@link DokanyOperations.ZwCreateFile} may not be called. (ditto @{link DokanyOperations.CloseFile} and @{link DokanyOperations.Cleanup}).
 	 *
 	 */
@@ -519,7 +519,7 @@ public class DokanyOperations extends Structure {
 	 *
 	 * Retrieves information about the file system and volume associated with the specified root directory.
 	 *
-	 * Neither this method nor {@link DokanyOperations.GetVolumeInformation} save the {@link com.dokany.java.structure.DokanyFileInfo#Context}. Before these methods are called,
+	 * Neither this method nor {@link DokanyOperations.GetVolumeInformation} save the {@link DokanyFileInfo#Context}. Before these methods are called,
 	 * {@link DokanyOperations.ZwCreateFile} may not be called. (ditto @{link DokanyOperations.CloseFile} and @{link DokanyOperations.Cleanup}).
 	 *
 	 * @see {@link FileSystemFlag#READ_ONLY_VOLUME} is automatically added to the <paramref name="features"/> if <see cref="DokanOptions.WriteProtection"/> was specified when

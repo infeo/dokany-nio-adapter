@@ -2,7 +2,7 @@ package com.dokany.java;
 
 
 import com.dokany.java.migrated.structure.ByHandleFileInformation;
-import com.dokany.java.structure.DokanyFileInfo;
+import com.dokany.java.migrated.structure.DokanyFileInfo;
 import com.sun.jna.Pointer;
 import com.sun.jna.WString;
 import com.sun.jna.platform.win32.WinBase;

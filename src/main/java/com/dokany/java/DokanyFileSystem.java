@@ -5,7 +5,7 @@ import com.dokany.java.migrated.constants.microsoft.NtStatus;
 import com.dokany.java.migrated.constants.dokany.MountOption;
 import com.dokany.java.migrated.constants.microsoft.CreationDisposition;
 import com.dokany.java.migrated.structure.ByHandleFileInformation;
-import com.dokany.java.structure.DokanyFileInfo;
+import com.dokany.java.migrated.structure.DokanyFileInfo;
 import com.sun.jna.Pointer;
 import com.sun.jna.WString;
 import com.sun.jna.platform.win32.WinBase;
