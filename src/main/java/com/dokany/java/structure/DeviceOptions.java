@@ -61,7 +61,7 @@ public class DeviceOptions extends Structure implements Structure.ByReference {
 		ThreadCount = threadCount;
 		this.mountOptions = mountOptions;
 		Options = mountOptions.toInt();
-		if (Objects.nonNull(uncName)) {
+		if (uncName != null) {
 			UNCName = new WString(uncName);
 		} else {
 			UNCName = null;
