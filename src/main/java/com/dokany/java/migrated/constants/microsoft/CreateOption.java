@@ -1,6 +1,5 @@
 package com.dokany.java.migrated.constants.microsoft;
 
-import com.dokany.java.DokanyUtils;
 import com.dokany.java.migrated.constants.EnumInteger;
 import com.dokany.java.structure.EnumIntegerSet;
 
@@ -37,7 +36,7 @@ public enum CreateOption implements EnumInteger {
 	}
 
 	public static EnumIntegerSet<CreateOption> fromInt(final int value) {
-		return DokanyUtils.enumSetFromInt(value, values());
+		return EnumIntegerSet.enumSetFromInt(value, values());
 	}
 
 	@Override

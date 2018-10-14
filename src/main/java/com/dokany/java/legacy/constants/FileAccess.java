@@ -1,6 +1,5 @@
 package com.dokany.java.legacy.constants;
 
-import com.dokany.java.DokanyUtils;
 import com.dokany.java.migrated.constants.EnumInteger;
 import com.dokany.java.structure.EnumIntegerSet;
 import com.sun.jna.platform.win32.WinNT;
@@ -142,7 +141,7 @@ public enum FileAccess implements EnumInteger {
         return (rawDesiredAccess & FileAccess.mask);
     }*/
     public static EnumIntegerSet<FileAccess> fromInt(final int i) {
-        return DokanyUtils.enumSetFromInt(i, values());
+        return EnumIntegerSet.enumSetFromInt(i, values());
     }
 
     @SuppressWarnings("all")

@@ -1,6 +1,5 @@
 package com.dokany.java.migrated.constants.microsoft;
 
-import com.dokany.java.DokanyUtils;
 import com.dokany.java.migrated.constants.EnumInteger;
 import com.dokany.java.structure.EnumIntegerSet;
 import com.sun.jna.platform.win32.WinNT;
@@ -35,7 +34,7 @@ public enum FileAttribute implements EnumInteger {
     private final int mask;
 
     public static EnumIntegerSet<FileAttribute> fromInt(final int value) {
-        return DokanyUtils.enumSetFromInt(value, values());
+        return EnumIntegerSet.enumSetFromInt(value, values());
     }
 
     FileAttribute(final int mask) {

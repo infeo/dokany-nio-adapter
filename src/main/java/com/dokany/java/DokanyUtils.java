@@ -59,18 +59,8 @@ public class DokanyUtils {
 	 * @param path
 	 * @return
 	 */
-	public static Path getPath(final String path) {
-		return Paths.get(path);
-	}
-
-	// TODO: can this return null?
-
-	/**
-	 * @param path
-	 * @return
-	 */
 	public static File toFile(final String path) {
-		return getPath(path).toFile();
+		return Paths.get(path).toFile();
 	}
 
 	public static String UNIX_SEPARATOR = FilenameUtils.separatorsToUnix(File.separator);
@@ -138,26 +128,6 @@ public class DokanyUtils {
 		return str.substring(0, Math.min(str.length(), len));
 	}
 
-	public static long exceptionToErrorCode(final Throwable t) {
-		return exceptionToErrorCode(t, NtStatus.UNSUCCESSFUL.getMask());
-	}
-
-	public static long exceptionToErrorCode(final Throwable t, final long defaultCode) {
-		LOG.warn(t.getMessage(), t);
-
-		if (t instanceof DokanyException) {
-			return ((DokanyException) t).getValue();
-		}
-		if (t instanceof FileNotFoundException) {
-			return W32Errors.ERROR_FILE_NOT_FOUND;
-		}
-		if (t instanceof FileAlreadyExistsException) {
-			return W32Errors.ERROR_ALREADY_EXISTS;
-		}
-
-		return defaultCode;
-	}
-
 	public static FileTime toFileTime(final FILETIME time) {
 		return FileTime.from(time.toDate().toInstant());
 	}
@@ -183,7 +153,7 @@ public class DokanyUtils {
 	 * @return
 	 */
 	public static BasicFileAttributeView getBasicAttributes(final String path) {
-		return getBasicAttributes(getPath(path));
+		return getBasicAttributes(Paths.get(path));
 	}
 
 	/**
@@ -194,45 +164,6 @@ public class DokanyUtils {
 		return Files.getFileAttributeView(path, BasicFileAttributeView.class);
 	}
 
-	/**
-	 * Will return an
-	 * TODO: can be refactored to the EnumIntegerSet Class
-	 *
-	 * @param value
-	 * @param allEnumValues
-	 * @return
-	 */
-	public static <T extends Enum<T> & EnumInteger> EnumIntegerSet<T> enumSetFromInt(final int value, final T[] allEnumValues) {
-		EnumIntegerSet<T> elements = new EnumIntegerSet<>(allEnumValues[0].getDeclaringClass());
-		int remainingValues = value;
-		for (T current : allEnumValues) {
-			int mask = current.getMask();
-
-			if ((remainingValues & mask) == mask) {
-				elements.add(current);
-				remainingValues -= mask;
-			}
-		}
-		return elements;
-	}
-
-
-	/**
-	 * TODO: can be refactored to the EnumIntegerSet Class
-	 *
-	 * @param value
-	 * @param enumValues
-	 * @param <T>
-	 * @return
-	 */
-	public static <T extends EnumInteger> T enumFromInt(final int value, final T[] enumValues) {
-		for (final T current : enumValues) {
-			if (value == current.getMask()) {
-				return current;
-			}
-		}
-		throw new IllegalArgumentException("Invalid int value: " + value);
-	}
 
 	/**
 	 * Set DokanyFileInfo.DeleteOnClose based on whether file or directory can be deleted.

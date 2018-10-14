@@ -5,6 +5,7 @@ import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Objects;
 
+import com.dokany.java.migrated.constants.microsoft.AccessMask;
 import com.dokany.java.migrated.constants.microsoft.FileSystemFlag;
 import com.dokany.java.migrated.constants.EnumInteger;
 import com.dokany.java.migrated.constants.dokany.MountOption;
@@ -25,8 +26,29 @@ public final class EnumIntegerSet<T extends Enum<T> & EnumInteger> extends Abstr
 		this.elements = EnumSet.of(first, others);
 	}
 
-	@SafeVarargs
-	public final void add(final T... items) {
+	/**
+	 * Will return an
+	 *
+	 * @param value
+	 * @param allEnumValues
+	 * @return
+	 */
+	public static <T extends Enum<T> & EnumInteger> EnumIntegerSet<T> enumSetFromInt(final int value, final T[] allEnumValues) {
+		EnumIntegerSet<T> elements = new EnumIntegerSet<>(allEnumValues[0].getDeclaringClass());
+		int remainingValues = value;
+		for (T current : allEnumValues) {
+			int mask = current.getMask();
+
+			if ((remainingValues & mask) == mask) {
+				elements.add(current);
+				remainingValues -= mask;
+			}
+		}
+		return elements;
+	}
+
+	public final void add(T item, T... items) {
+		//TODO: add checks for item
 		if (Objects.isNull(items) || (items.length < 1)) {
 			throw new IllegalArgumentException("items array cannot be empty");
 		}

@@ -1,6 +1,5 @@
 package com.dokany.java.migrated.constants.microsoft;
 
-import com.dokany.java.DokanyUtils;
 import com.dokany.java.migrated.constants.EnumInteger;
 import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.ptr.IntByReference;
@@ -70,7 +69,7 @@ public enum CreationDisposition implements EnumInteger {
     }
 
     public static CreationDisposition fromInt(final int value) {
-        return DokanyUtils.enumFromInt(value, values());
+        return EnumInteger.enumFromInt(value, values());
     }
 
     public int getMask() {

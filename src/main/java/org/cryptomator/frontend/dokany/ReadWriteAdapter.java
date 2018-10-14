@@ -86,7 +86,7 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 		}
 
 		//is the file a directory and if yes, indicated as one?
-		EnumIntegerSet<CreateOption> createOptions = DokanyUtils.enumSetFromInt(rawCreateOptions, CreateOption.values());
+		EnumIntegerSet<CreateOption> createOptions = EnumIntegerSet.enumSetFromInt(rawCreateOptions, CreateOption.values());
 		if (attr.isPresent() && attr.get().isDirectory()) {
 			if ((rawCreateOptions & CreateOption.FILE_NON_DIRECTORY_FILE.getMask()) == 0) {
 				dokanyFileInfo.IsDirectory = 0x01;

@@ -1,7 +1,6 @@
 package com.dokany.java.migrated.constants.dokany;
 
 import com.dokany.java.DokanyOperations;
-import com.dokany.java.DokanyUtils;
 import com.dokany.java.migrated.constants.EnumInteger;
 import com.dokany.java.structure.DeviceOptions;
 
@@ -23,7 +22,7 @@ public enum MountError implements EnumInteger {
     private final String description;
 
     public static MountError fromInt(final int value) {
-        return DokanyUtils.enumFromInt(value, values());
+        return EnumInteger.enumFromInt(value, values());
     }
 
     MountError(final int mask, final String description) {

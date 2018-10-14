@@ -1,6 +1,5 @@
 package com.dokany.java.migrated.constants.dokany;
 
-import com.dokany.java.DokanyUtils;
 import com.dokany.java.migrated.constants.EnumInteger;
 import com.dokany.java.structure.EnumIntegerSet;
 
@@ -29,7 +28,7 @@ public enum MountOption implements EnumInteger {
     }
 
     public static EnumIntegerSet<MountOption> fromInt(final int value) {
-        return DokanyUtils.enumSetFromInt(value, values());
+        return EnumIntegerSet.enumSetFromInt(value, values());
     }
 
     public int getMask() {
