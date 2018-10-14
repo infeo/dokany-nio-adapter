@@ -1,4 +1,4 @@
-package com.dokany.java.structure;
+package com.dokany.java.migrated.structure;
 
 import com.dokany.java.migrated.constants.EnumInteger;
 import com.dokany.java.migrated.constants.dokany.MountOption;

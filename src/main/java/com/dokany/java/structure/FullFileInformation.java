@@ -4,12 +4,12 @@ package com.dokany.java.structure;
 import com.dokany.java.DokanyUtils;
 import com.dokany.java.migrated.constants.microsoft.FileAttribute;
 import com.dokany.java.migrated.structure.ByHandleFileInformation;
+import com.dokany.java.migrated.structure.EnumIntegerSet;
 import com.sun.jna.platform.win32.WinBase.FILETIME;
 import com.sun.jna.platform.win32.WinBase.WIN32_FIND_DATA;
 
 import java.io.FileNotFoundException;
 import java.nio.file.Paths;
-import java.util.Objects;
 
 /**
  * Combines {@link FullFileInformation} and {@link WIN32_FIND_DATA}. This object will be stored in the Xodus fileInfo store.

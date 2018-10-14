@@ -1,7 +1,7 @@
 package com.dokany.java;
 
 import com.dokany.java.migrated.constants.microsoft.AccessMask;
-import com.dokany.java.structure.EnumIntegerSet;
+import com.dokany.java.migrated.structure.EnumIntegerSet;
 import com.dokany.java.structure.filesecurity.*;
 import org.junit.Assert;
 import org.junit.Test;

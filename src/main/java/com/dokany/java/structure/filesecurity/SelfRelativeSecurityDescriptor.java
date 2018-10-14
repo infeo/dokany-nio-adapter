@@ -1,6 +1,6 @@
 package com.dokany.java.structure.filesecurity;
 
-import com.dokany.java.structure.EnumIntegerSet;
+import com.dokany.java.migrated.structure.EnumIntegerSet;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;

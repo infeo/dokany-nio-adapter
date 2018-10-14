@@ -1,7 +1,7 @@
 package com.dokany.java.legacy.constants;
 
 import com.dokany.java.migrated.constants.EnumInteger;
-import com.dokany.java.structure.EnumIntegerSet;
+import com.dokany.java.migrated.structure.EnumIntegerSet;
 import com.sun.jna.platform.win32.WinNT;
 
 /**

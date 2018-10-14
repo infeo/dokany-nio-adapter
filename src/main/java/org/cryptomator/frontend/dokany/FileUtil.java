@@ -1,7 +1,7 @@
 package org.cryptomator.frontend.dokany;
 
 import com.dokany.java.migrated.constants.microsoft.FileAttribute;
-import com.dokany.java.structure.EnumIntegerSet;
+import com.dokany.java.migrated.structure.EnumIntegerSet;
 import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

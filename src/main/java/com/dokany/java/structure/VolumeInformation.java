@@ -2,6 +2,7 @@
 package com.dokany.java.structure;
 
 import com.dokany.java.migrated.constants.microsoft.FileSystemFlag;
+import com.dokany.java.migrated.structure.EnumIntegerSet;
 
 public final class VolumeInformation {
 	private final int maxComponentLength;

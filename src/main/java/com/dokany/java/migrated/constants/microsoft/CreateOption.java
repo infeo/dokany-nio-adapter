@@ -1,7 +1,7 @@
 package com.dokany.java.migrated.constants.microsoft;
 
 import com.dokany.java.migrated.constants.EnumInteger;
-import com.dokany.java.structure.EnumIntegerSet;
+import com.dokany.java.migrated.structure.EnumIntegerSet;
 
 /**
  * Enum of flags specifying the options to apply when the driver creates or opens the file.

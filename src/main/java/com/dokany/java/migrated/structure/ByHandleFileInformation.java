@@ -3,7 +3,6 @@ package com.dokany.java.migrated.structure;
 
 import com.dokany.java.DokanyUtils;
 import com.dokany.java.migrated.constants.microsoft.FileAttribute;
-import com.dokany.java.structure.EnumIntegerSet;
 import com.sun.jna.Structure;
 import com.sun.jna.platform.win32.WinBase.FILETIME;
 import com.sun.jna.platform.win32.WinNT;

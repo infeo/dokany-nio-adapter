@@ -1,19 +1,13 @@
 package com.dokany.java;
 
-import com.dokany.java.migrated.constants.EnumInteger;
-import com.dokany.java.migrated.constants.microsoft.NtStatus;
 import com.dokany.java.structure.DokanyFileInfo;
-import com.dokany.java.structure.EnumIntegerSet;
 import com.sun.jna.WString;
-import com.sun.jna.platform.win32.W32Errors;
 import com.sun.jna.platform.win32.WinBase.FILETIME;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
