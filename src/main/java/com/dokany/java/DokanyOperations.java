@@ -7,7 +7,7 @@ import com.dokany.java.migrated.constants.microsoft.FileSystemFlag;
 import com.dokany.java.migrated.constants.microsoft.NtStatus;
 import com.dokany.java.migrated.constants.dokany.MountOption;
 import com.dokany.java.migrated.structure.ByHandleFileInformation;
-import com.dokany.java.migrated.structure.DokanyFileInfo;
+import com.dokany.java.migrated.structure.DokanFileInfo;
 import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
@@ -99,7 +99,7 @@ public class DokanyOperations extends Structure {
 	 * CreateFile is called each time a request is made on a file system object.
 	 *
 	 * If the file is a directory, this method is also called. In this case, the method should return {@link NtStatus#SUCCESS} when that directory can be opened and
-	 * {@link DokanyFileInfo#IsDirectory} has to be set to <i>true</i>. {@link DokanyFileInfo#Context} can be used to store
+	 * {@link DokanFileInfo#IsDirectory} has to be set to <i>true</i>. {@link DokanFileInfo#Context} can be used to store
 	 * data FileStream that can be retrieved in all other request related to the context.
 	 *
 	 * @see <a href="https://msdn.microsoft.com/en-us/library/windows/hardware/ff566424(v=vs.85).aspx">MSDN for more information about the parameters of this callback.</a>
@@ -115,7 +115,7 @@ public class DokanyOperations extends Structure {
 		 *            the open file.
 		 * @param rawCreateDisposition
 		 * @param rawCreateOptions Represents advanced options for creating a File object. See <a href="https://msdn.microsoft.com/en-us/library/system.io.fileoptions(v=vs.110).aspx">MSDN</a>
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
@@ -126,7 +126,7 @@ public class DokanyOperations extends Structure {
 		        int rawShareAccess,
 		        int rawCreateDisposition,
 		        int rawCreateOptions,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	/**
@@ -141,18 +141,18 @@ public class DokanyOperations extends Structure {
 		/**
 		 *
 		 * @param rawPath
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 		 */
 		void callback(
 		          WString rawPath,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	/**
 	 * CloseFile is called at the end of the life of the context. Receipt of this request indicates that the last handle of the file object that is associated with the target
 	 * device object has been closed and released. All outstanding I/O requests have been completed or canceled.
 	 *
-	 * CloseFile is requested after {@link DokanyOperations.Cleanup} is called. Anything remaining in {@link DokanyFileInfo#Context} has to be cleared
+	 * CloseFile is requested after {@link DokanyOperations.Cleanup} is called. Anything remaining in {@link DokanFileInfo#Context} has to be cleared
 	 * before return.
 	 *
 	 */
@@ -161,11 +161,11 @@ public class DokanyOperations extends Structure {
 		/**
 		 *
 		 * @param rawPath
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 		 */
 		void callback(
 		          WString rawPath,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	/**
@@ -181,7 +181,7 @@ public class DokanyOperations extends Structure {
 		 * @param rawBufferLength
 		 * @param rawReadLength
 		 * @param rawOffset
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
@@ -190,7 +190,7 @@ public class DokanyOperations extends Structure {
 		        int rawBufferLength,
 		          IntByReference rawReadLength,
 		        long rawOffset,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	/**
@@ -207,7 +207,7 @@ public class DokanyOperations extends Structure {
 		 * @param rawNumberOfBytesToWrite
 		 * @param rawNumberOfBytesWritten
 		 * @param rawOffset
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
@@ -216,7 +216,7 @@ public class DokanyOperations extends Structure {
 		        int rawNumberOfBytesToWrite,
 		          IntByReference rawNumberOfBytesWritten,
 		        long rawOffset,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 
 	}
 
@@ -229,12 +229,12 @@ public class DokanyOperations extends Structure {
 		/**
 		 *
 		 * @param rawPath
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	/**
@@ -248,13 +248,13 @@ public class DokanyOperations extends Structure {
 		 *
 		 * @param fileName
 		 * @param handleFileInfo
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString fileName,
 		          ByHandleFileInformation handleFileInfo,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	/**
@@ -267,13 +267,13 @@ public class DokanyOperations extends Structure {
 		 *
 		 * @param rawPath
 		 * @param rawFillFindData
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
 		          FillWin32FindData rawFillFindData,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	/**
@@ -288,14 +288,14 @@ public class DokanyOperations extends Structure {
 		 * @param fileName
 		 * @param searchPattern
 		 * @param rawFillFindData
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString fileName,
 		          WString searchPattern,
 		          FillWin32FindData rawFillFindData,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	/**
@@ -308,13 +308,13 @@ public class DokanyOperations extends Structure {
 		 *
 		 * @param rawPath
 		 * @param rawAttributes
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
 		        int rawAttributes,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	/**
@@ -329,7 +329,7 @@ public class DokanyOperations extends Structure {
 		 * @param rawCreationTime time of creation
 		 * @param rawLastAccessTime time of last access
 		 * @param rawLastWriteTime time of last modification
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
@@ -337,7 +337,7 @@ public class DokanyOperations extends Structure {
 		          FILETIME rawCreationTime,
 		          FILETIME rawLastAccessTime,
 		          FILETIME rawLastWriteTime,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	/**
@@ -347,10 +347,10 @@ public class DokanyOperations extends Structure {
 	 * You should NOT delete the file in this method, but instead you must only check whether you can delete the file or not, and return {@link NtStatus#SUCCESS} (when you can
 	 * delete it) or appropriate error codes such as {@link NtStatus#ACCESS_DENIED}, {@link NtStatus#OBJECT_NO_LONGER_EXISTS}, {@link NtStatus#OBJECT_NAME_NOT_FOUND}.
 	 *
-	 * {@link DokanyOperations.DeleteFile} will also be called with {@link DokanyFileInfo#DeleteOnClose} set to <i>false</i> to notify the driver when the file is no longer
+	 * {@link DokanyOperations.DeleteFile} will also be called with {@link DokanFileInfo#DeleteOnClose} set to <i>false</i> to notify the driver when the file is no longer
 	 * requested to be deleted.
 	 *
-	 * When you return {@link NtStatus#SUCCESS}, you get a {@link DokanyOperations.Cleanup}> call afterwards with {@link DokanyFileInfo#DeleteOnClose} set to <i>true</i> and only
+	 * When you return {@link NtStatus#SUCCESS}, you get a {@link DokanyOperations.Cleanup}> call afterwards with {@link DokanFileInfo#DeleteOnClose} set to <i>true</i> and only
 	 * then you have to actually delete the file being closed.
 	 *
 	 * @see {@link DokanyOperations.DeleteDirectory}
@@ -360,12 +360,12 @@ public class DokanyOperations extends Structure {
 		/**
 		 *
 		 * @param rawPath
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file.
 		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	/**
@@ -380,12 +380,12 @@ public class DokanyOperations extends Structure {
 		/**
 		 *
 		 * @param rawPath
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the directory.
 		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	/**
@@ -399,14 +399,14 @@ public class DokanyOperations extends Structure {
 		 * @param rawPath
 		 * @param rawNewFileName
 		 * @param rawReplaceIfExisting
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
 		          WString rawNewFileName,
 		        boolean rawReplaceIfExisting,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	/**
@@ -419,13 +419,13 @@ public class DokanyOperations extends Structure {
 		 *
 		 * @param rawPath
 		 * @param rawByteOffset
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
 		        long rawByteOffset,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	/**
@@ -438,13 +438,13 @@ public class DokanyOperations extends Structure {
 		 *
 		 * @param rawPath
 		 * @param rawLength
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
 		        long rawLength,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	/**
@@ -458,14 +458,14 @@ public class DokanyOperations extends Structure {
 		 * @param rawPath
 		 * @param rawByteOffset
 		 * @param rawLength
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
 		        long rawByteOffset,
 		        long rawLength,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	/**
@@ -479,14 +479,14 @@ public class DokanyOperations extends Structure {
 		 * @param rawPath
 		 * @param rawByteOffset
 		 * @param rawLength
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
 		        long rawByteOffset,
 		        long rawLength,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	/**
@@ -494,7 +494,7 @@ public class DokanyOperations extends Structure {
 	 * Retrieves information about the amount of space that is available on a disk volume, which is the total amount of space, the total amount of free space, and the total amount
 	 * of free space available to the user that is associated with the calling thread.
 	 *
-	 * Neither this method nor {@link DokanyOperations.GetVolumeInformation} save the {@link DokanyFileInfo#Context}. Before these methods are called,
+	 * Neither this method nor {@link DokanyOperations.GetVolumeInformation} save the {@link DokanFileInfo#Context}. Before these methods are called,
 	 * {@link DokanyOperations.ZwCreateFile} may not be called. (ditto @{link DokanyOperations.CloseFile} and @{link DokanyOperations.Cleanup}).
 	 *
 	 */
@@ -505,21 +505,21 @@ public class DokanyOperations extends Structure {
 		 * @param freeBytesAvailable
 		 * @param totalNumberOfBytes
 		 * @param totalNumberOfFreeBytes
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          LongByReference freeBytesAvailable,
 		          LongByReference totalNumberOfBytes,
 		          LongByReference totalNumberOfFreeBytes,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	/**
 	 *
 	 * Retrieves information about the file system and volume associated with the specified root directory.
 	 *
-	 * Neither this method nor {@link DokanyOperations.GetVolumeInformation} save the {@link DokanyFileInfo#Context}. Before these methods are called,
+	 * Neither this method nor {@link DokanyOperations.GetVolumeInformation} save the {@link DokanFileInfo#Context}. Before these methods are called,
 	 * {@link DokanyOperations.ZwCreateFile} may not be called. (ditto @{link DokanyOperations.CloseFile} and @{link DokanyOperations.Cleanup}).
 	 *
 	 * @see {@link FileSystemFlag#READ_ONLY_VOLUME} is automatically added to the <paramref name="features"/> if <see cref="DokanOptions.WriteProtection"/> was specified when
@@ -545,7 +545,7 @@ public class DokanyOperations extends Structure {
 		 * @param rawFileSystemFlags
 		 * @param rawFileSystemNameBuffer
 		 * @param rawFileSystemNameSize
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
@@ -556,7 +556,7 @@ public class DokanyOperations extends Structure {
 		          IntByReference /* FileSystemFeatures */ rawFileSystemFlags,
 		          Pointer rawFileSystemNameBuffer,
 		        int rawFileSystemNameSize,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	/**
@@ -566,7 +566,7 @@ public class DokanyOperations extends Structure {
 	@FunctionalInterface
 	interface Mounted extends Callback {
 		long mounted(
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	/**
@@ -576,7 +576,7 @@ public class DokanyOperations extends Structure {
 	@FunctionalInterface
 	interface Unmounted extends Callback {
 		long unmounted(
-		          final DokanyFileInfo dokanyFileInfo);
+		          final DokanFileInfo dokanFileInfo);
 	}
 
 	/**
@@ -594,7 +594,7 @@ public class DokanyOperations extends Structure {
 		 * @param rawSecurityDescriptor
 		 * @param rawSecurityDescriptorLength
 		 * @param rawSecurityDescriptorLengthNeeded
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
@@ -603,7 +603,7 @@ public class DokanyOperations extends Structure {
 		          Pointer rawSecurityDescriptor,
 		        int rawSecurityDescriptorLength,
 		          IntByReference rawSecurityDescriptorLengthNeeded,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	/**
@@ -620,7 +620,7 @@ public class DokanyOperations extends Structure {
 		 * @param rawSecurityInformation
 		 * @param rawSecurityDescriptor
 		 * @param rawSecurityDescriptorLength
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
@@ -629,7 +629,7 @@ public class DokanyOperations extends Structure {
 		        // @TODO: This is a pointer??
 		          Pointer rawSecurityDescriptor,
 		        int rawSecurityDescriptorLength,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	@FunctionalInterface
@@ -637,11 +637,11 @@ public class DokanyOperations extends Structure {
 		/**
 		 *
 		 * @param rawFillFindData
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 		 */
 		void fillWin32FindData(
 		          WIN32_FIND_DATA rawFillFindData,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	/**
@@ -654,13 +654,13 @@ public class DokanyOperations extends Structure {
 		 *
 		 * @param rawPath
 		 * @param rawFillFindData
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 		 * @return {@link com.dokany.java.migrated.microsoft.NtStatus}
 		 */
 		long callback(
 		          WString rawPath,
 		          FillWin32FindStreamData rawFillFindData,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	/**
@@ -672,11 +672,11 @@ public class DokanyOperations extends Structure {
 		/**
 		 *
 		 * @param rawFillFindData
-		 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 		 */
 		void callback(
 		          Win32FindStreamData rawFillFindData,
-		          DokanyFileInfo dokanyFileInfo);
+		          DokanFileInfo dokanFileInfo);
 	}
 
 	interface Win32FindStreamDataInterface {

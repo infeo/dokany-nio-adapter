@@ -5,7 +5,7 @@ import com.dokany.java.migrated.constants.microsoft.NtStatus;
 import com.dokany.java.migrated.constants.dokany.MountOption;
 import com.dokany.java.migrated.constants.microsoft.CreationDisposition;
 import com.dokany.java.migrated.structure.ByHandleFileInformation;
-import com.dokany.java.migrated.structure.DokanyFileInfo;
+import com.dokany.java.migrated.structure.DokanFileInfo;
 import com.sun.jna.Pointer;
 import com.sun.jna.WString;
 import com.sun.jna.platform.win32.WinBase;
@@ -24,9 +24,9 @@ public interface DokanyFileSystem {
 	 *
 	 * In case OPEN_ALWAYS &amp; CREATE_ALWAYS are successfully opening an existing file, STATUS_OBJECT_NAME_COLLISION should be returned instead of STATUS_SUCCESS . This will inform Dokan that the file has been opened and not created during the request.
 	 *
-	 * If the file is a directory, CreateFile is also called. In this case, CreateFile should return {@link NtStatus#SUCCESS} when that directory can be opened and {@link DokanyFileInfo#IsDirectory} has to be set to TRUE. On the other hand, if {@link DokanyFileInfo#IsDirectory} is set to TRUE but the path targets a file, {@link NtStatus#NOT_A_DIRECTORY} must be returned.
+	 * If the file is a directory, CreateFile is also called. In this case, CreateFile should return {@link NtStatus#SUCCESS} when that directory can be opened and {@link DokanFileInfo#IsDirectory} has to be set to TRUE. On the other hand, if {@link DokanFileInfo#IsDirectory} is set to TRUE but the path targets a file, {@link NtStatus#NOT_A_DIRECTORY} must be returned.
 	 *
-	 * {@link DokanyFileInfo#Context} can be used to store Data (like a filehandle) that can be retrieved in all other requests related to the Context. To avoid memory leak, Context needs to be released in {@link DokanyFileSystem#cleanup(WString, DokanyFileInfo)} .
+	 * {@link DokanFileInfo#Context} can be used to store Data (like a filehandle) that can be retrieved in all other requests related to the Context. To avoid memory leak, Context needs to be released in {@link DokanyFileSystem#cleanup(WString, DokanFileInfo)} .
 	 *
 	 * @param rawPath Path requested by the Kernel on the File System.
 	 * TODO: rewrite this parameter description to link to winBase
@@ -37,7 +37,7 @@ public interface DokanyFileSystem {
 	 * the open file.
 	 * @param rawCreateDisposition Specifies the action to perform if the file does or does not exist. Can be translated into a readable thing via {@link CreationDisposition}
 	 * @param rawCreateOptions Specifies the options to apply when the driver creates or opens the file. (see also in the .NET API <a href="https://docs.microsoft.com/de-de/dotnet/api/system.io.fileoptions">System.IO.FileOptions</a>)
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 * @return integer code of a {@link NtStatus}
 	 * @see <a href="https://dokan-dev.github.io/dokany-doc/html/struct_d_o_k_a_n___o_p_e_r_a_t_i_o_n_s.html#a40c2f61e1287237f5fd5c2690e795183">Dokany documentation of ZwCreateFile</a>
 	 * @see <a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/content/ntifs/nf-ntifs-ntcreatefile">Microsoft documentation of zwCreateFile</a>
@@ -51,37 +51,37 @@ public interface DokanyFileSystem {
 			int rawShareAccess,
 			int rawCreateDisposition,
 			int rawCreateOptions,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 	/**
 	 * Receipt of this request indicates that the last handle for a file object that is associated with the target device object has been closed (but, due to outstanding I/O
 	 * requests, might not have been released).
 	 * <p>
-	 * Cleanup is requested before @{link {@link DokanyFileSystem#closeFile(WString, DokanyFileInfo)} is called.
+	 * Cleanup is requested before @{link {@link DokanyFileSystem#closeFile(WString, DokanFileInfo)} is called.
 	 *
 	 * @param rawPath
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 */
 	void cleanup(
 			WString rawPath,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 	/**
 	 * CloseFile is called at the end of the life of the context. Receipt of this request indicates that the last handle of the file object that is associated with the target
 	 * device object has been closed and released. All outstanding I/O requests have been completed or canceled.
 	 * <p>
-	 * CloseFile is requested after {@link DokanyFileSystem#cleanup(WString, DokanyFileInfo)} is called. Anything remaining in {@link DokanyFileInfo#Context} has to be cleared
+	 * CloseFile is requested after {@link DokanyFileSystem#cleanup(WString, DokanFileInfo)} is called. Anything remaining in {@link DokanFileInfo#Context} has to be cleared
 	 * before return.
 	 *
 	 * @param rawPath
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 */
 	void closeFile(
 			WString rawPath,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 	/**
-	 * ReadFile callback on the file previously opened in {@link DokanyFileSystem#zwCreateFile(WString, WinBase.SECURITY_ATTRIBUTES, int, int, int, int, int, DokanyFileInfo)}. It can be called by different thread at the same time, therefore the read has to be
+	 * ReadFile callback on the file previously opened in {@link DokanyFileSystem#zwCreateFile(WString, WinBase.SECURITY_ATTRIBUTES, int, int, int, int, int, DokanFileInfo)}. It can be called by different thread at the same time, therefore the read has to be
 	 * thread safe.
 	 *
 	 * @param rawPath
@@ -89,7 +89,7 @@ public interface DokanyFileSystem {
 	 * @param rawBufferLength
 	 * @param rawReadLength
 	 * @param rawOffset
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 * @return {@link NtStatus}
 	 */
 	int readFile(
@@ -98,10 +98,10 @@ public interface DokanyFileSystem {
 			int rawBufferLength,
 			IntByReference rawReadLength,
 			long rawOffset,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 	/**
-	 * WriteFile callback on the file previously opened in {@link DokanyFileSystem#zwCreateFile(WString, WinBase.SECURITY_ATTRIBUTES, int, int, int, int, int, DokanyFileInfo)} It can be called by different thread at the same time, therefore the write/context has to
+	 * WriteFile callback on the file previously opened in {@link DokanyFileSystem#zwCreateFile(WString, WinBase.SECURITY_ATTRIBUTES, int, int, int, int, int, DokanFileInfo)} It can be called by different thread at the same time, therefore the write/context has to
 	 * be thread safe.
 	 *
 	 * @param rawPath
@@ -109,7 +109,7 @@ public interface DokanyFileSystem {
 	 * @param rawNumberOfBytesToWrite
 	 * @param rawNumberOfBytesWritten
 	 * @param rawOffset
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 * @return {@link NtStatus}
 	 */
 	int writeFile(
@@ -118,73 +118,73 @@ public interface DokanyFileSystem {
 			int rawNumberOfBytesToWrite,
 			IntByReference rawNumberOfBytesWritten,
 			long rawOffset,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 
 	/**
 	 * Clears buffers for this context and causes any buffered data to be written to the file.
 	 *
 	 * @param rawPath
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 * @return {@link NtStatus}
 	 */
 	int flushFileBuffers(
 			WString rawPath,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 	/**
 	 * Get specific informations on a file.
 	 *
 	 * @param fileName
 	 * @param handleFileInfo
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 * @return {@link NtStatus}
 	 */
 	int getFileInformation(
 			WString fileName,
 			ByHandleFileInformation handleFileInfo,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 	/**
 	 * List all files in the path requested.
 	 *
 	 * @param rawPath
 	 * @param rawFillFindData
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 * @return {@link NtStatus}
 	 */
 	int findFiles(
 			WString rawPath,
 			DokanyOperations.FillWin32FindData rawFillFindData,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 	/**
-	 * Same as {@link DokanyFileSystem#findFiles(WString, DokanyOperations.FillWin32FindData, DokanyFileInfo)} but with a search pattern to filter the result.
+	 * Same as {@link DokanyFileSystem#findFiles(WString, DokanyOperations.FillWin32FindData, DokanFileInfo)} but with a search pattern to filter the result.
 	 *
 	 * @param fileName
 	 * @param searchPattern
 	 * @param rawFillFindData
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 * @return {@link NtStatus}
 	 */
 	int findFilesWithPattern(
 			WString fileName,
 			WString searchPattern,
 			DokanyOperations.FillWin32FindData rawFillFindData,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 	/**
 	 * Set file attributes on a specific file.
 	 *
 	 * @param rawPath
 	 * @param rawAttributes
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 * @return {@link NtStatus}
 	 */
 	int setFileAttributes(
 			WString rawPath,
 			int rawAttributes,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 	/**
 	 * Set file times on a specific file.
@@ -193,7 +193,7 @@ public interface DokanyFileSystem {
 	 * @param rawCreationTime time of creation
 	 * @param rawLastAccessTime time of last access
 	 * @param rawLastWriteTime time of last modification
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 * @return {@link NtStatus}
 	 */
 	int setFileTime(
@@ -201,7 +201,7 @@ public interface DokanyFileSystem {
 			FILETIME rawCreationTime,
 			FILETIME rawLastAccessTime,
 			FILETIME rawLastWriteTime,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 	/**
 	 * Check if it is possible to delete a file.
@@ -209,32 +209,32 @@ public interface DokanyFileSystem {
 	 * You should NOT delete the file in this method, but instead you must only check whether you can delete the file or not, and return {@link NtStatus#SUCCESS} (when you can
 	 * delete it) or appropriate error codes such as {@link NtStatus#ACCESS_DENIED}, {@link NtStatus#OBJECT_NO_LONGER_EXISTS}, {@link NtStatus#OBJECT_NAME_NOT_FOUND}.
 	 * <p>
-	 * {@link DokanyFileSystem#deleteFile(WString, DokanyFileInfo)} will also be called with {@link DokanyFileInfo#DeleteOnClose} set to <i>false</i> to notify the driver when the file is no longer
+	 * {@link DokanyFileSystem#deleteFile(WString, DokanFileInfo)} will also be called with {@link DokanFileInfo#DeleteOnClose} set to <i>false</i> to notify the driver when the file is no longer
 	 * requested to be deleted.
 	 * <p>
-	 * When you return {@link NtStatus#SUCCESS}, you get a {@link DokanyFileSystem#cleanup(WString, DokanyFileInfo)} call afterwards with {@link DokanyFileInfo#DeleteOnClose} set to <i>true</i> and only
+	 * When you return {@link NtStatus#SUCCESS}, you get a {@link DokanyFileSystem#cleanup(WString, DokanFileInfo)} call afterwards with {@link DokanFileInfo#DeleteOnClose} set to <i>true</i> and only
 	 * then you have to actually delete the file being closed.
 	 *
 	 * @param rawPath
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file.
 	 * @return {@link NtStatus}
-	 * @see #deleteDirectory(WString, DokanyFileInfo)
+	 * @see #deleteDirectory(WString, DokanFileInfo)
 	 */
 	int deleteFile(
 			WString rawPath,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 	/**
 	 * Check if it is possible to delete a directory.
 	 *
 	 * @param rawPath
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the directory.
 	 * @return {@link NtStatus}
-	 * @see #deleteFile(WString, DokanyFileInfo)
+	 * @see #deleteFile(WString, DokanFileInfo)
 	 */
 	int deleteDirectory(
 			WString rawPath,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 	/**
 	 * Move a file or directory to a new location.
@@ -242,40 +242,40 @@ public interface DokanyFileSystem {
 	 * @param rawPath
 	 * @param rawNewFileName
 	 * @param rawReplaceIfExisting
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 * @return {@link NtStatus}
 	 */
 	int moveFile(
 			WString rawPath,
 			WString rawNewFileName,
 			boolean rawReplaceIfExisting,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 	/**
 	 * SetEndOfFile is used to truncate or extend a file (physical file size).
 	 *
 	 * @param rawPath
 	 * @param rawByteOffset
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 * @return {@link NtStatus}
 	 */
 	int setEndOfFile(
 			WString rawPath,
 			long rawByteOffset,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 	/**
 	 * SetAllocationSize is used to truncate or extend a file.
 	 *
 	 * @param rawPath
 	 * @param rawLength
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 * @return {@link NtStatus}
 	 */
 	int setAllocationSize(
 			WString rawPath,
 			long rawLength,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 	/**
 	 * Lock file at a specific offset and data length. This is only used if {@link MountOption#FILELOCK_USER_MODE} is enabled.
@@ -283,14 +283,14 @@ public interface DokanyFileSystem {
 	 * @param rawPath
 	 * @param rawByteOffset
 	 * @param rawLength
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 * @return {@link NtStatus}
 	 */
 	int lockFile(
 			WString rawPath,
 			long rawByteOffset,
 			long rawLength,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 	/**
 	 * Unlock file at a specific offset and data length. This is only used if {@link MountOption#FILELOCK_USER_MODE} is enabled.
@@ -298,39 +298,39 @@ public interface DokanyFileSystem {
 	 * @param rawPath
 	 * @param rawByteOffset
 	 * @param rawLength
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 * @return {@link NtStatus}
 	 */
 	int unlockFile(
 			WString rawPath,
 			long rawByteOffset,
 			long rawLength,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 	/**
 	 * Retrieves information about the amount of space that is available on a disk volume, which is the total amount of space, the total amount of free space, and the total amount
 	 * of free space available to the user that is associated with the calling thread.
 	 * <p>
-	 * Neither this method nor {@link DokanyFileSystem#getVolumeInformation(Pointer, int, IntByReference, IntByReference, IntByReference, Pointer, int, DokanyFileInfo)} save the {@link DokanyFileInfo#Context}. Before these methods are called,
-	 * {@link DokanyFileSystem#zwCreateFile(WString, WinBase.SECURITY_ATTRIBUTES, int, int, int, int, int, DokanyFileInfo)} may not be called. (ditto @{link DokanyOperations.CloseFile} and @{link DokanyOperations.Cleanup}).
+	 * Neither this method nor {@link DokanyFileSystem#getVolumeInformation(Pointer, int, IntByReference, IntByReference, IntByReference, Pointer, int, DokanFileInfo)} save the {@link DokanFileInfo#Context}. Before these methods are called,
+	 * {@link DokanyFileSystem#zwCreateFile(WString, WinBase.SECURITY_ATTRIBUTES, int, int, int, int, int, DokanFileInfo)} may not be called. (ditto @{link DokanyOperations.CloseFile} and @{link DokanyOperations.Cleanup}).
 	 *
 	 * @param freeBytesAvailable
 	 * @param totalNumberOfBytes
 	 * @param totalNumberOfFreeBytes
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 * @return {@link NtStatus}
 	 */
 	int getDiskFreeSpace(
 			LongByReference freeBytesAvailable,
 			LongByReference totalNumberOfBytes,
 			LongByReference totalNumberOfFreeBytes,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 	/**
 	 * Retrieves information about the file system and volume associated with the specified root directory.
 	 * <p>
-	 * Neither this method nor {@link DokanyFileSystem#getVolumeInformation(Pointer, int, IntByReference, IntByReference, IntByReference, Pointer, int, DokanyFileInfo)} save the {@link DokanyFileInfo#Context}. Before these methods are called,
-	 * {@link DokanyFileSystem#zwCreateFile(WString, WinBase.SECURITY_ATTRIBUTES, int, int, int, int, int, DokanyFileInfo)} may not be called. (ditto @{link DokanyOperations.CloseFile} and @{link DokanyOperations.Cleanup}).
+	 * Neither this method nor {@link DokanyFileSystem#getVolumeInformation(Pointer, int, IntByReference, IntByReference, IntByReference, Pointer, int, DokanFileInfo)} save the {@link DokanFileInfo#Context}. Before these methods are called,
+	 * {@link DokanyFileSystem#zwCreateFile(WString, WinBase.SECURITY_ATTRIBUTES, int, int, int, int, int, DokanFileInfo)} may not be called. (ditto @{link DokanyOperations.CloseFile} and @{link DokanyOperations.Cleanup}).
 	 *
 	 * {@link FileSystemFlag#READ_ONLY_VOLUME} is automatically added to the features if {@link MountOption#WRITE_PROTECTION} was specified during mount.
 	 * <p>
@@ -350,7 +350,7 @@ public interface DokanyFileSystem {
 	 * @param rawFileSystemFlags
 	 * @param rawFileSystemNameBuffer
 	 * @param rawFileSystemNameSize
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 * @return {@link NtStatus}
 	 */
 	int getVolumeInformation(
@@ -361,19 +361,19 @@ public interface DokanyFileSystem {
 			IntByReference /* FileSystemFeatures */ rawFileSystemFlags,
 			Pointer rawFileSystemNameBuffer,
 			int rawFileSystemNameSize,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 	/**
 	 * Is called when Dokany succeeded mounting the volume.
 	 */
 	int mounted(
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 	/**
 	 * Is called when Dokany succeeded unmounting the volume.
 	 */
 	int unmounted(
-			final DokanyFileInfo dokanyFileInfo);
+			final DokanFileInfo dokanFileInfo);
 
 	/**
 	 * Get specified information about the security of a file or directory.
@@ -385,7 +385,7 @@ public interface DokanyFileSystem {
 	 * @param rawSecurityDescriptor
 	 * @param rawSecurityDescriptorLength
 	 * @param rawSecurityDescriptorLengthNeeded
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 * @return {@link NtStatus}
 	 */
 	int getFileSecurity(
@@ -394,7 +394,7 @@ public interface DokanyFileSystem {
 			Pointer rawSecurityDescriptor,
 			int rawSecurityDescriptorLength,
 			IntByReference rawSecurityDescriptorLengthNeeded,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 	/**
 	 * Sets the security of a file or directory object.
@@ -405,7 +405,7 @@ public interface DokanyFileSystem {
 	 * @param rawSecurityInformation
 	 * @param rawSecurityDescriptor
 	 * @param rawSecurityDescriptorLength
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 * @return {@link NtStatus}
 	 */
 	int setFileSecurity(
@@ -414,27 +414,27 @@ public interface DokanyFileSystem {
 			// @TODO: This is a pointer??
 			Pointer rawSecurityDescriptor,
 			int rawSecurityDescriptorLength,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 	/**
 	 * @param rawFillFindData
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 */
 	void fillWin32FindData(
 			WIN32_FIND_DATA rawFillFindData,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 	/**
 	 * Retrieve all NTFS Streams informations on the file. This is only called if {@link MountOption#ALT_STREAM} is enabled.
 	 *
 	 * @param rawPath
 	 * @param rawFillFindData
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 * @return {@link NtStatus}
 	 */
 	int findStreams(
 			WString rawPath,
 			DokanyOperations.FillWin32FindStreamData rawFillFindData,
-			DokanyFileInfo dokanyFileInfo);
+			DokanFileInfo dokanFileInfo);
 
 }

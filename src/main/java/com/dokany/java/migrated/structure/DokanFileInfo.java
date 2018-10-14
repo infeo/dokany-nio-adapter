@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @see <a href="https://dokan-dev.github.io/dokany-doc/html/struct_d_o_k_a_n___f_i_l_e___i_n_f_o.html">Dokany Documentation of PDOKAN_FILE_INFO</a>
  */
-public class DokanyFileInfo extends Structure implements Structure.ByReference {
+public class DokanFileInfo extends Structure implements Structure.ByReference {
 
 	/**
 	 * Context that can be used to carry information between operation. The context can carry whatever type like {@link com.sun.jna.platform.win32.WinNT.HANDLE},
@@ -66,7 +66,7 @@ public class DokanyFileInfo extends Structure implements Structure.ByReference {
 	 */
 	public byte WriteToEndOfFile;
 
-	public DokanyFileInfo() {
+	public DokanFileInfo() {
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package com.dokany.java;
 
-import com.dokany.java.migrated.structure.DokanyFileInfo;
+import com.dokany.java.migrated.structure.DokanFileInfo;
 import com.sun.jna.WString;
 import com.sun.jna.platform.win32.WinBase.FILETIME;
 import org.apache.commons.io.FilenameUtils;
@@ -162,13 +162,13 @@ public class DokanyUtils {
 	 * Set DokanyFileInfo.DeleteOnClose based on whether file or directory can be deleted.
 	 *
 	 * @param fileOrDirectory
-	 * @param dokanyFileInfo
+	 * @param dokanFileInfo
 	 */
-	public static void setDeleteStatus(final File fileOrDirectory, final DokanyFileInfo dokanyFileInfo) {
+	public static void setDeleteStatus(final File fileOrDirectory, final DokanFileInfo dokanFileInfo) {
 		boolean canDelete = fileOrDirectory.renameTo(fileOrDirectory);
 
 		if (canDelete) {
-			dokanyFileInfo.DeleteOnClose = 1;
+			dokanFileInfo.DeleteOnClose = 1;
 		}
 	}
 }

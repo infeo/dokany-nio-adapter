@@ -8,7 +8,7 @@ import com.dokany.java.migrated.constants.microsoft.CreationDisposition;
 import com.dokany.java.migrated.constants.microsoft.FileAttribute;
 import com.dokany.java.migrated.constants.microsoft.Win32ErrorCode;
 import com.dokany.java.migrated.structure.ByHandleFileInformation;
-import com.dokany.java.migrated.structure.DokanyFileInfo;
+import com.dokany.java.migrated.structure.DokanFileInfo;
 import com.dokany.java.migrated.structure.EnumIntegerSet;
 import com.dokany.java.structure.FullFileInformation;
 import com.dokany.java.structure.VolumeInformation;
@@ -73,7 +73,7 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 	}
 
 	@Override
-	public int zwCreateFile(WString rawPath, WinBase.SECURITY_ATTRIBUTES securityContext, int rawDesiredAccess, int rawFileAttributes, int rawShareAccess, int rawCreateDisposition, int rawCreateOptions, DokanyFileInfo dokanyFileInfo) {
+	public int zwCreateFile(WString rawPath, WinBase.SECURITY_ATTRIBUTES securityContext, int rawDesiredAccess, int rawFileAttributes, int rawShareAccess, int rawCreateDisposition, int rawCreateOptions, DokanFileInfo dokanFileInfo) {
 		Path path = getRootedPath(rawPath);
 		CreationDisposition creationDisposition = CreationDisposition.fromInt(rawCreateDisposition);
 		LOG.debug("zwCreateFile() is called for {} with CreationDisposition {}.", path.toString(), creationDisposition.name());
@@ -89,7 +89,7 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 		EnumIntegerSet<CreateOption> createOptions = EnumIntegerSet.enumSetFromInt(rawCreateOptions, CreateOption.values());
 		if (attr.isPresent() && attr.get().isDirectory()) {
 			if ((rawCreateOptions & CreateOption.FILE_NON_DIRECTORY_FILE.getMask()) == 0) {
-				dokanyFileInfo.IsDirectory = 0x01;
+				dokanFileInfo.IsDirectory = 0x01;
 				//TODO: set the share access like in the dokany mirror example
 			} else {
 				LOG.trace("Ressource {} is a Directory and cannot be opened as a file.");
@@ -98,8 +98,8 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 			}
 		}
 
-		if (dokanyFileInfo.isDirectory()) {
-			return createDirectory(path, creationDisposition, rawFileAttributes, dokanyFileInfo);
+		if (dokanFileInfo.isDirectory()) {
+			return createDirectory(path, creationDisposition, rawFileAttributes, dokanFileInfo);
 		} else {
 			Set<OpenOption> openOptions = Sets.newHashSet();
 			openOptions.add(StandardOpenOption.READ);
@@ -150,10 +150,10 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 				}
 			}
 
-			if (dokanyFileInfo.writeToEndOfFile()) {
+			if (dokanFileInfo.writeToEndOfFile()) {
 				openOptions.add(StandardOpenOption.APPEND);
 			}
-			return createFile(path, creationDisposition, openOptions, rawFileAttributes, dokanyFileInfo);
+			return createFile(path, creationDisposition, openOptions, rawFileAttributes, dokanFileInfo);
 		}
 
 
@@ -163,7 +163,7 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 	/**
 	 * @return
 	 */
-	private int createDirectory(Path path, CreationDisposition creationDisposition, int rawFileAttributes, DokanyFileInfo dokanyFileInfo) {
+	private int createDirectory(Path path, CreationDisposition creationDisposition, int rawFileAttributes, DokanFileInfo dokanFileInfo) {
 		LOG.trace("Try to open {} as Directory.", path.toString());
 		final int mask = creationDisposition.getMask();
 		//createDirectory request
@@ -195,13 +195,13 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 		} else {
 			// we open the directory in some kinda way
 			setFileAttributes(path, rawFileAttributes);
-			dokanyFileInfo.Context = fac.openDir(path);
-			LOG.trace("({}) {} opened successful with handle {}.", dokanyFileInfo.Context, path.toString(), dokanyFileInfo.Context);
+			dokanFileInfo.Context = fac.openDir(path);
+			LOG.trace("({}) {} opened successful with handle {}.", dokanFileInfo.Context, path.toString(), dokanFileInfo.Context);
 			return Win32ErrorCode.ERROR_SUCCESS.getMask();
 		}
 	}
 
-	private int createFile(Path path, CreationDisposition creationDisposition, Set<OpenOption> openOptions, int rawFileAttributes, DokanyFileInfo dokanyFileInfo) {
+	private int createFile(Path path, CreationDisposition creationDisposition, Set<OpenOption> openOptions, int rawFileAttributes, DokanFileInfo dokanFileInfo) {
 		LOG.trace("Try to open {} as File.", path.toString());
 		final int mask = creationDisposition.getMask();
 		DosFileAttributes attr = null;
@@ -228,16 +228,16 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 		}
 		//read-only?
 		else if ((attr != null && attr.isReadOnly() || ((rawFileAttributes & FileAttribute.READONLY.getMask()) != 0))
-				&& dokanyFileInfo.DeleteOnClose != 0
+				&& dokanFileInfo.DeleteOnClose != 0
 				) {
 			//cannot overwrite file
 			LOG.trace("{} is readonly. Unable to overwrite.", path.toString());
 			return Win32ErrorCode.ERROR_FILE_READ_ONLY.getMask();
 		} else {
 			try {
-				dokanyFileInfo.Context = fac.openFile(path, openOptions);
+				dokanFileInfo.Context = fac.openFile(path, openOptions);
 				setFileAttributes(path, rawFileAttributes);
-				LOG.trace("({}) {} opened successful with handle {}.", dokanyFileInfo.Context, path.toString(), dokanyFileInfo.Context);
+				LOG.trace("({}) {} opened successful with handle {}.", dokanFileInfo.Context, path.toString(), dokanFileInfo.Context);
 				//required by contract
 				Win32ErrorCode returnCode;
 				if (attr != null && (mask == CreationDisposition.OPEN_ALWAYS.getMask() || mask == CreationDisposition.CREATE_ALWAYS.getMask())) {
@@ -265,8 +265,8 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 			} catch (IllegalArgumentException e) {
 				LOG.warn("createFile(): Exception occurred:", e);
 				LOG.warn("{} seems to be modified on disk.", path.toString());
-				dokanyFileInfo.Context = fac.openRestrictedFile(path);
-				LOG.warn("({}) {} opened in restricted mode with handle {}.", dokanyFileInfo.Context, path.toString(), dokanyFileInfo.Context);
+				dokanFileInfo.Context = fac.openRestrictedFile(path);
+				LOG.warn("({}) {} opened in restricted mode with handle {}.", dokanFileInfo.Context, path.toString(), dokanFileInfo.Context);
 				return Win32ErrorCode.ERROR_FILE_CORRUPT.getMask();
 			}
 		}
@@ -276,64 +276,64 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 	 * The handle is closed in this method, due to the requirements of the dokany implementation to delete a file in the cleanUp method
 	 *
 	 * @param rawPath
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 */
 	@Override
-	public void cleanup(WString rawPath, DokanyFileInfo dokanyFileInfo) {
+	public void cleanup(WString rawPath, DokanFileInfo dokanFileInfo) {
 		Path path = getRootedPath(rawPath);
-		LOG.debug("({}) cleanup() is called for {}.", dokanyFileInfo.Context, path.toString());
-		if (dokanyFileInfo.Context == 0) {
+		LOG.debug("({}) cleanup() is called for {}.", dokanFileInfo.Context, path.toString());
+		if (dokanFileInfo.Context == 0) {
 			LOG.info("cleanup(): Invalid handle to {}.", path.toString());
 		} else {
 			try {
-				fac.close(dokanyFileInfo.Context);
-				if (dokanyFileInfo.deleteOnClose()) {
+				fac.close(dokanFileInfo.Context);
+				if (dokanFileInfo.deleteOnClose()) {
 					try {
 						Files.delete(path);
-						LOG.trace("({}) {} successful deleted.", dokanyFileInfo.Context, path.toString());
+						LOG.trace("({}) {} successful deleted.", dokanFileInfo.Context, path.toString());
 					} catch (DirectoryNotEmptyException e) {
-						LOG.trace("({}) Directory {} not empty.", dokanyFileInfo.Context, path.toString());
+						LOG.trace("({}) Directory {} not empty.", dokanFileInfo.Context, path.toString());
 					} catch (IOException e) {
-						LOG.info("({}) cleanup(): IO error during deletion of {} ", dokanyFileInfo.Context, path.toString(), e);
+						LOG.info("({}) cleanup(): IO error during deletion of {} ", dokanFileInfo.Context, path.toString(), e);
 						LOG.debug("cleanup(): ", e);
 					}
 				}
 			} catch (IOException e) {
-				LOG.warn("({}) cleanup(): Unable to close handle to {}", dokanyFileInfo.Context, path.toString(), e);
+				LOG.warn("({}) cleanup(): Unable to close handle to {}", dokanFileInfo.Context, path.toString(), e);
 				LOG.debug("cleanup(): ", e);
 			}
 		}
 	}
 
 	@Override
-	public void closeFile(WString rawPath, DokanyFileInfo dokanyFileInfo) {
+	public void closeFile(WString rawPath, DokanFileInfo dokanFileInfo) {
 		Path p = getRootedPath(rawPath);
-		LOG.debug("({}) closeFile() is called for {}.", dokanyFileInfo.Context, p.toString());
-		if (fac.exists(dokanyFileInfo.Context)) {
-			LOG.info("({}) Resource {} was not cleanuped. Closing handle now.", dokanyFileInfo.Context, p.toString());
+		LOG.debug("({}) closeFile() is called for {}.", dokanFileInfo.Context, p.toString());
+		if (fac.exists(dokanFileInfo.Context)) {
+			LOG.info("({}) Resource {} was not cleanuped. Closing handle now.", dokanFileInfo.Context, p.toString());
 			try {
-				fac.close(dokanyFileInfo.Context);
+				fac.close(dokanFileInfo.Context);
 			} catch (IOException e) {
-				LOG.warn("({}) closeFile(): Unable to close handle to resource {}. To close it please restart the adapter.", dokanyFileInfo.Context, p.toString());
+				LOG.warn("({}) closeFile(): Unable to close handle to resource {}. To close it please restart the adapter.", dokanFileInfo.Context, p.toString());
 				LOG.debug("closeFile():", e);
 			}
 		}
-		dokanyFileInfo.Context = 0;
+		dokanFileInfo.Context = 0;
 	}
 
 	@Override
-	public int readFile(WString rawPath, Pointer rawBuffer, int rawBufferLength, IntByReference rawReadLength, long rawOffset, DokanyFileInfo dokanyFileInfo) {
+	public int readFile(WString rawPath, Pointer rawBuffer, int rawBufferLength, IntByReference rawReadLength, long rawOffset, DokanFileInfo dokanFileInfo) {
 		Path path = getRootedPath(rawPath);
-		LOG.debug("({}) readFile() is called for {}.", dokanyFileInfo.Context, path.toString());
-		if (dokanyFileInfo.Context == 0) {
+		LOG.debug("({}) readFile() is called for {}.", dokanFileInfo.Context, path.toString());
+		if (dokanFileInfo.Context == 0) {
 			LOG.info("readFile(): Invalid handle to {} ", path.toString());
 			return Win32ErrorCode.ERROR_INVALID_HANDLE.getMask();
-		} else if (dokanyFileInfo.isDirectory()) {
-			LOG.trace("({}) {} is a directory. Unable to read Data from it.", dokanyFileInfo.Context, path.toString());
+		} else if (dokanFileInfo.isDirectory()) {
+			LOG.trace("({}) {} is a directory. Unable to read Data from it.", dokanFileInfo.Context, path.toString());
 			return Win32ErrorCode.ERROR_ACCESS_DENIED.getMask();
 		}
 
-		long handleID = dokanyFileInfo.Context;
+		long handleID = dokanFileInfo.Context;
 		boolean reopened = false;
 		OpenFile handle = (OpenFile) fac.get(handleID);
 		if (handle == null) {
@@ -370,18 +370,18 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 	}
 
 	@Override
-	public int writeFile(WString rawPath, Pointer rawBuffer, int rawNumberOfBytesToWrite, IntByReference rawNumberOfBytesWritten, long rawOffset, DokanyFileInfo dokanyFileInfo) {
+	public int writeFile(WString rawPath, Pointer rawBuffer, int rawNumberOfBytesToWrite, IntByReference rawNumberOfBytesWritten, long rawOffset, DokanFileInfo dokanFileInfo) {
 		Path path = getRootedPath(rawPath);
-		LOG.debug("({}) writeFile() is called for {}.", dokanyFileInfo.Context, path.toString());
-		if (dokanyFileInfo.Context == 0) {
+		LOG.debug("({}) writeFile() is called for {}.", dokanFileInfo.Context, path.toString());
+		if (dokanFileInfo.Context == 0) {
 			LOG.info("writeFile(): Invalid handle to {}", path.toString());
 			return Win32ErrorCode.ERROR_INVALID_HANDLE.getMask();
-		} else if (dokanyFileInfo.isDirectory()) {
-			LOG.trace("({}) {} is a directory. Unable to write Data to it.", dokanyFileInfo.Context, path.toString());
+		} else if (dokanFileInfo.isDirectory()) {
+			LOG.trace("({}) {} is a directory. Unable to write Data to it.", dokanFileInfo.Context, path.toString());
 			return Win32ErrorCode.ERROR_ACCESS_DENIED.getMask();
 		}
 
-		long handleID = dokanyFileInfo.Context;
+		long handleID = dokanFileInfo.Context;
 		boolean reopened = false;
 		OpenFile handle = (OpenFile) fac.get(handleID);
 		if (handle == null) {
@@ -417,23 +417,23 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 	}
 
 	@Override
-	public int flushFileBuffers(WString rawPath, DokanyFileInfo dokanyFileInfo) {
+	public int flushFileBuffers(WString rawPath, DokanFileInfo dokanFileInfo) {
 		Path path = getRootedPath(rawPath);
-		LOG.debug("({}) flushFileBuffers() is called for {}.", dokanyFileInfo.Context, path.toString());
-		if (dokanyFileInfo.Context == 0) {
+		LOG.debug("({}) flushFileBuffers() is called for {}.", dokanFileInfo.Context, path.toString());
+		if (dokanFileInfo.Context == 0) {
 			LOG.info("flushFileBuffers(): Invalid handle to {}.", path.toString());
 			return Win32ErrorCode.ERROR_INVALID_HANDLE.getMask();
-		} else if (dokanyFileInfo.isDirectory()) {
-			LOG.trace("({}) {} is a directory. Unable to write Data to it.", dokanyFileInfo.Context, path.toString());
+		} else if (dokanFileInfo.isDirectory()) {
+			LOG.trace("({}) {} is a directory. Unable to write Data to it.", dokanFileInfo.Context, path.toString());
 			return Win32ErrorCode.ERROR_ACCESS_DENIED.getMask();
 		} else {
-			OpenHandle handle = fac.get(dokanyFileInfo.Context);
+			OpenHandle handle = fac.get(dokanFileInfo.Context);
 			try {
 				((OpenFile) handle).flush();
-				LOG.trace("Flushed successful to {} with handle {}.", path.toString(), dokanyFileInfo.Context);
+				LOG.trace("Flushed successful to {} with handle {}.", path.toString(), dokanFileInfo.Context);
 				return Win32ErrorCode.ERROR_SUCCESS.getMask();
 			} catch (IOException e) {
-				LOG.info("({}) flushFileBuffers(): IO Error while flushing to {}.", dokanyFileInfo.Context, path.toString(), e);
+				LOG.info("({}) flushFileBuffers(): IO Error while flushing to {}.", dokanFileInfo.Context, path.toString(), e);
 				LOG.debug("flushFileBuffers(): ", e);
 				return Win32ErrorCode.ERROR_WRITE_FAULT.getMask();
 			}
@@ -443,34 +443,34 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 	/**
 	 * @param fileName
 	 * @param handleFileInfo
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 * @return
 	 */
 	@Override
-	public int getFileInformation(WString fileName, ByHandleFileInformation handleFileInfo, DokanyFileInfo dokanyFileInfo) {
+	public int getFileInformation(WString fileName, ByHandleFileInformation handleFileInfo, DokanFileInfo dokanFileInfo) {
 		Path path = getRootedPath(fileName);
-		LOG.debug("({}) getFileInformation() is called for {}.", dokanyFileInfo.Context, path.toString());
-		if (dokanyFileInfo.Context == 0) {
+		LOG.debug("({}) getFileInformation() is called for {}.", dokanFileInfo.Context, path.toString());
+		if (dokanFileInfo.Context == 0) {
 			LOG.info("getFileInformation(): Invalid handle to {}.", path.toString());
 			return Win32ErrorCode.ERROR_INVALID_HANDLE.getMask();
 		} else {
 			try {
-				FullFileInformation data = getFileInformation(path, dokanyFileInfo);
+				FullFileInformation data = getFileInformation(path, dokanFileInfo);
 				data.copyTo(handleFileInfo);
-				LOG.trace("({}) File Information successful read from {}.", dokanyFileInfo.Context, path.toString());
+				LOG.trace("({}) File Information successful read from {}.", dokanFileInfo.Context, path.toString());
 				return Win32ErrorCode.ERROR_SUCCESS.getMask();
 			} catch (NoSuchFileException e) {
-				LOG.debug("({}) Resource {} not found.", dokanyFileInfo.Context, path.toString());
+				LOG.debug("({}) Resource {} not found.", dokanFileInfo.Context, path.toString());
 				return Win32ErrorCode.ERROR_FILE_NOT_FOUND.getMask();
 			} catch (IOException e) {
-				LOG.info("({}) getFileInformation(): IO error occurred reading meta data from {}.", dokanyFileInfo.Context, path.toString(), e);
+				LOG.info("({}) getFileInformation(): IO error occurred reading meta data from {}.", dokanFileInfo.Context, path.toString(), e);
 				LOG.debug("getFileInformation(): ", e);
 				return Win32ErrorCode.ERROR_READ_FAULT.getMask();
 			}
 		}
 	}
 
-	private FullFileInformation getFileInformation(Path p, DokanyFileInfo dokanyFileInfo) throws IOException {
+	private FullFileInformation getFileInformation(Path p, DokanFileInfo dokanFileInfo) throws IOException {
 		DosFileAttributes attr = Files.readAttributes(p, DosFileAttributes.class);
 		long index = 0;
 		if (attr.fileKey() != null) {
@@ -487,23 +487,23 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 		try {
 			data.setSize(attr.size());
 		} catch (IllegalArgumentException e) {
-			LOG.warn("({}) getFileInformation(): Wrong ciphertext file size of {} . Displayed cleartext file size is set to zero.", dokanyFileInfo.Context, p.toString());
+			LOG.warn("({}) getFileInformation(): Wrong ciphertext file size of {} . Displayed cleartext file size is set to zero.", dokanFileInfo.Context, p.toString());
 			data.setSize(0);
 		}
 		return data;
 	}
 
 	@Override
-	public int findFiles(WString rawPath, DokanyOperations.FillWin32FindData rawFillFindData, DokanyFileInfo dokanyFileInfo) {
-		LOG.debug("({}) findFiles() is called for {}.", dokanyFileInfo.Context, getRootedPath(rawPath).toString());
-		return findFilesWithPattern(rawPath, new WString("*"), rawFillFindData, dokanyFileInfo);
+	public int findFiles(WString rawPath, DokanyOperations.FillWin32FindData rawFillFindData, DokanFileInfo dokanFileInfo) {
+		LOG.debug("({}) findFiles() is called for {}.", dokanFileInfo.Context, getRootedPath(rawPath).toString());
+		return findFilesWithPattern(rawPath, new WString("*"), rawFillFindData, dokanFileInfo);
 	}
 
 	@Override
-	public int findFilesWithPattern(WString fileName, WString searchPattern, DokanyOperations.FillWin32FindData rawFillFindData, DokanyFileInfo dokanyFileInfo) {
+	public int findFilesWithPattern(WString fileName, WString searchPattern, DokanyOperations.FillWin32FindData rawFillFindData, DokanFileInfo dokanFileInfo) {
 		Path path = getRootedPath(fileName);
-		LOG.debug("({}) findFilesWithPattern() is called for {} with search pattern {}.", dokanyFileInfo.Context, path.toString(), searchPattern.toString());
-		if (dokanyFileInfo.Context == 0) {
+		LOG.debug("({}) findFilesWithPattern() is called for {} with search pattern {}.", dokanFileInfo.Context, path.toString(), searchPattern.toString());
+		if (dokanFileInfo.Context == 0) {
 			LOG.info("findFilesWithPattern(): Invalid handle to {}.", path.toString());
 			return Win32ErrorCode.ERROR_INVALID_HANDLE.getMask();
 		} else {
@@ -519,37 +519,37 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 				}
 				filteredStream.map(p -> {
 					try {
-						return getFileInformation(path.resolve(p), dokanyFileInfo).toWin32FindData();
+						return getFileInformation(path.resolve(p), dokanFileInfo).toWin32FindData();
 					} catch (IOException e) {
-						LOG.warn("({}) findFilesWithPatter(): IO error accessing {}. Will be ignored in file listing.", dokanyFileInfo.Context, p.toString());
+						LOG.warn("({}) findFilesWithPatter(): IO error accessing {}. Will be ignored in file listing.", dokanFileInfo.Context, p.toString());
 						return null;
 					}
 				}).forEach(file -> {
 					try {
 						if (file != null) {
-							LOG.trace("({}) findFilesWithPattern(): found file {}", dokanyFileInfo.Context, file.getFileName());
-							rawFillFindData.fillWin32FindData(file, dokanyFileInfo);
+							LOG.trace("({}) findFilesWithPattern(): found file {}", dokanFileInfo.Context, file.getFileName());
+							rawFillFindData.fillWin32FindData(file, dokanFileInfo);
 						}
 					} catch (Error e) {
 						//TODO: invalid memory access can happen, which is an Java.Lang.Error
-						LOG.error("({}) Error filling Win32FindData with file {}. Occurred error is {}", dokanyFileInfo.Context, file.getFileName());
-						LOG.error("(" + dokanyFileInfo.Context + ") findFilesWithPattern(): Stacktrace:", e);
+						LOG.error("({}) Error filling Win32FindData with file {}. Occurred error is {}", dokanFileInfo.Context, file.getFileName());
+						LOG.error("(" + dokanFileInfo.Context + ") findFilesWithPattern(): Stacktrace:", e);
 					}
 				});
-				LOG.trace("({}) Successful searched content in {}.", dokanyFileInfo.Context, path.toString());
+				LOG.trace("({}) Successful searched content in {}.", dokanFileInfo.Context, path.toString());
 				return Win32ErrorCode.ERROR_SUCCESS.getMask();
 			} catch (IOException e) {
-				LOG.error("({}) findFilesWithPattern(): Unable to list content of directory {}. Error is {}", dokanyFileInfo.Context, path.toString(), e);
+				LOG.error("({}) findFilesWithPattern(): Unable to list content of directory {}. Error is {}", dokanFileInfo.Context, path.toString(), e);
 				return Win32ErrorCode.ERROR_READ_FAULT.getMask();
 			}
 		}
 	}
 
 	@Override
-	public int setFileAttributes(WString rawPath, int rawAttributes, DokanyFileInfo dokanyFileInfo) {
+	public int setFileAttributes(WString rawPath, int rawAttributes, DokanFileInfo dokanFileInfo) {
 		Path path = getRootedPath(rawPath);
-		LOG.debug("({}) setFileAttributes() is called for {}.", dokanyFileInfo.Context, path.toString());
-		if (dokanyFileInfo.Context == 0) {
+		LOG.debug("({}) setFileAttributes() is called for {}.", dokanFileInfo.Context, path.toString());
+		if (dokanFileInfo.Context == 0) {
 			LOG.info("setFileAttribute(): Invalid handle to {}.", path.toString());
 			return Win32ErrorCode.ERROR_INVALID_HANDLE.getMask();
 		} else {
@@ -574,10 +574,10 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 	}
 
 	@Override
-	public int setFileTime(WString rawPath, WinBase.FILETIME rawCreationTime, WinBase.FILETIME rawLastAccessTime, WinBase.FILETIME rawLastWriteTime, DokanyFileInfo dokanyFileInfo) {
+	public int setFileTime(WString rawPath, WinBase.FILETIME rawCreationTime, WinBase.FILETIME rawLastAccessTime, WinBase.FILETIME rawLastWriteTime, DokanFileInfo dokanFileInfo) {
 		Path path = getRootedPath(rawPath);
-		LOG.debug("({}) setFileTime() is called for {}.", dokanyFileInfo.Context, path.toString());
-		if (dokanyFileInfo.Context == 0) {
+		LOG.debug("({}) setFileTime() is called for {}.", dokanFileInfo.Context, path.toString());
+		if (dokanFileInfo.Context == 0) {
 			LOG.info("setFileTime(): Invalid handle to {}.", path.toString());
 			return Win32ErrorCode.ERROR_INVALID_HANDLE.getMask();
 		} else {
@@ -586,13 +586,13 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 				FileTime lastAccessTime = FileTime.fromMillis(rawLastAccessTime.toDate().getTime());
 				FileTime createdTime = FileTime.fromMillis(rawCreationTime.toDate().getTime());
 				Files.getFileAttributeView(path, BasicFileAttributeView.class).setTimes(lastModifiedTime, lastAccessTime, createdTime);
-				LOG.trace("({}) Successful updated Filetime for {}.", dokanyFileInfo.Context, path.toString());
+				LOG.trace("({}) Successful updated Filetime for {}.", dokanFileInfo.Context, path.toString());
 				return Win32ErrorCode.ERROR_SUCCESS.getMask();
 			} catch (NoSuchFileException e) {
-				LOG.trace("({}) File {} not found.", dokanyFileInfo.Context, path.toString());
+				LOG.trace("({}) File {} not found.", dokanFileInfo.Context, path.toString());
 				return Win32ErrorCode.ERROR_FILE_NOT_FOUND.getMask();
 			} catch (IOException e) {
-				LOG.info("({}) setFileTime(): IO error occurred accessing {}.", dokanyFileInfo.Context, path.toString(), e);
+				LOG.info("({}) setFileTime(): IO error occurred accessing {}.", dokanFileInfo.Context, path.toString(), e);
 				LOG.debug("setFileTime(): ", e);
 				return Win32ErrorCode.ERROR_WRITE_FAULT.getMask();
 			}
@@ -600,57 +600,57 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 	}
 
 	@Override
-	public int deleteFile(WString rawPath, DokanyFileInfo dokanyFileInfo) {
+	public int deleteFile(WString rawPath, DokanFileInfo dokanFileInfo) {
 		Path path = getRootedPath(rawPath);
-		LOG.debug("({}) deleteFile() is called for {}.", dokanyFileInfo.Context, path.toString());
-		if (dokanyFileInfo.Context == 0) {
+		LOG.debug("({}) deleteFile() is called for {}.", dokanFileInfo.Context, path.toString());
+		if (dokanFileInfo.Context == 0) {
 			LOG.info("deleteFile(): Invalid handle to {}.", path.toString());
 			return Win32ErrorCode.ERROR_INVALID_HANDLE.getMask();
-		} else if (dokanyFileInfo.isDirectory()) {
-			LOG.warn("({}) {} is a directory. Unable to delete via deleteFile()", dokanyFileInfo.Context, path.toString());
+		} else if (dokanFileInfo.isDirectory()) {
+			LOG.warn("({}) {} is a directory. Unable to delete via deleteFile()", dokanFileInfo.Context, path.toString());
 			return Win32ErrorCode.ERROR_ACCESS_DENIED.getMask();
 		} else {
 			//TODO: race condition with handle == null possible?
-			OpenHandle handle = fac.get(dokanyFileInfo.Context);
+			OpenHandle handle = fac.get(dokanFileInfo.Context);
 			if (Files.exists(path)) {
 				//TODO: what is the best condition for the deletion? and is this case analysis correct?
 				if (((OpenFile) handle).canBeDeleted()) {
-					LOG.trace("({}) Deletion of {} possible.", dokanyFileInfo.Context, path.toString());
+					LOG.trace("({}) Deletion of {} possible.", dokanFileInfo.Context, path.toString());
 					return Win32ErrorCode.ERROR_SUCCESS.getMask();
 				} else {
-					LOG.trace("({}) Deletion of {} not possible.", dokanyFileInfo.Context, path.toString());
+					LOG.trace("({}) Deletion of {} not possible.", dokanFileInfo.Context, path.toString());
 					return Win32ErrorCode.ERROR_BUSY.getMask();
 				}
 			} else {
-				LOG.trace("({}) {} not found.", dokanyFileInfo.Context, path.toString());
+				LOG.trace("({}) {} not found.", dokanFileInfo.Context, path.toString());
 				return Win32ErrorCode.ERROR_FILE_NOT_FOUND.getMask();
 			}
 		}
 	}
 
 	@Override
-	public int deleteDirectory(WString rawPath, DokanyFileInfo dokanyFileInfo) {
+	public int deleteDirectory(WString rawPath, DokanFileInfo dokanFileInfo) {
 		Path path = getRootedPath(rawPath);
-		LOG.debug("({}) deleteDirectory() is called for {}.", dokanyFileInfo.Context, path.toString());
-		if (dokanyFileInfo.Context == 0) {
+		LOG.debug("({}) deleteDirectory() is called for {}.", dokanFileInfo.Context, path.toString());
+		if (dokanFileInfo.Context == 0) {
 			LOG.info("deleteDirectory(): Invalid handle to {}.", path.toString());
 			return Win32ErrorCode.ERROR_INVALID_HANDLE.getMask();
-		} else if (!dokanyFileInfo.isDirectory()) {
-			LOG.warn("({}) {} is a file. Unable to delete via deleteDirectory()", dokanyFileInfo.Context, path.toString());
+		} else if (!dokanFileInfo.isDirectory()) {
+			LOG.warn("({}) {} is a file. Unable to delete via deleteDirectory()", dokanFileInfo.Context, path.toString());
 			return Win32ErrorCode.ERROR_ACCESS_DENIED.getMask();
 		} else {
 			//TODO: check for directory existence
 			//TODO: race condition with handle == null possible?
 			try (DirectoryStream emptyCheck = Files.newDirectoryStream(path)) {
 				if (emptyCheck.iterator().hasNext()) {
-					LOG.trace("({}) Deletion of {} not possible.", dokanyFileInfo.Context, path.toString());
+					LOG.trace("({}) Deletion of {} not possible.", dokanFileInfo.Context, path.toString());
 					return Win32ErrorCode.ERROR_DIR_NOT_EMPTY.getMask();
 				} else {
-					LOG.trace("({}) Deletion of {} possible.", dokanyFileInfo.Context, path.toString());
+					LOG.trace("({}) Deletion of {} possible.", dokanFileInfo.Context, path.toString());
 					return Win32ErrorCode.ERROR_SUCCESS.getMask();
 				}
 			} catch (IOException e) {
-				LOG.info("({}) deleteDirectory(): IO error occurred reading {}.", dokanyFileInfo.Context, path.toString());
+				LOG.info("({}) deleteDirectory(): IO error occurred reading {}.", dokanFileInfo.Context, path.toString());
 				LOG.debug("deleteDirectory(): ", e);
 				return Win32ErrorCode.ERROR_CURRENT_DIRECTORY.getMask();
 			}
@@ -658,11 +658,11 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 	}
 
 	@Override
-	public int moveFile(WString rawPath, WString rawNewFileName, boolean rawReplaceIfExisting, DokanyFileInfo dokanyFileInfo) {
+	public int moveFile(WString rawPath, WString rawNewFileName, boolean rawReplaceIfExisting, DokanFileInfo dokanFileInfo) {
 		Path path = getRootedPath(rawPath);
 		Path newPath = getRootedPath(rawNewFileName);
-		LOG.debug("({}) moveFile() is called for {}.", dokanyFileInfo.Context, path.toString());
-		if (dokanyFileInfo.Context == 0) {
+		LOG.debug("({}) moveFile() is called for {}.", dokanFileInfo.Context, path.toString());
+		if (dokanFileInfo.Context == 0) {
 			LOG.info("moveFile(): Invalid handle to {}.", path.toString());
 			return Win32ErrorCode.ERROR_INVALID_HANDLE.getMask();
 		} else {
@@ -672,16 +672,16 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 				} else {
 					Files.move(path, newPath);
 				}
-				LOG.trace("({}) Successful moved resource {} to {}.", dokanyFileInfo.Context, path.toString(), newPath);
+				LOG.trace("({}) Successful moved resource {} to {}.", dokanFileInfo.Context, path.toString(), newPath);
 				return Win32ErrorCode.ERROR_SUCCESS.getMask();
 			} catch (FileAlreadyExistsException e) {
-				LOG.trace("({}) Ressource {} already exists at {}.", dokanyFileInfo.Context, path.toString(), newPath);
+				LOG.trace("({}) Ressource {} already exists at {}.", dokanFileInfo.Context, path.toString(), newPath);
 				return Win32ErrorCode.ERROR_FILE_EXISTS.getMask();
 			} catch (DirectoryNotEmptyException e) {
-				LOG.trace("({}) Target directoy {} is not emtpy.", dokanyFileInfo.Context, path.toString());
+				LOG.trace("({}) Target directoy {} is not emtpy.", dokanFileInfo.Context, path.toString());
 				return Win32ErrorCode.ERROR_DIR_NOT_EMPTY.getMask();
 			} catch (IOException e) {
-				LOG.info("({}) moveFile(): IO error occured while moving ressource {}.", dokanyFileInfo.Context, path.toString());
+				LOG.info("({}) moveFile(): IO error occured while moving ressource {}.", dokanFileInfo.Context, path.toString());
 				LOG.debug("moveFile(): ", e);
 				return Win32ErrorCode.ERROR_GEN_FAILURE.getMask();
 			}
@@ -689,23 +689,23 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 	}
 
 	@Override
-	public int setEndOfFile(WString rawPath, long rawByteOffset, DokanyFileInfo dokanyFileInfo) {
+	public int setEndOfFile(WString rawPath, long rawByteOffset, DokanFileInfo dokanFileInfo) {
 		Path path = getRootedPath(rawPath);
-		LOG.debug("({}) setEndOfFile() is called for {}.", dokanyFileInfo.Context, path.toString());
-		if (dokanyFileInfo.Context == 0) {
+		LOG.debug("({}) setEndOfFile() is called for {}.", dokanFileInfo.Context, path.toString());
+		if (dokanFileInfo.Context == 0) {
 			LOG.info("setEndOfFile(): Invalid handle to {}.", path.toString());
 			return Win32ErrorCode.ERROR_INVALID_HANDLE.getMask();
-		} else if (dokanyFileInfo.isDirectory()) {
-			LOG.warn("({}) setEndOfFile(): {} is a directory. Unable to truncate.", dokanyFileInfo.Context, path.toString());
+		} else if (dokanFileInfo.isDirectory()) {
+			LOG.warn("({}) setEndOfFile(): {} is a directory. Unable to truncate.", dokanFileInfo.Context, path.toString());
 			return Win32ErrorCode.ERROR_ACCESS_DENIED.getMask();
 		} else {
 			try {
-				OpenHandle handle = fac.get(dokanyFileInfo.Context);
+				OpenHandle handle = fac.get(dokanFileInfo.Context);
 				((OpenFile) handle).truncate(rawByteOffset);
-				LOG.trace("({}) Successful truncated {}.", dokanyFileInfo.Context, path.toString());
+				LOG.trace("({}) Successful truncated {}.", dokanFileInfo.Context, path.toString());
 				return Win32ErrorCode.ERROR_SUCCESS.getMask();
 			} catch (IOException e) {
-				LOG.info("({}) setEndOfFile(): IO error while truncating {}.", dokanyFileInfo.Context, path.toString());
+				LOG.info("({}) setEndOfFile(): IO error while truncating {}.", dokanFileInfo.Context, path.toString());
 				LOG.debug("setEndOfFile(): ", e);
 				return Win32ErrorCode.ERROR_WRITE_FAULT.getMask();
 			}
@@ -713,24 +713,24 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 	}
 
 	@Override
-	public int setAllocationSize(WString rawPath, long rawLength, DokanyFileInfo dokanyFileInfo) {
+	public int setAllocationSize(WString rawPath, long rawLength, DokanFileInfo dokanFileInfo) {
 		Path path = getRootedPath(rawPath);
-		LOG.debug("({}) setAllocationSize() is called for {}.", dokanyFileInfo.Context, path.toString());
-		return setEndOfFile(rawPath, rawLength, dokanyFileInfo);
+		LOG.debug("({}) setAllocationSize() is called for {}.", dokanFileInfo.Context, path.toString());
+		return setEndOfFile(rawPath, rawLength, dokanFileInfo);
 	}
 
 	@Override
-	public int lockFile(WString rawPath, long rawByteOffset, long rawLength, DokanyFileInfo dokanyFileInfo) {
+	public int lockFile(WString rawPath, long rawByteOffset, long rawLength, DokanFileInfo dokanFileInfo) {
 		return 0;
 	}
 
 	@Override
-	public int unlockFile(WString rawPath, long rawByteOffset, long rawLength, DokanyFileInfo dokanyFileInfo) {
+	public int unlockFile(WString rawPath, long rawByteOffset, long rawLength, DokanFileInfo dokanFileInfo) {
 		return 0;
 	}
 
 	@Override
-	public int getDiskFreeSpace(LongByReference freeBytesAvailable, LongByReference totalNumberOfBytes, LongByReference totalNumberOfFreeBytes, DokanyFileInfo dokanyFileInfo) {
+	public int getDiskFreeSpace(LongByReference freeBytesAvailable, LongByReference totalNumberOfBytes, LongByReference totalNumberOfFreeBytes, DokanFileInfo dokanFileInfo) {
 		LOG.debug("getFreeDiskSpace() is called.");
 		try {
 			totalNumberOfBytes.setValue(fileStore.getTotalSpace());
@@ -738,7 +738,7 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 			totalNumberOfFreeBytes.setValue(fileStore.getUnallocatedSpace());
 			return Win32ErrorCode.ERROR_SUCCESS.getMask();
 		} catch (IOException e) {
-			LOG.info("({}) getFreeDiskSpace(): Unable to detect disk space status.", dokanyFileInfo.Context, e);
+			LOG.info("({}) getFreeDiskSpace(): Unable to detect disk space status.", dokanFileInfo.Context, e);
 			return Win32ErrorCode.ERROR_READ_FAULT.getMask();
 		}
 	}
@@ -753,11 +753,11 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 	 * @param rawFileSystemFlags
 	 * @param rawFileSystemNameBuffer
 	 * @param rawFileSystemNameSize
-	 * @param dokanyFileInfo {@link DokanyFileInfo} with information about the file or directory.
+	 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
 	 * @return
 	 */
 	@Override
-	public int getVolumeInformation(Pointer rawVolumeNameBuffer, int rawVolumeNameSize, IntByReference rawVolumeSerialNumber, IntByReference rawMaximumComponentLength, IntByReference rawFileSystemFlags, Pointer rawFileSystemNameBuffer, int rawFileSystemNameSize, DokanyFileInfo dokanyFileInfo) {
+	public int getVolumeInformation(Pointer rawVolumeNameBuffer, int rawVolumeNameSize, IntByReference rawVolumeSerialNumber, IntByReference rawMaximumComponentLength, IntByReference rawFileSystemFlags, Pointer rawFileSystemNameBuffer, int rawFileSystemNameSize, DokanFileInfo dokanFileInfo) {
 		try {
 			rawVolumeNameBuffer.setWideString(0L, DokanyUtils.trimStrToSize(volumeInformation.getName(), rawVolumeNameSize));
 			rawVolumeSerialNumber.setValue(volumeInformation.getSerialNumber());
@@ -771,20 +771,20 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 	}
 
 	@Override
-	public int mounted(DokanyFileInfo dokanyFileInfo) {
+	public int mounted(DokanFileInfo dokanFileInfo) {
 		LOG.debug("mounted() is called.");
 		didMount.complete(null);
 		return 0;
 	}
 
 	@Override
-	public int unmounted(DokanyFileInfo dokanyFileInfo) {
+	public int unmounted(DokanFileInfo dokanFileInfo) {
 		LOG.debug("unmounted() is called.");
 		return 0;
 	}
 
 	@Override
-	public int getFileSecurity(WString rawPath, int rawSecurityInformation, Pointer rawSecurityDescriptor, int rawSecurityDescriptorLength, IntByReference rawSecurityDescriptorLengthNeeded, DokanyFileInfo dokanyFileInfo) {
+	public int getFileSecurity(WString rawPath, int rawSecurityInformation, Pointer rawSecurityDescriptor, int rawSecurityDescriptorLength, IntByReference rawSecurityDescriptorLengthNeeded, DokanFileInfo dokanFileInfo) {
 //		Path path = getRootedPath(rawPath);
 //		//SecurityInformation securityInfo = DokanyUtils.enumFromInt(rawSecurityInformation, SecurityInformation.values());
 //		//LOG.debug("getFileSecurity() is called for {} {}", path.toString(), securityInfo.name());
@@ -804,7 +804,7 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 	}
 
 	@Override
-	public int setFileSecurity(WString rawPath, int rawSecurityInformation, Pointer rawSecurityDescriptor, int rawSecurityDescriptorLength, DokanyFileInfo dokanyFileInfo) {
+	public int setFileSecurity(WString rawPath, int rawSecurityInformation, Pointer rawSecurityDescriptor, int rawSecurityDescriptorLength, DokanFileInfo dokanFileInfo) {
 //		Path path = getRootedPath(rawPath);
 //		LOG.trace("setFileSecurity() is called for " + path.toString());
 //		if (Files.exists(path)) {
@@ -822,12 +822,12 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 	}
 
 	@Override
-	public void fillWin32FindData(WinBase.WIN32_FIND_DATA rawFillFindData, DokanyFileInfo dokanyFileInfo) {
+	public void fillWin32FindData(WinBase.WIN32_FIND_DATA rawFillFindData, DokanFileInfo dokanFileInfo) {
 
 	}
 
 	@Override
-	public int findStreams(WString rawPath, DokanyOperations.FillWin32FindStreamData rawFillFindData, DokanyFileInfo dokanyFileInfo) {
+	public int findStreams(WString rawPath, DokanyOperations.FillWin32FindStreamData rawFillFindData, DokanFileInfo dokanFileInfo) {
 		return 0;
 	}
 
