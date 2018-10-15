@@ -10,13 +10,13 @@ import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.LongByReference;
 
 /**
- * Implementation of {@link com.dokany.java.DokanyOperations} which connects to {@link com.dokany.java.DokanyFileSystem}.
+ * Implementation of {@link com.dokany.java.DokanyOperations} which connects to {@link DokanyFileSystem_OLD}.
  */
 final class DokanyOperationsProxy extends com.dokany.java.DokanyOperations {
 
-	private final DokanyFileSystem fileSystem;
+	private final DokanyFileSystem_OLD fileSystem;
 
-	DokanyOperationsProxy(final DokanyFileSystem fileSystem) {
+	DokanyOperationsProxy(final DokanyFileSystem_OLD fileSystem) {
 		this.fileSystem = fileSystem;
 		super.ZwCreateFile = new ZwCreateFileProxy();
 		super.CloseFile = fileSystem::closeFile;

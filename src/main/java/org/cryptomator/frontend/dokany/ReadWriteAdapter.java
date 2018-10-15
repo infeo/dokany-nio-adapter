@@ -1,6 +1,6 @@
 package org.cryptomator.frontend.dokany;
 
-import com.dokany.java.DokanyFileSystem;
+import com.dokany.java.DokanyFileSystem_OLD;
 import com.dokany.java.DokanyOperations;
 import com.dokany.java.DokanyUtils;
 import com.dokany.java.migrated.constants.microsoft.CreateOption;
@@ -49,7 +49,7 @@ import java.util.stream.Stream;
 /**
  * TODO: Beware of DokanyUtils.enumSetFromInt()!!!
  */
-public class ReadWriteAdapter implements DokanyFileSystem {
+public class ReadWriteAdapter implements DokanyFileSystem_OLD {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ReadWriteAdapter.class);
 

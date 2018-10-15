@@ -1,7 +1,7 @@
 package org.cryptomator.frontend.dokany;
 
 import com.dokany.java.DokanyDriver;
-import com.dokany.java.DokanyFileSystem;
+import com.dokany.java.DokanyFileSystem_OLD;
 import com.dokany.java.migrated.constants.microsoft.FileSystemFlag;
 import com.dokany.java.migrated.constants.dokany.MountOption;
 import com.dokany.java.migrated.structure.DokanOptions;
@@ -41,7 +41,7 @@ public class MirrorReadOnlyThread implements Runnable {
 
 		VolumeInformation volumeInfo = new VolumeInformation(VolumeInformation.DEFAULT_MAX_COMPONENT_LENGTH, "Mirror", 0x98765432, "Dokany MirrorFS", fsFeatures);
 
-		DokanyFileSystem myFs = new ReadWriteAdapter(dirToMirror, volumeInfo, new CompletableFuture());
+		DokanyFileSystem_OLD myFs = new ReadWriteAdapter(dirToMirror, volumeInfo, new CompletableFuture());
 		dokany = new DokanyDriver(devOps, myFs);
 	}
 

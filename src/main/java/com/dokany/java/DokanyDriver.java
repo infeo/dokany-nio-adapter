@@ -13,9 +13,9 @@ public final class DokanyDriver {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DokanyDriver.class);
 	private final DokanOptions dokanOptions;
-	private final DokanyFileSystem fileSystem;
+	private final DokanyFileSystem_OLD fileSystem;
 
-	public DokanyDriver(final DokanOptions dokanOptions, final DokanyFileSystem fileSystem) {
+	public DokanyDriver(final DokanOptions dokanOptions, final DokanyFileSystem_OLD fileSystem) {
 
 		this.dokanOptions = dokanOptions;
 		this.fileSystem = fileSystem;
@@ -50,7 +50,7 @@ public final class DokanyDriver {
 	 * @return
 	 */
 
-	public DokanyFileSystem getFileSystem() {
+	public DokanyFileSystem_OLD getFileSystem() {
 		return fileSystem;
 	}
 
