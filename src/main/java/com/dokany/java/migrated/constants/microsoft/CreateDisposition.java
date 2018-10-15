@@ -3,13 +3,13 @@ package com.dokany.java.migrated.constants.microsoft;
 import com.dokany.java.migrated.constants.EnumInteger;
 
 /**
- *  Enum of possible actions to perform on a file when the function {@link com.dokany.java.DokanyOperations.ZwCreateFile} is called.
+ * Enum of possible actions to perform on a file when the function {@link com.dokany.java.DokanyOperations.ZwCreateFile} is called.
  *
- *  <p>
- *  <b> Attention!</b>
- *  The members of this enum are the kernel flags, not to be confused with the user flags in {@link CreationDisposition}.
- *  To convert them, use {@link DokanMapKernelToUserFlags}. The relation between this two is also descriped under this <a href="https://stackoverflow.com/questions/22552697/correspondence-between-procmon-and-createfile-disposition-options#22553544">link</a>.
- *  </p>
+ * <p>
+ * <b> Attention!</b>
+ * The members of this enum are the kernel flags, not to be confused with the user flags in {@link CreationDisposition}. To convert them, use {@link DokanMapKernelToUserFlags}. The relation between this two is also
+ * descriped under this <a href="https://stackoverflow.com/questions/22552697/correspondence-between-procmon-and-createfile-disposition-options#22553544">link</a>.
+ * </p>
  *
  * <p>
  * The following table shows the actions performed on a file for the given flag distinguishing if the file already exists or not:
@@ -18,41 +18,41 @@ import com.dokany.java.migrated.constants.EnumInteger;
  * <caption style="display:none">additional options</caption>
  * <thead>
  * <tr>
- *   <th scope="col">Option</th>
- *   <th scope="col">Action if file exists</th>
- *   <th scope="col">Action if file does not exist</th>
+ * <th scope="col">Option</th>
+ * <th scope="col">Action if file exists</th>
+ * <th scope="col">Action if file does not exist</th>
  * </tr>
  * </thead>
  * <tbody>
  * <tr>
- *   <th scope="row">FILE_SUPERSEDE</td>
- *   <td>Replace the file.</td>
- *   <td>Create the file.</td>
+ * <th scope="row">FILE_SUPERSEDE</td>
+ * <td>Replace the file.</td>
+ * <td>Create the file.</td>
  * </tr>
  * <tr>
- *   <th scope="row">FILE_CREATE</td>
- *   <td>Return an error.</td>
- *   <td>Create the file.</td>
+ * <th scope="row">FILE_CREATE</td>
+ * <td>Return an error.</td>
+ * <td>Create the file.</td>
  * </tr>
  * <tr>
- *   <th scope="row">FILE_OPEN</td>
- *   <td>Open the file.</td>
- *   <td>Return an error.</td>
+ * <th scope="row">FILE_OPEN</td>
+ * <td>Open the file.</td>
+ * <td>Return an error.</td>
  * </tr>
  * <tr>
- *   <th scope="row">FILE_OPEN_IF</td>
- *   <td>Open the file.</td>
- *   <td>Create the file.</td>
+ * <th scope="row">FILE_OPEN_IF</td>
+ * <td>Open the file.</td>
+ * <td>Create the file.</td>
  * </tr>
  * <tr>
- *   <th scope="row">FILE_OVERWRITE</td>
- *   <td>Open the file, and overwrite it.</td>
- *   <td>Return an error.</td>
+ * <th scope="row">FILE_OVERWRITE</td>
+ * <td>Open the file, and overwrite it.</td>
+ * <td>Return an error.</td>
  * </tr>
  * <tr>
- *   <th scope="row">FILE_OVERWRITE_IF</td>
- *   <td>Open the file, and overwrite it.</td>
- *   <td>Create the file.</td>
+ * <th scope="row">FILE_OVERWRITE_IF</td>
+ * <td>Open the file, and overwrite it.</td>
+ * <td>Create the file.</td>
  * </tr>
  * </tbody>
  * </table>

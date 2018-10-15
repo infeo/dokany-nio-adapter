@@ -14,75 +14,76 @@ import java.util.Iterator;
  * @param <T> Type of {@link EnumInteger}
  */
 public final class EnumIntegerSet<T extends Enum<T> & EnumInteger> extends AbstractSet<T> {
-	private final EnumSet<T> elements;
 
-	public EnumIntegerSet(final Class<T> clazz) {
-		elements = EnumSet.noneOf(clazz);
-	}
+    private final EnumSet<T> elements;
 
-	public EnumIntegerSet(T first, T... others) {
-		this.elements = EnumSet.of(first, others);
-	}
+    public EnumIntegerSet(final Class<T> clazz) {
+        elements = EnumSet.noneOf(clazz);
+    }
 
-	/**
-	 * Creates a set of enumInteger objects which corresponds to the bit flag given as an integer.
-	 *
-	 * @param intValue the integer value of the combined bitflag
-	 * @param allEnumValues all possible values of this enumInteger
-	 * @return a set of enumInteger values whose mask were actie in the intValue
-	 */
-	public static <T extends Enum<T> & EnumInteger> EnumIntegerSet<T> enumSetFromInt(final int intValue, final T[] allEnumValues) {
-		EnumIntegerSet<T> elements = new EnumIntegerSet<>(allEnumValues[0].getDeclaringClass());
-		int remainingValues = intValue;
-		for (T current : allEnumValues) {
-			int mask = current.getMask();
+    public EnumIntegerSet(T first, T... others) {
+        this.elements = EnumSet.of(first, others);
+    }
 
-			if ((remainingValues & mask) == mask) {
-				elements.add(current);
-				remainingValues -= mask;
-			}
-		}
-		return elements;
-	}
+    /**
+     * Creates a set of enumInteger objects which corresponds to the bit flag given as an integer.
+     *
+     * @param intValue the integer value of the combined bitflag
+     * @param allEnumValues all possible values of this enumInteger
+     * @return a set of enumInteger values whose mask were actie in the intValue
+     */
+    public static <T extends Enum<T> & EnumInteger> EnumIntegerSet<T> enumSetFromInt(final int intValue, final T[] allEnumValues) {
+        EnumIntegerSet<T> elements = new EnumIntegerSet<>(allEnumValues[0].getDeclaringClass());
+        int remainingValues = intValue;
+        for (T current : allEnumValues) {
+            int mask = current.getMask();
 
-	public final void add(T item, T... items) {
-		if (item == null) {
-			throw new IllegalArgumentException("Adding null is not allowed.");
-		} else {
-			elements.add(item);
-			for (final T it : items) {
-				if(it != null){
-					elements.add(it);
-				}
-			}
-		}
-	}
+            if ((remainingValues & mask) == mask) {
+                elements.add(current);
+                remainingValues -= mask;
+            }
+        }
+        return elements;
+    }
 
-	public int toInt() {
-		int toReturn = 0;
-		for (final T current : elements) {
-			toReturn |= current.getMask();
-		}
-		return toReturn;
-	}
+    public final void add(T item, T... items) {
+        if (item == null) {
+            throw new IllegalArgumentException("Adding null is not allowed.");
+        } else {
+            elements.add(item);
+            for (final T it : items) {
+                if (it != null) {
+                    elements.add(it);
+                }
+            }
+        }
+    }
 
-	@Override
-	public boolean add(final T e) {
-		return elements.add(e);
-	}
+    public int toInt() {
+        int toReturn = 0;
+        for (final T current : elements) {
+            toReturn |= current.getMask();
+        }
+        return toReturn;
+    }
 
-	@Override
-	public Iterator<T> iterator() {
-		return elements.iterator();
-	}
+    @Override
+    public boolean add(final T e) {
+        return elements.add(e);
+    }
 
-	@Override
-	public int size() {
-		return elements.size();
-	}
+    @Override
+    public Iterator<T> iterator() {
+        return elements.iterator();
+    }
 
-	@Override
-	public String toString() {
-		return "EnumIntegerSet(elements=" + this.elements + ")";
-	}
+    @Override
+    public int size() {
+        return elements.size();
+    }
+
+    @Override
+    public String toString() {
+        return "EnumIntegerSet(elements=" + this.elements + ")";
+    }
 }

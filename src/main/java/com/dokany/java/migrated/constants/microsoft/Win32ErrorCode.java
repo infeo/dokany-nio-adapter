@@ -1,7 +1,6 @@
 package com.dokany.java.migrated.constants.microsoft;
 
 import com.dokany.java.migrated.constants.EnumInteger;
-import com.sun.jna.platform.win32.WinError;
 
 /**
  * A mere shadow of the win32 error codes.
