@@ -2,6 +2,7 @@ package com.dokany.java;
 
 import com.dokany.java.migrated.DokanyFileSystem;
 import com.dokany.java.migrated.NotImplemented;
+import com.dokany.java.migrated.constants.dokany.MountError;
 import com.dokany.java.migrated.structure.DokanOptions;
 import com.dokany.java.structure.VolumeInformation;
 import com.sun.jna.ptr.IntByReference;
@@ -14,20 +15,22 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static sun.jvm.hotspot.runtime.VM.shutdown;
+
 public abstract class AbstractDokanyFileSystem implements DokanyFileSystem {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDokanyFileSystem.class);
 
     private Set<String> notImplementedMethods;
     protected final Path mountPoint;
-    protected final DokanOptions dokanOptions;
     protected final VolumeInformation volumeInformation;
     protected final DokanyOperations dokanyOperations;
     protected final boolean usesKernelFlagsAndCodes;
 
-    public AbstractDokanyFileSystem(Path mountPoint, DokanOptions dokanOptions, VolumeInformation volumeInformation, boolean usesKernelFlagsAndCodes) {
+    protected DokanOptions dokanOptions;
+
+    public AbstractDokanyFileSystem(Path mountPoint, VolumeInformation volumeInformation, boolean usesKernelFlagsAndCodes) {
         this.mountPoint = mountPoint;
-        this.dokanOptions = dokanOptions;
         this.volumeInformation = volumeInformation;
         this.usesKernelFlagsAndCodes = usesKernelFlagsAndCodes;
         this.dokanyOperations = new DokanyOperations();
@@ -214,6 +217,30 @@ public abstract class AbstractDokanyFileSystem implements DokanyFileSystem {
     }
 
     public void mount(Path mountPoint, DokanOptions dokanOptions, VolumeInformation volumeInformation) {
+        LOG.info("Detected Dokan Kernel Driver Version is {}.", NativeMethods.DokanDriverVersion());
+        LOG.info("Detected Dokan Version is {}.", NativeMethods.DokanVersion());
+        this.dokanOptions = dokanOptions;
+        try {
+            int mountStatus = NativeMethods.DokanMain(dokanOptions, dokanyOperations);
+
+            if (mountStatus < 0) {
+                throw new IllegalStateException(MountError.fromInt(mountStatus).getDescription());
+            }
+
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                @Override
+                public void run() {
+                    //TODO: is this correct
+                    shutdown();
+                }
+            });
+        } catch (UnsatisfiedLinkError err) {
+            LOG.error("Unable to find dokany driver.", err);
+            throw new LibraryNotFoundException(err.getMessage());
+        } catch (Throwable e) {
+            LOG.warn("Error while mounting", e);
+            throw e;
+        }
         //TODO
     }
 
