@@ -685,4 +685,204 @@ public class DokanyOperations extends Structure {
 
 		public char[] cFileName();
 	}
+
+    public DokanyOperations.ZwCreateFile getZwCreateFile() {
+        return ZwCreateFile;
+    }
+
+    public void setZwCreateFile(DokanyOperations.ZwCreateFile zwCreateFile) {
+        ZwCreateFile = zwCreateFile;
+    }
+
+    public DokanyOperations.Cleanup getCleanup() {
+        return Cleanup;
+    }
+
+    public void setCleanup(DokanyOperations.Cleanup cleanup) {
+        Cleanup = cleanup;
+    }
+
+    public DokanyOperations.CloseFile getCloseFile() {
+        return CloseFile;
+    }
+
+    public void setCloseFile(DokanyOperations.CloseFile closeFile) {
+        CloseFile = closeFile;
+    }
+
+    public DokanyOperations.ReadFile getReadFile() {
+        return ReadFile;
+    }
+
+    public void setReadFile(DokanyOperations.ReadFile readFile) {
+        ReadFile = readFile;
+    }
+
+    public DokanyOperations.WriteFile getWriteFile() {
+        return WriteFile;
+    }
+
+    public void setWriteFile(DokanyOperations.WriteFile writeFile) {
+        WriteFile = writeFile;
+    }
+
+    public DokanyOperations.FlushFileBuffers getFlushFileBuffers() {
+        return FlushFileBuffers;
+    }
+
+    public void setFlushFileBuffers(DokanyOperations.FlushFileBuffers flushFileBuffers) {
+        FlushFileBuffers = flushFileBuffers;
+    }
+
+    public DokanyOperations.GetFileInformation getGetFileInformation() {
+        return GetFileInformation;
+    }
+
+    public void setGetFileInformation(DokanyOperations.GetFileInformation getFileInformation) {
+        GetFileInformation = getFileInformation;
+    }
+
+    public DokanyOperations.FindFiles getFindFiles() {
+        return FindFiles;
+    }
+
+    public void setFindFiles(DokanyOperations.FindFiles findFiles) {
+        FindFiles = findFiles;
+    }
+
+    public DokanyOperations.FindFilesWithPattern getFindFilesWithPattern() {
+        return FindFilesWithPattern;
+    }
+
+    public void setFindFilesWithPattern(DokanyOperations.FindFilesWithPattern findFilesWithPattern) {
+        FindFilesWithPattern = findFilesWithPattern;
+    }
+
+    public DokanyOperations.SetFileAttributes getSetFileAttributes() {
+        return SetFileAttributes;
+    }
+
+    public void setSetFileAttributes(DokanyOperations.SetFileAttributes setFileAttributes) {
+        SetFileAttributes = setFileAttributes;
+    }
+
+    public DokanyOperations.SetFileTime getSetFileTime() {
+        return SetFileTime;
+    }
+
+    public void setSetFileTime(DokanyOperations.SetFileTime setFileTime) {
+        SetFileTime = setFileTime;
+    }
+
+    public DokanyOperations.DeleteFile getDeleteFile() {
+        return DeleteFile;
+    }
+
+    public void setDeleteFile(DokanyOperations.DeleteFile deleteFile) {
+        DeleteFile = deleteFile;
+    }
+
+    public DokanyOperations.DeleteDirectory getDeleteDirectory() {
+        return DeleteDirectory;
+    }
+
+    public void setDeleteDirectory(DokanyOperations.DeleteDirectory deleteDirectory) {
+        DeleteDirectory = deleteDirectory;
+    }
+
+    public DokanyOperations.MoveFile getMoveFile() {
+        return MoveFile;
+    }
+
+    public void setMoveFile(DokanyOperations.MoveFile moveFile) {
+        MoveFile = moveFile;
+    }
+
+    public DokanyOperations.SetEndOfFile getSetEndOfFile() {
+        return SetEndOfFile;
+    }
+
+    public void setSetEndOfFile(DokanyOperations.SetEndOfFile setEndOfFile) {
+        SetEndOfFile = setEndOfFile;
+    }
+
+    public DokanyOperations.SetAllocationSize getSetAllocationSize() {
+        return SetAllocationSize;
+    }
+
+    public void setSetAllocationSize(DokanyOperations.SetAllocationSize setAllocationSize) {
+        SetAllocationSize = setAllocationSize;
+    }
+
+    public DokanyOperations.LockFile getLockFile() {
+        return LockFile;
+    }
+
+    public void setLockFile(DokanyOperations.LockFile lockFile) {
+        LockFile = lockFile;
+    }
+
+    public DokanyOperations.UnlockFile getUnlockFile() {
+        return UnlockFile;
+    }
+
+    public void setUnlockFile(DokanyOperations.UnlockFile unlockFile) {
+        UnlockFile = unlockFile;
+    }
+
+    public DokanyOperations.GetDiskFreeSpace getGetDiskFreeSpace() {
+        return GetDiskFreeSpace;
+    }
+
+    public void setGetDiskFreeSpace(DokanyOperations.GetDiskFreeSpace getDiskFreeSpace) {
+        GetDiskFreeSpace = getDiskFreeSpace;
+    }
+
+    public DokanyOperations.GetVolumeInformation getGetVolumeInformation() {
+        return GetVolumeInformation;
+    }
+
+    public void setGetVolumeInformation(DokanyOperations.GetVolumeInformation getVolumeInformation) {
+        GetVolumeInformation = getVolumeInformation;
+    }
+
+    public DokanyOperations.Mounted getMounted() {
+        return Mounted;
+    }
+
+    public void setMounted(DokanyOperations.Mounted mounted) {
+        Mounted = mounted;
+    }
+
+    public DokanyOperations.Unmounted getUnmounted() {
+        return Unmounted;
+    }
+
+    public void setUnmounted(DokanyOperations.Unmounted unmounted) {
+        Unmounted = unmounted;
+    }
+
+    public DokanyOperations.GetFileSecurity getGetFileSecurity() {
+        return GetFileSecurity;
+    }
+
+    public void setGetFileSecurity(DokanyOperations.GetFileSecurity getFileSecurity) {
+        GetFileSecurity = getFileSecurity;
+    }
+
+    public DokanyOperations.SetFileSecurity getSetFileSecurity() {
+        return SetFileSecurity;
+    }
+
+    public void setSetFileSecurity(DokanyOperations.SetFileSecurity setFileSecurity) {
+        SetFileSecurity = setFileSecurity;
+    }
+
+    public DokanyOperations.FindStreams getFindStreams() {
+        return FindStreams;
+    }
+
+    public void setFindStreams(DokanyOperations.FindStreams findStreams) {
+        FindStreams = findStreams;
+    }
 }
