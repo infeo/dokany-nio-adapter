@@ -70,31 +70,31 @@ public class DokanyOperations extends Structure {
 		        "FindStreams");
 	}
 
-	public ZwCreateFile ZwCreateFile;
-	public Cleanup Cleanup;
-	public CloseFile CloseFile;
-	public ReadFile ReadFile;
-	public WriteFile WriteFile;
-	public FlushFileBuffers FlushFileBuffers;
-	public GetFileInformation GetFileInformation;
-	public FindFiles FindFiles;
-	public FindFilesWithPattern FindFilesWithPattern;
-	public SetFileAttributes SetFileAttributes;
-	public SetFileTime SetFileTime;
-	public DeleteFile DeleteFile;
-	public DeleteDirectory DeleteDirectory;
-	public MoveFile MoveFile;
-	public SetEndOfFile SetEndOfFile;
-	public SetAllocationSize SetAllocationSize;
-	public LockFile LockFile;
-	public UnlockFile UnlockFile;
-	public GetDiskFreeSpace GetDiskFreeSpace;
-	public GetVolumeInformation GetVolumeInformation;
-	public Mounted Mounted;
-	public Unmounted Unmounted;
-	public GetFileSecurity GetFileSecurity;
-	public SetFileSecurity SetFileSecurity;
-	public FindStreams FindStreams;
+	public ZwCreateFile ZwCreateFile = null;
+	public Cleanup Cleanup = null;
+	public CloseFile CloseFile = null;
+	public ReadFile ReadFile = null;
+	public WriteFile WriteFile = null;
+	public FlushFileBuffers FlushFileBuffers = null;
+	public GetFileInformation GetFileInformation = null;
+	public FindFiles FindFiles = null;
+	public FindFilesWithPattern FindFilesWithPattern = null;
+	public SetFileAttributes SetFileAttributes = null;
+	public SetFileTime SetFileTime = null;
+	public DeleteFile DeleteFile = null;
+	public DeleteDirectory DeleteDirectory = null;
+	public MoveFile MoveFile = null;
+	public SetEndOfFile SetEndOfFile = null;
+	public SetAllocationSize SetAllocationSize = null;
+	public LockFile LockFile = null;
+	public UnlockFile UnlockFile = null;
+	public GetDiskFreeSpace GetDiskFreeSpace = null;
+	public GetVolumeInformation GetVolumeInformation = null;
+	public Mounted Mounted = null;
+	public Unmounted Unmounted = null;
+	public GetFileSecurity GetFileSecurity = null;
+	public SetFileSecurity SetFileSecurity = null;
+	public FindStreams FindStreams = null;
 
 	/**
 	 * CreateFile is called each time a request is made on a file system object.
