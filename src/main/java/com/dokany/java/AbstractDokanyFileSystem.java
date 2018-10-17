@@ -1,6 +1,7 @@
 package com.dokany.java;
 
 import com.dokany.java.migrated.DokanyFileSystem;
+import com.dokany.java.migrated.FileSystemInformation;
 import com.dokany.java.migrated.NotImplemented;
 import com.dokany.java.migrated.constants.dokany.MountError;
 import com.dokany.java.migrated.structure.DokanOptions;
@@ -23,21 +24,22 @@ public abstract class AbstractDokanyFileSystem implements DokanyFileSystem {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDokanyFileSystem.class);
     private static final int TIMEOUT = 3000;
 
-    private Set<String> notImplementedMethods;
-    protected final Path mountPoint;
-    protected final VolumeInformation volumeInformation;
+    protected final FileSystemInformation fileSystemInformation;
     protected final DokanyOperations dokanyOperations;
     protected final boolean usesKernelFlagsAndCodes;
 
+    protected Path mountPoint;
+    protected String volumeName;
+    protected int volumeSerialnumber;
     protected DokanOptions dokanOptions;
 
-    public AbstractDokanyFileSystem(Path mountPoint, VolumeInformation volumeInformation, boolean usesKernelFlagsAndCodes) {
-        this.mountPoint = mountPoint;
-        this.volumeInformation = volumeInformation;
+    private Set<String> notImplementedMethods;
+
+    public AbstractDokanyFileSystem(FileSystemInformation fileSystemInformation, boolean usesKernelFlagsAndCodes) {
+        this.fileSystemInformation = fileSystemInformation;
         this.usesKernelFlagsAndCodes = usesKernelFlagsAndCodes;
         this.dokanyOperations = new DokanyOperations();
     }
-
 
     private void init(DokanyOperations dokanyOperations) {
         notImplementedMethods = Arrays.stream(getClass().getMethods())
@@ -218,10 +220,15 @@ public abstract class AbstractDokanyFileSystem implements DokanyFileSystem {
         return !notImplementedMethods.contains(funcName);
     }
 
-    public void mount(Path mountPoint, DokanOptions dokanOptions, VolumeInformation volumeInformation, boolean blocking) {
+    @Override
+    public void mount(Path mountPoint, String volumeName, int volumeSerialnumber, DokanOptions dokanOptions, boolean blocking) {
+        this.dokanOptions = dokanOptions;
+        this.mountPoint = mountPoint;
+        this.volumeName = volumeName; //TODO: add checks for mountPoint, volumeName and volumeSerialNumber
+        this.volumeSerialnumber = volumeSerialnumber;
+
         LOG.info("Detected Dokan Kernel Driver Version is {}.", NativeMethods.DokanDriverVersion());
         LOG.info("Detected Dokan Version is {}.", NativeMethods.DokanVersion());
-        this.dokanOptions = dokanOptions;
         try {
             int mountStatus;
 

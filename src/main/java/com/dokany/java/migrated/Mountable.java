@@ -1,7 +1,6 @@
 package com.dokany.java.migrated;
 
 import com.dokany.java.migrated.structure.DokanOptions;
-import com.dokany.java.structure.VolumeInformation;
 
 import java.nio.file.Path;
 
@@ -13,7 +12,7 @@ import java.nio.file.Path;
  */
 public interface Mountable {
 
-    void mount(Path mountPoint, DokanOptions dokanOptions, VolumeInformation volumeInformation, boolean blocking);
+    void mount(Path mountPoint, String volumeName, int volumeSerialnumber, DokanOptions dokanOptions, boolean blocking);
 
     void unmount();
 
