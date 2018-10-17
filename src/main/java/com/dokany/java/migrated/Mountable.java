@@ -13,7 +13,7 @@ import java.nio.file.Path;
  */
 public interface Mountable {
 
-    void mount(Path mountPoint, DokanOptions dokanOptions, VolumeInformation volumeInformation);
+    void mount(Path mountPoint, DokanOptions dokanOptions, VolumeInformation volumeInformation, boolean blocking);
 
     void unmount();
 

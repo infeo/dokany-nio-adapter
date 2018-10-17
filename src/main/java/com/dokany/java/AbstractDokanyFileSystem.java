@@ -13,13 +13,15 @@ import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
-
-import static sun.jvm.hotspot.runtime.VM.shutdown;
 
 public abstract class AbstractDokanyFileSystem implements DokanyFileSystem {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDokanyFileSystem.class);
+    private static final int TIMEOUT = 3000;
 
     private Set<String> notImplementedMethods;
     protected final Path mountPoint;
@@ -216,32 +218,45 @@ public abstract class AbstractDokanyFileSystem implements DokanyFileSystem {
         return !notImplementedMethods.contains(funcName);
     }
 
-    public void mount(Path mountPoint, DokanOptions dokanOptions, VolumeInformation volumeInformation) {
+    public void mount(Path mountPoint, DokanOptions dokanOptions, VolumeInformation volumeInformation, boolean blocking) {
         LOG.info("Detected Dokan Kernel Driver Version is {}.", NativeMethods.DokanDriverVersion());
         LOG.info("Detected Dokan Version is {}.", NativeMethods.DokanVersion());
         this.dokanOptions = dokanOptions;
         try {
-            int mountStatus = NativeMethods.DokanMain(dokanOptions, dokanyOperations);
+            int mountStatus;
 
-            if (mountStatus < 0) {
-                throw new IllegalStateException(MountError.fromInt(mountStatus).getDescription());
+            if (DokanyUtils.canHandleShutdownHooks()) {
+                Runtime.getRuntime().addShutdownHook(new Thread(this::unmount));
             }
-
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-                @Override
-                public void run() {
-                    //TODO: is this correct
-                    shutdown();
+            if (blocking) {
+                mountStatus = execMount(dokanOptions);
+            } else {
+                try {
+                    mountStatus = CompletableFuture
+                            .supplyAsync(() -> execMount(dokanOptions))
+                            .get(TIMEOUT, TimeUnit.MILLISECONDS);
+                } catch (TimeoutException e) {
+                    // ok
+                    mountStatus = 0;
                 }
-            });
+            }
+            if (mountStatus < 0) {
+                throw new DokanyException("Error while mounting. Errormessage:" + MountError.fromInt(mountStatus).getDescription(), mountStatus);
+            }
         } catch (UnsatisfiedLinkError err) {
             LOG.error("Unable to find dokany driver.", err);
             throw new LibraryNotFoundException(err.getMessage());
-        } catch (Throwable e) {
-            LOG.warn("Error while mounting", e);
+        } catch (DokanyException e) {
+            LOG.warn("Unable to mount filesystem.", e);
             throw e;
+        } catch (Exception e) {
+            LOG.warn("Unable to mount Filesystem.", e);
+            throw new DokanyException(e);
         }
-        //TODO
+    }
+
+    private int execMount(DokanOptions dokanOptions) {
+        return NativeMethods.DokanMain(dokanOptions, this.dokanyOperations);
     }
 
     public void unmount() {
