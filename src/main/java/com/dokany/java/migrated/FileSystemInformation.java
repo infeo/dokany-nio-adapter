@@ -18,6 +18,7 @@ public final class FileSystemInformation {
 
 	/**
 	 * Provides default values for maxComponentLength and Filesystem name.
+     * TODO: add checks to assert filesystemflags is not null!
 	 */
 	public FileSystemInformation(EnumIntegerSet<FileSystemFlag> fileSystemFlags) {
 		this(DEFAULT_MAX_COMPONENT_LENGTH, DEFAULT_FS_NAME, fileSystemFlags);
