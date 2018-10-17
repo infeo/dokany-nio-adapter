@@ -5,7 +5,6 @@ import com.dokany.java.migrated.FileSystemInformation;
 import com.dokany.java.migrated.NotImplemented;
 import com.dokany.java.migrated.constants.dokany.MountError;
 import com.dokany.java.migrated.structure.DokanOptions;
-import com.dokany.java.structure.VolumeInformation;
 import com.sun.jna.ptr.IntByReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

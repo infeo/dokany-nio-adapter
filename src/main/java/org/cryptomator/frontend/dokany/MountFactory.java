@@ -6,7 +6,7 @@ import com.dokany.java.migrated.constants.microsoft.FileSystemFlag;
 import com.dokany.java.migrated.constants.dokany.MountOption;
 import com.dokany.java.migrated.structure.DokanOptions;
 import com.dokany.java.migrated.structure.EnumIntegerSet;
-import com.dokany.java.structure.VolumeInformation;
+import com.dokany.java.legacy.structure.VolumeInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

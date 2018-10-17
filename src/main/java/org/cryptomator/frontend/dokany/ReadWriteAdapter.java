@@ -10,7 +10,7 @@ import com.dokany.java.migrated.constants.microsoft.Win32ErrorCode;
 import com.dokany.java.migrated.structure.ByHandleFileInformation;
 import com.dokany.java.migrated.structure.DokanFileInfo;
 import com.dokany.java.migrated.structure.EnumIntegerSet;
-import com.dokany.java.structure.VolumeInformation;
+import com.dokany.java.legacy.structure.VolumeInformation;
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.Sets;
 import com.sun.jna.Pointer;

@@ -1,4 +1,4 @@
-package com.dokany.java.structure;
+package com.dokany.java.legacy.structure;
 
 import com.dokany.java.migrated.constants.microsoft.FileSystemFlag;
 import com.dokany.java.migrated.structure.EnumIntegerSet;
