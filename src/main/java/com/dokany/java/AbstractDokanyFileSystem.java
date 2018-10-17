@@ -5,6 +5,7 @@ import com.dokany.java.migrated.FileSystemInformation;
 import com.dokany.java.migrated.NotImplemented;
 import com.dokany.java.migrated.constants.dokany.MountError;
 import com.dokany.java.migrated.structure.DokanOptions;
+import com.sun.jna.WString;
 import com.sun.jna.ptr.IntByReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -265,7 +266,13 @@ public abstract class AbstractDokanyFileSystem implements DokanyFileSystem {
         return NativeMethods.DokanMain(dokanOptions, this.dokanyOperations);
     }
 
+    @Override
     public void unmount() {
-        //TODO
+        LOG.info("Start to unmount volume {} at {} and shutdown.", this.volumeName, this.mountPoint);
+        if(NativeMethods.DokanRemoveMountPoint(new WString(mountPoint.toAbsolutePath().toString()))){
+            LOG.info("Unmount operation successful.");
+        }else{
+            LOG.error("Unable to unmount filesystem from {}. Please use `dokanctl.exe` to unmount manually.", mountPoint);
+        }
     }
 }
