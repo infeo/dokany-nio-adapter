@@ -1,4 +1,4 @@
-package com.dokany.java;
+package com.dokany.java.migrated;
 
 public class LibraryNotFoundException extends RuntimeException{
 
