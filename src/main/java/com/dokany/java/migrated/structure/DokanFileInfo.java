@@ -1,5 +1,6 @@
 package com.dokany.java.migrated.structure;
 
+import com.dokany.java.migrated.DokanyOperations;
 import com.sun.jna.Structure;
 
 import java.util.Arrays;
@@ -19,7 +20,7 @@ public class DokanFileInfo extends Structure implements Structure.ByReference {
     public long Context;
 
     /**
-     * Flag if the file has to be delete during {@link com.dokany.java.DokanyOperations#Cleanup} event.
+     * Flag if the file has to be delete during {@link DokanyOperations#Cleanup} event.
      */
     public byte DeleteOnClose;
 
@@ -29,12 +30,12 @@ public class DokanFileInfo extends Structure implements Structure.ByReference {
     public long DokanContext;
 
     /**
-     * A pointer to {@link DokanOptions} which was passed to {@link com.dokany.java.NativeMethods#DokanMain}.
+     * A pointer to {@link DokanOptions} which was passed to {@link com.dokany.java.migrated.NativeMethods#DokanMain}.
      */
     public DokanOptions DokanOpts;
 
     /**
-     * Requesting a directory file. Must be set in {@link com.dokany.java.DokanyOperations#ZwCreateFile} if the file object appears to be a directory.
+     * Requesting a directory file. Must be set in {@link DokanyOperations#ZwCreateFile} if the file object appears to be a directory.
      */
     public byte IsDirectory;
 

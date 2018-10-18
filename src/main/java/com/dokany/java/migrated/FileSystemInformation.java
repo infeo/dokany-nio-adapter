@@ -5,7 +5,7 @@ import com.dokany.java.migrated.structure.EnumIntegerSet;
 
 /**
  * Supplementary class to bundle information of the filesystem.
- * <p>Mainly used for {@link com.dokany.java.DokanyOperations#GetVolumeInformation} function to have all needed information at one place.</p>
+ * <p>Mainly used for {@link DokanyOperations#GetVolumeInformation} function to have all needed information at one place.</p>
  */
 public final class FileSystemInformation {
 

@@ -1,11 +1,12 @@
 package com.dokany.java.legacy.structure;
 
+import com.dokany.java.migrated.DokanyOperations;
 import com.dokany.java.migrated.constants.microsoft.FileSystemFlag;
 import com.dokany.java.migrated.structure.EnumIntegerSet;
 
 /**
  * Supplementary class to bundle information of the mounted volume and its filesystem.
- * <p>Mainly used for {@link com.dokany.java.DokanyOperations#GetVolumeInformation} function to have all needed information at one place.</p>
+ * <p>Mainly used for {@link DokanyOperations#GetVolumeInformation} function to have all needed information at one place.</p>
  * TODO: Maybe this can be completely integrated in the DokanyFileSystem class
  */
 public final class VolumeInformation {

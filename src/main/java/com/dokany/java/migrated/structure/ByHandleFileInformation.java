@@ -2,6 +2,7 @@
 package com.dokany.java.migrated.structure;
 
 import com.dokany.java.DokanyUtils;
+import com.dokany.java.migrated.DokanyOperations;
 import com.dokany.java.migrated.constants.microsoft.FileAttribute;
 import com.sun.jna.Structure;
 import com.sun.jna.platform.win32.WinBase.FILETIME;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Contains information that the {@link com.dokany.java.DokanyOperations.GetFileInformation} function retrieves.
+ * Contains information that the {@link DokanyOperations.GetFileInformation} function retrieves.
  * <p>
  * The identifier that is stored in the nFileIndexHigh and nFileIndexLow members is called the file ID. Support for file IDs is file system-specific. File IDs are not guaranteed to be unique over time, because file
  * systems are free to reuse them. In some cases, the file ID for a file can change over time.

@@ -1,13 +1,15 @@
 package com.dokany.java.migrated.constants.microsoft;
 
+import com.dokany.java.migrated.DokanyOperations;
 import com.dokany.java.migrated.constants.EnumInteger;
+import com.sun.jna.ptr.IntByReference;
 
 /**
- * Enum of possible actions to perform on a file when the function {@link com.dokany.java.DokanyOperations.ZwCreateFile} is called.
+ * Enum of possible actions to perform on a file when the function {@link DokanyOperations.ZwCreateFile} is called.
  *
  * <p>
  * <b> Attention!</b>
- * The members of this enum are the kernel flags, not to be confused with the user flags in {@link CreationDisposition}. To convert them, use {@link DokanMapKernelToUserFlags}. The relation between this two is also
+ * The members of this enum are the kernel flags, not to be confused with the user flags in {@link CreationDisposition}. To convert them, use {@link com.dokany.java.migrated.NativeMethods#DokanMapKernelToUserCreateFileFlags(long, long, long, long, IntByReference, IntByReference, IntByReference)}. The relation between this two is also
  * descriped under this <a href="https://stackoverflow.com/questions/22552697/correspondence-between-procmon-and-createfile-disposition-options#22553544">link</a>.
  * </p>
  *

@@ -1,4 +1,4 @@
-package com.dokany.java;
+package com.dokany.java.migrated;
 
 import com.dokany.java.migrated.constants.dokany.MountError;
 import com.dokany.java.migrated.structure.DokanOptions;

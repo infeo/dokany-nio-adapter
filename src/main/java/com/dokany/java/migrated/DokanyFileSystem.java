@@ -1,6 +1,5 @@
 package com.dokany.java.migrated;
 
-import com.dokany.java.DokanyOperations;
 import com.dokany.java.migrated.constants.dokany.MountOption;
 import com.dokany.java.migrated.constants.microsoft.CreationDisposition;
 import com.dokany.java.migrated.constants.microsoft.FileSystemFlag;

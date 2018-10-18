@@ -7,8 +7,8 @@ import com.sun.jna.ptr.IntByReference;
 /**
  * Enum of actions to take on a not-necessarily existing file or device.
  * <p>These values are the userspace equivalent of {@link CreateDisposition}.
- * For a given CreateDisposition value the corresponding CreationDisposition value can be computed via the {@link com.dokany.java.NativeMethods#DokanMapKernelToUserCreateFileFlags(long, long, long, long, IntByReference,
- * IntByReference, IntByReference)}
+ * For a given CreateDisposition value the corresponding CreationDisposition value can be computed via the {@link com.dokany.java.migrated.NativeMethods#DokanMapKernelToUserCreateFileFlags(long, long, long, long,
+ * IntByReference, IntByReference, IntByReference)}
  * </p>
  *
  * <p>

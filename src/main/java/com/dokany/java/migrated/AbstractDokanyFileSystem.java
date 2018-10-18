@@ -1,8 +1,8 @@
-package com.dokany.java;
+package com.dokany.java.migrated;
 
-import com.dokany.java.migrated.DokanyFileSystem;
-import com.dokany.java.migrated.FileSystemInformation;
-import com.dokany.java.migrated.NotImplemented;
+import com.dokany.java.DokanyException;
+import com.dokany.java.DokanyUtils;
+import com.dokany.java.LibraryNotFoundException;
 import com.dokany.java.migrated.constants.dokany.MountError;
 import com.dokany.java.migrated.structure.DokanOptions;
 import com.sun.jna.WString;

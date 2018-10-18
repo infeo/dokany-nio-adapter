@@ -1,5 +1,6 @@
 package com.dokany.java.migrated.constants.microsoft;
 
+import com.dokany.java.migrated.DokanyOperations;
 import com.dokany.java.migrated.constants.EnumInteger;
 import com.dokany.java.migrated.structure.EnumIntegerSet;
 import com.sun.jna.platform.win32.WinNT;
@@ -8,7 +9,7 @@ import com.sun.jna.platform.win32.WinNT;
  * Properties which the implemented filesystem supports.
  *
  * <p>
- * Returned in {@link com.dokany.java.DokanyOperations#GetVolumeInformation} to the kernel layer indicating what properties your file system implementation supports.
+ * Returned in {@link DokanyOperations#GetVolumeInformation} to the kernel layer indicating what properties your file system implementation supports.
  * </p>
  *
  * <p> They can be arbitrary combined within an {@link EnumIntegerSet}. However FILE_FILE_COMPRESSION and FILE_VOL_IS_COMPRESSED are mutually exclusive.</p>
