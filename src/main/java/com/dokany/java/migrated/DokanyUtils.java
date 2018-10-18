@@ -1,7 +1,6 @@
-package com.dokany.java;
+package com.dokany.java.migrated;
 
 import com.dokany.java.migrated.structure.ByHandleFileInformation;
-import com.dokany.java.migrated.structure.DokanFileInfo;
 import com.sun.jna.WString;
 import com.sun.jna.platform.win32.WinBase;
 import com.sun.jna.platform.win32.WinBase.WIN32_FIND_DATA;
@@ -20,6 +19,8 @@ import java.util.Date;
  * Utilities to do various operations.
  */
 public class DokanyUtils {
+
+	public static String UNIX_SEPARATOR = FilenameUtils.separatorsToUnix(File.separator);
 
 	private static final Logger LOG = LoggerFactory.getLogger(DokanyUtils.class);
 
@@ -57,7 +58,6 @@ public class DokanyUtils {
 		return Paths.get(path).toFile();
 	}
 
-	public static String UNIX_SEPARATOR = FilenameUtils.separatorsToUnix(File.separator);
 
 	/**
 	 * Will add tail UNIX_SEPARATOR if file is a directory and tail separator is not already present
@@ -164,19 +164,6 @@ public class DokanyUtils {
 				cFileName,
 				cAlternateFileName);
 
-	}
-	/**
-	 * Set DokanyFileInfo.DeleteOnClose based on whether file or directory can be deleted.
-	 *
-	 * @param fileOrDirectory
-	 * @param dokanFileInfo
-	 */
-	public static void setDeleteStatus(final File fileOrDirectory, final DokanFileInfo dokanFileInfo) {
-		boolean canDelete = fileOrDirectory.renameTo(fileOrDirectory);
-
-		if (canDelete) {
-			dokanFileInfo.DeleteOnClose = 1;
-		}
 	}
 
     public static boolean canHandleShutdownHooks() {

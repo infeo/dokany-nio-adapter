@@ -1,4 +1,4 @@
-package com.dokany.java;
+package com.dokany.java.migrated;
 
 import java.util.Arrays;
 import java.util.List;

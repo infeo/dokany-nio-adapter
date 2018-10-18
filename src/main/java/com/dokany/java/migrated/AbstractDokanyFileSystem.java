@@ -1,6 +1,5 @@
 package com.dokany.java.migrated;
 
-import com.dokany.java.DokanyUtils;
 import com.dokany.java.migrated.constants.dokany.MountError;
 import com.dokany.java.migrated.structure.DokanOptions;
 import com.sun.jna.WString;
