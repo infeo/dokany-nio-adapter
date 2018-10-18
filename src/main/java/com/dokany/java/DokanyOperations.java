@@ -21,865 +21,731 @@ import com.sun.jna.ptr.LongByReference;
 
 
 /**
- *
  * Dokany API callbacks interface. This is an internal class and should not used directly by code outside com.dokany.java.
- *
+ * <p>
  * A struct of callbacks that describe all Dokany API operation that will be called when Windows accesses the file system.
- *
+ * <p>
  * If an error occurs, return {@link NtStatus}.
- *
- * All these callbacks can be set to <i>null</i> or return {@link NtStatus#NOT_IMPLEMENTED} if you don't want to support one of them. Be aware that returning such a value to
- * important callbacks such as {@link DokanyOperations.ZwCreateFile} or {@link DokanyOperations.ReadFile} would make the file system not working or unstable.
- *
+ * <p>
+ * All these callbacks can be set to <i>null</i> or return {@link NtStatus#NOT_IMPLEMENTED} if you don't want to support one of them. Be aware that returning such a value to important callbacks such as {@link
+ * DokanyOperations.ZwCreateFile} or {@link DokanyOperations.ReadFile} would make the file system not working or unstable.
+ * <p>
  * This is the same struct as <i>_DOKAN_OPERATIONS</i> (dokan.h) in the C++ version of Dokany.</remarks>
- *
  */
 public class DokanyOperations extends Structure {
 
-	public DokanyOperations() {
-	}
+    public DokanyOperations() {
+    }
 
-	// @Override
-	@Override
-	protected List<String> getFieldOrder() {
-		return Arrays.asList(
-		        "ZwCreateFile",
-		        "Cleanup",
-		        "CloseFile",
-		        "ReadFile",
-		        "WriteFile",
-		        "FlushFileBuffers",
-		        "GetFileInformation",
-		        "FindFiles",
-		        "FindFilesWithPattern",
-		        "SetFileAttributes",
-		        "SetFileTime",
-		        "DeleteFile",
-		        "DeleteDirectory",
-		        "MoveFile",
-		        "SetEndOfFile",
-		        "SetAllocationSize",
-		        "LockFile",
-		        "UnlockFile",
-		        "GetDiskFreeSpace",
-		        "GetVolumeInformation",
-		        "Mounted",
-		        "Unmounted",
-		        "GetFileSecurity",
-		        "SetFileSecurity",
-		        "FindStreams");
-	}
+    // @Override
+    @Override
+    protected List<String> getFieldOrder() {
+        return Arrays.asList(
+                "ZwCreateFile",
+                "Cleanup",
+                "CloseFile",
+                "ReadFile",
+                "WriteFile",
+                "FlushFileBuffers",
+                "GetFileInformation",
+                "FindFiles",
+                "FindFilesWithPattern",
+                "SetFileAttributes",
+                "SetFileTime",
+                "DeleteFile",
+                "DeleteDirectory",
+                "MoveFile",
+                "SetEndOfFile",
+                "SetAllocationSize",
+                "LockFile",
+                "UnlockFile",
+                "GetDiskFreeSpace",
+                "GetVolumeInformation",
+                "Mounted",
+                "Unmounted",
+                "GetFileSecurity",
+                "SetFileSecurity",
+                "FindStreams");
+    }
 
-	public ZwCreateFile ZwCreateFile = null;
-	public Cleanup Cleanup = null;
-	public CloseFile CloseFile = null;
-	public ReadFile ReadFile = null;
-	public WriteFile WriteFile = null;
-	public FlushFileBuffers FlushFileBuffers = null;
-	public GetFileInformation GetFileInformation = null;
-	public FindFiles FindFiles = null;
-	public FindFilesWithPattern FindFilesWithPattern = null;
-	public SetFileAttributes SetFileAttributes = null;
-	public SetFileTime SetFileTime = null;
-	public DeleteFile DeleteFile = null;
-	public DeleteDirectory DeleteDirectory = null;
-	public MoveFile MoveFile = null;
-	public SetEndOfFile SetEndOfFile = null;
-	public SetAllocationSize SetAllocationSize = null;
-	public LockFile LockFile = null;
-	public UnlockFile UnlockFile = null;
-	public GetDiskFreeSpace GetDiskFreeSpace = null;
-	public GetVolumeInformation GetVolumeInformation = null;
-	public Mounted Mounted = null;
-	public Unmounted Unmounted = null;
-	public GetFileSecurity GetFileSecurity = null;
-	public SetFileSecurity SetFileSecurity = null;
-	public FindStreams FindStreams = null;
+    public ZwCreateFile ZwCreateFile = null;
+    public Cleanup Cleanup = null;
+    public CloseFile CloseFile = null;
+    public ReadFile ReadFile = null;
+    public WriteFile WriteFile = null;
+    public FlushFileBuffers FlushFileBuffers = null;
+    public GetFileInformation GetFileInformation = null;
+    public FindFiles FindFiles = null;
+    public FindFilesWithPattern FindFilesWithPattern = null;
+    public SetFileAttributes SetFileAttributes = null;
+    public SetFileTime SetFileTime = null;
+    public DeleteFile DeleteFile = null;
+    public DeleteDirectory DeleteDirectory = null;
+    public MoveFile MoveFile = null;
+    public SetEndOfFile SetEndOfFile = null;
+    public SetAllocationSize SetAllocationSize = null;
+    public LockFile LockFile = null;
+    public UnlockFile UnlockFile = null;
+    public GetDiskFreeSpace GetDiskFreeSpace = null;
+    public GetVolumeInformation GetVolumeInformation = null;
+    public Mounted Mounted = null;
+    public Unmounted Unmounted = null;
+    public GetFileSecurity GetFileSecurity = null;
+    public SetFileSecurity SetFileSecurity = null;
+    public FindStreams FindStreams = null;
 
-	/**
-	 * CreateFile is called each time a request is made on a file system object.
-	 *
-	 * If the file is a directory, this method is also called. In this case, the method should return {@link NtStatus#SUCCESS} when that directory can be opened and
-	 * {@link DokanFileInfo#IsDirectory} has to be set to <i>true</i>. {@link DokanFileInfo#Context} can be used to store
-	 * data FileStream that can be retrieved in all other request related to the context.
-	 *
-	 * @see <a href="https://msdn.microsoft.com/en-us/library/windows/hardware/ff566424(v=vs.85).aspx">MSDN for more information about the parameters of this callback.</a>
-	 */
-	@FunctionalInterface
-	interface ZwCreateFile extends Callback {
-		/**
-		 * @param rawPath Path requested by the Kernel on the File System.
-		 * @param securityContext ??
-		 * @param rawDesiredAccess ?? Permissions for file or directory.
-		 * @param rawFileAttributes Provides attributes for files and directories. See <a href="https://msdn.microsoft.com/en-us/library/system.io.fileattributes(v=vs.110).aspx">MSDN</a>
-		 * @param rawShareAccess Type of share access to other threads. Device and intermediate drivers usually set ShareAccess to zero, which gives the caller exclusive access to
-		 *            the open file.
-		 * @param rawCreateDisposition
-		 * @param rawCreateOptions Represents advanced options for creating a File object. See <a href="https://msdn.microsoft.com/en-us/library/system.io.fileoptions(v=vs.110).aspx">MSDN</a>
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
-		 * @return {@link NtStatus}
-		 */
-		long callback(
-		          WString rawPath,
-		          WinBase.SECURITY_ATTRIBUTES securityContext,
-		        int rawDesiredAccess,
-		        int rawFileAttributes,
-		        int rawShareAccess,
-		        int rawCreateDisposition,
-		        int rawCreateOptions,
-		          DokanFileInfo dokanFileInfo);
-	}
+    /**
+     * CreateFile is called each time a request is made on a file system object.
+     * <p>
+     * If the file is a directory, this method is also called. In this case, the method should return {@link NtStatus#SUCCESS} when that directory can be opened and {@link DokanFileInfo#IsDirectory} has to be set to
+     * <i>true</i>. {@link DokanFileInfo#Context} can be used to store data FileStream that can be retrieved in all other request related to the context.
+     *
+     * @see <a href="https://msdn.microsoft.com/en-us/library/windows/hardware/ff566424(v=vs.85).aspx">MSDN for more information about the parameters of this callback.</a>
+     */
+    @FunctionalInterface
+    interface ZwCreateFile extends Callback {
 
-	/**
-	 * Receipt of this request indicates that the last handle for a file object that is associated with the target device object has been closed (but, due to outstanding I/O
-	 * requests, might not have been released).
-	 *
-	 * Cleanup is requested before @{link {@link DokanyOperations#CloseFile} is called.
-	 *
-	 */
-	@FunctionalInterface
-	interface Cleanup extends Callback {
-		/**
-		 *
-		 * @param rawPath
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
-		 */
-		void callback(
-		          WString rawPath,
-		          DokanFileInfo dokanFileInfo);
-	}
+        /**
+         * @param rawPath Path requested by the Kernel on the File System.
+         * @param securityContext ??
+         * @param rawDesiredAccess ?? Permissions for file or directory.
+         * @param rawFileAttributes Provides attributes for files and directories. See <a href="https://msdn.microsoft.com/en-us/library/system.io.fileattributes(v=vs.110).aspx">MSDN</a>
+         * @param rawShareAccess Type of share access to other threads. Device and intermediate drivers usually set ShareAccess to zero, which gives the caller exclusive access to the open file.
+         * @param rawCreateDisposition
+         * @param rawCreateOptions Represents advanced options for creating a File object. See <a href="https://msdn.microsoft.com/en-us/library/system.io.fileoptions(v=vs.110).aspx">MSDN</a>
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
+         * @return {@link NtStatus}
+         */
+        long callback(
+                WString rawPath,
+                WinBase.SECURITY_ATTRIBUTES securityContext,
+                int rawDesiredAccess,
+                int rawFileAttributes,
+                int rawShareAccess,
+                int rawCreateDisposition,
+                int rawCreateOptions,
+                DokanFileInfo dokanFileInfo);
+    }
 
-	/**
-	 * CloseFile is called at the end of the life of the context. Receipt of this request indicates that the last handle of the file object that is associated with the target
-	 * device object has been closed and released. All outstanding I/O requests have been completed or canceled.
-	 *
-	 * CloseFile is requested after {@link DokanyOperations.Cleanup} is called. Anything remaining in {@link DokanFileInfo#Context} has to be cleared
-	 * before return.
-	 *
-	 */
-	@FunctionalInterface
-	interface CloseFile extends Callback {
-		/**
-		 *
-		 * @param rawPath
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
-		 */
-		void callback(
-		          WString rawPath,
-		          DokanFileInfo dokanFileInfo);
-	}
+    /**
+     * Receipt of this request indicates that the last handle for a file object that is associated with the target device object has been closed (but, due to outstanding I/O requests, might not have been released).
+     * <p>
+     * Cleanup is requested before @{link {@link DokanyOperations#CloseFile} is called.
+     */
+    @FunctionalInterface
+    interface Cleanup extends Callback {
 
-	/**
-	 * ReadFile callback on the file previously opened in {@link DokanyOperations.ZwCreateFile}. It can be called by different thread at the same time, therefore the read has to be
-	 * thread safe.
-	 *
-	 */
-	interface ReadFile extends Callback {
-		/**
-		 *
-		 * @param rawPath
-		 * @param rawBuffer
-		 * @param rawBufferLength
-		 * @param rawReadLength
-		 * @param rawOffset
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
-		 * @return {@link NtStatus}
-		 */
-		long callback(
-		          WString rawPath,
-		          Pointer rawBuffer,
-		        int rawBufferLength,
-		          IntByReference rawReadLength,
-		        long rawOffset,
-		          DokanFileInfo dokanFileInfo);
-	}
+        /**
+         * @param rawPath
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
+         */
+        void callback(
+                WString rawPath,
+                DokanFileInfo dokanFileInfo);
+    }
 
-	/**
-	 * WriteFile callback on the file previously opened in {@link DokanyOperations.ZwCreateFile} It can be called by different thread at the same time, therefore the write/context has to
-	 * be thread safe.
-	 *
-	 */
-	@FunctionalInterface
-	interface WriteFile extends Callback {
-		/**
-		 *
-		 * @param rawPath
-		 * @param rawBuffer
-		 * @param rawNumberOfBytesToWrite
-		 * @param rawNumberOfBytesWritten
-		 * @param rawOffset
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
-		 * @return {@link NtStatus}
-		 */
-		long callback(
-		          WString rawPath,
-		          Pointer rawBuffer,
-		        int rawNumberOfBytesToWrite,
-		          IntByReference rawNumberOfBytesWritten,
-		        long rawOffset,
-		          DokanFileInfo dokanFileInfo);
+    /**
+     * CloseFile is called at the end of the life of the context. Receipt of this request indicates that the last handle of the file object that is associated with the target device object has been closed and released.
+     * All outstanding I/O requests have been completed or canceled.
+     * <p>
+     * CloseFile is requested after {@link DokanyOperations.Cleanup} is called. Anything remaining in {@link DokanFileInfo#Context} has to be cleared before return.
+     */
+    @FunctionalInterface
+    interface CloseFile extends Callback {
 
-	}
+        /**
+         * @param rawPath
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
+         */
+        void callback(
+                WString rawPath,
+                DokanFileInfo dokanFileInfo);
+    }
 
-	/**
-	 * Clears buffers for this context and causes any buffered data to be written to the file.
-	 *
-	 */
-	@FunctionalInterface
-	interface FlushFileBuffers extends Callback {
-		/**
-		 *
-		 * @param rawPath
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
-		 * @return {@link NtStatus}
-		 */
-		long callback(
-		          WString rawPath,
-		          DokanFileInfo dokanFileInfo);
-	}
+    /**
+     * ReadFile callback on the file previously opened in {@link DokanyOperations.ZwCreateFile}. It can be called by different thread at the same time, therefore the read has to be thread safe.
+     */
+    interface ReadFile extends Callback {
 
-	/**
-	 *
-	 * Get specific informations on a file.
-	 *
-	 */
-	@FunctionalInterface
-	interface GetFileInformation extends Callback {
-		/**
-		 *
-		 * @param fileName
-		 * @param handleFileInfo
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
-		 * @return {@link NtStatus}
-		 */
-		long callback(
-		          WString fileName,
-		          ByHandleFileInformation handleFileInfo,
-		          DokanFileInfo dokanFileInfo);
-	}
+        /**
+         * @param rawPath
+         * @param rawBuffer
+         * @param rawBufferLength
+         * @param rawReadLength
+         * @param rawOffset
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
+         * @return {@link NtStatus}
+         */
+        long callback(
+                WString rawPath,
+                Pointer rawBuffer,
+                int rawBufferLength,
+                IntByReference rawReadLength,
+                long rawOffset,
+                DokanFileInfo dokanFileInfo);
+    }
 
-	/**
-	 *
-	 * List all files in the path requested.
-	 */
-	@FunctionalInterface
-	interface FindFiles extends Callback {
-		/**
-		 *
-		 * @param rawPath
-		 * @param rawFillFindData
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
-		 * @return {@link NtStatus}
-		 */
-		long callback(
-		          WString rawPath,
-		          FillWin32FindData rawFillFindData,
-		          DokanFileInfo dokanFileInfo);
-	}
+    /**
+     * WriteFile callback on the file previously opened in {@link DokanyOperations.ZwCreateFile} It can be called by different thread at the same time, therefore the write/context has to be thread safe.
+     */
+    @FunctionalInterface
+    interface WriteFile extends Callback {
 
-	/**
-	 *
-	 * Same as {@link DokanyOperations.FindFiles} but with a search pattern to filter the result.
-	 *
-	 */
-	@FunctionalInterface
-	interface FindFilesWithPattern extends Callback {
-		/**
-		 *
-		 * @param fileName
-		 * @param searchPattern
-		 * @param rawFillFindData
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
-		 * @return {@link NtStatus}
-		 */
-		long callback(
-		          WString fileName,
-		          WString searchPattern,
-		          FillWin32FindData rawFillFindData,
-		          DokanFileInfo dokanFileInfo);
-	}
+        /**
+         * @param rawPath
+         * @param rawBuffer
+         * @param rawNumberOfBytesToWrite
+         * @param rawNumberOfBytesWritten
+         * @param rawOffset
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
+         * @return {@link NtStatus}
+         */
+        long callback(
+                WString rawPath,
+                Pointer rawBuffer,
+                int rawNumberOfBytesToWrite,
+                IntByReference rawNumberOfBytesWritten,
+                long rawOffset,
+                DokanFileInfo dokanFileInfo);
 
-	/**
-	 *
-	 * Set file attributes on a specific file.
-	 */
-	@FunctionalInterface
-	interface SetFileAttributes extends Callback {
-		/**
-		 *
-		 * @param rawPath
-		 * @param rawAttributes
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
-		 * @return {@link NtStatus}
-		 */
-		long callback(
-		          WString rawPath,
-		        int rawAttributes,
-		          DokanFileInfo dokanFileInfo);
-	}
+    }
 
-	/**
-	 *
-	 * Set file times on a specific file.
-	 */
-	@FunctionalInterface
-	interface SetFileTime extends Callback {
-		/**
-		 *
-		 * @param rawPath path to file or directory
-		 * @param rawCreationTime time of creation
-		 * @param rawLastAccessTime time of last access
-		 * @param rawLastWriteTime time of last modification
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
-		 * @return {@link NtStatus}
-		 */
-		long callback(
-		          WString rawPath,
-		          FILETIME rawCreationTime,
-		          FILETIME rawLastAccessTime,
-		          FILETIME rawLastWriteTime,
-		          DokanFileInfo dokanFileInfo);
-	}
+    /**
+     * Clears buffers for this context and causes any buffered data to be written to the file.
+     */
+    @FunctionalInterface
+    interface FlushFileBuffers extends Callback {
 
-	/**
-	 *
-	 * Check if it is possible to delete a file.
-	 *
-	 * You should NOT delete the file in this method, but instead you must only check whether you can delete the file or not, and return {@link NtStatus#SUCCESS} (when you can
-	 * delete it) or appropriate error codes such as {@link NtStatus#ACCESS_DENIED}, {@link NtStatus#OBJECT_NO_LONGER_EXISTS}, {@link NtStatus#OBJECT_NAME_NOT_FOUND}.
-	 *
-	 * {@link DokanyOperations.DeleteFile} will also be called with {@link DokanFileInfo#DeleteOnClose} set to <i>false</i> to notify the driver when the file is no longer
-	 * requested to be deleted.
-	 *
-	 * When you return {@link NtStatus#SUCCESS}, you get a {@link DokanyOperations.Cleanup}> call afterwards with {@link DokanFileInfo#DeleteOnClose} set to <i>true</i> and only
-	 * then you have to actually delete the file being closed.
-	 *
-	 * @see {@link DokanyOperations.DeleteDirectory}
-	 */
-	@FunctionalInterface
-	interface DeleteFile extends Callback {
-		/**
-		 *
-		 * @param rawPath
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file.
-		 * @return {@link NtStatus}
-		 */
-		long callback(
-		          WString rawPath,
-		          DokanFileInfo dokanFileInfo);
-	}
+        /**
+         * @param rawPath
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
+         * @return {@link NtStatus}
+         */
+        long callback(
+                WString rawPath,
+                DokanFileInfo dokanFileInfo);
+    }
 
-	/**
-	 *
-	 * Check if it is possible to delete a directory.
-	 *
-	 * @see {@link DokanyOperations.DeleteFile} for more specifics.
-	 *
-	 */
-	@FunctionalInterface
-	interface DeleteDirectory extends Callback {
-		/**
-		 *
-		 * @param rawPath
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the directory.
-		 * @return {@link NtStatus}
-		 */
-		long callback(
-		          WString rawPath,
-		          DokanFileInfo dokanFileInfo);
-	}
+    /**
+     * Get specific informations on a file.
+     */
+    @FunctionalInterface
+    interface GetFileInformation extends Callback {
 
-	/**
-	 *
-	 * Move a file or directory to a new location.
-	 */
-	@FunctionalInterface
-	interface MoveFile extends Callback {
-		/**
-		 *
-		 * @param rawPath
-		 * @param rawNewFileName
-		 * @param rawReplaceIfExisting
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
-		 * @return {@link NtStatus}
-		 */
-		long callback(
-		          WString rawPath,
-		          WString rawNewFileName,
-		        boolean rawReplaceIfExisting,
-		          DokanFileInfo dokanFileInfo);
-	}
+        /**
+         * @param fileName
+         * @param handleFileInfo
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
+         * @return {@link NtStatus}
+         */
+        long callback(
+                WString fileName,
+                ByHandleFileInformation handleFileInfo,
+                DokanFileInfo dokanFileInfo);
+    }
 
-	/**
-	 *
-	 * SetEndOfFile is used to truncate or extend a file (physical file size).
-	 */
-	@FunctionalInterface
-	interface SetEndOfFile extends Callback {
-		/**
-		 *
-		 * @param rawPath
-		 * @param rawByteOffset
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
-		 * @return {@link NtStatus}
-		 */
-		long callback(
-		          WString rawPath,
-		        long rawByteOffset,
-		          DokanFileInfo dokanFileInfo);
-	}
+    /**
+     * List all files in the path requested.
+     */
+    @FunctionalInterface
+    interface FindFiles extends Callback {
 
-	/**
-	 *
-	 * SetAllocationSize is used to truncate or extend a file.
-	 */
-	@FunctionalInterface
-	interface SetAllocationSize extends Callback {
-		/**
-		 *
-		 * @param rawPath
-		 * @param rawLength
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
-		 * @return {@link NtStatus}
-		 */
-		long callback(
-		          WString rawPath,
-		        long rawLength,
-		          DokanFileInfo dokanFileInfo);
-	}
+        /**
+         * @param rawPath
+         * @param rawFillFindData
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
+         * @return {@link NtStatus}
+         */
+        long callback(
+                WString rawPath,
+                FillWin32FindData rawFillFindData,
+                DokanFileInfo dokanFileInfo);
+    }
 
-	/**
-	 *
-	 * Lock file at a specific offset and data length. This is only used if {@link MountOption#FILELOCK_USER_MODE} is enabled.
-	 */
-	@FunctionalInterface
-	interface LockFile extends Callback {
-		/**
-		 *
-		 * @param rawPath
-		 * @param rawByteOffset
-		 * @param rawLength
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
-		 * @return {@link NtStatus}
-		 */
-		long callback(
-		          WString rawPath,
-		        long rawByteOffset,
-		        long rawLength,
-		          DokanFileInfo dokanFileInfo);
-	}
+    /**
+     * Same as {@link DokanyOperations.FindFiles} but with a search pattern to filter the result.
+     */
+    @FunctionalInterface
+    interface FindFilesWithPattern extends Callback {
 
-	/**
-	 *
-	 * Unlock file at a specific offset and data length. This is only used if {@link MountOption#FILELOCK_USER_MODE} is enabled.
-	 */
-	@FunctionalInterface
-	interface UnlockFile extends Callback {
-		/**
-		 *
-		 * @param rawPath
-		 * @param rawByteOffset
-		 * @param rawLength
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
-		 * @return {@link NtStatus}
-		 */
-		long callback(
-		          WString rawPath,
-		        long rawByteOffset,
-		        long rawLength,
-		          DokanFileInfo dokanFileInfo);
-	}
+        /**
+         * @param fileName
+         * @param searchPattern
+         * @param rawFillFindData
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
+         * @return {@link NtStatus}
+         */
+        long callback(
+                WString fileName,
+                WString searchPattern,
+                FillWin32FindData rawFillFindData,
+                DokanFileInfo dokanFileInfo);
+    }
 
-	/**
-	 *
-	 * Retrieves information about the amount of space that is available on a disk volume, which is the total amount of space, the total amount of free space, and the total amount
-	 * of free space available to the user that is associated with the calling thread.
-	 *
-	 * Neither this method nor {@link DokanyOperations.GetVolumeInformation} save the {@link DokanFileInfo#Context}. Before these methods are called,
-	 * {@link DokanyOperations.ZwCreateFile} may not be called. (ditto @{link DokanyOperations.CloseFile} and @{link DokanyOperations.Cleanup}).
-	 *
-	 */
-	@FunctionalInterface
-	interface GetDiskFreeSpace extends Callback {
-		/**
-		 *
-		 * @param freeBytesAvailable
-		 * @param totalNumberOfBytes
-		 * @param totalNumberOfFreeBytes
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
-		 * @return {@link NtStatus}
-		 */
-		long callback(
-		          LongByReference freeBytesAvailable,
-		          LongByReference totalNumberOfBytes,
-		          LongByReference totalNumberOfFreeBytes,
-		          DokanFileInfo dokanFileInfo);
-	}
+    /**
+     * Set file attributes on a specific file.
+     */
+    @FunctionalInterface
+    interface SetFileAttributes extends Callback {
 
-	/**
-	 *
-	 * Retrieves information about the file system and volume associated with the specified root directory.
-	 *
-	 * Neither this method nor {@link DokanyOperations.GetVolumeInformation} save the {@link DokanFileInfo#Context}. Before these methods are called,
-	 * {@link DokanyOperations.ZwCreateFile} may not be called. (ditto @{link DokanyOperations.CloseFile} and @{link DokanyOperations.Cleanup}).
-	 *
-	 * @see {@link FileSystemFlag#READ_ONLY_VOLUME} is automatically added to the <paramref name="features"/> if <see cref="DokanOpts.WriteProtection"/> was specified when
-	 *      the volume was mounted.
-	 *
-	 *      If {@link NtStatus#NOT_IMPLEMENTED} is returned, the Dokany kernel driver use following settings by default:
-	 *
-	 *      <ul>
-	 *      <li>rawVolumeSerialNumber = 0x19831116</li>
-	 *      <li>rawMaximumComponentLength = 256</li>
-	 *      <li>rawFileSystemFlags = CaseSensitiveSearch, CasePreservedNames, SupportsRemoteStorage, UnicodeOnDisk</li>
-	 *      <li>rawFileSystemNameBuffer = NTFS</li>
-	 *      </ul>
-	 */
-	@FunctionalInterface
-	interface GetVolumeInformation extends Callback {
-		/**
-		 *
-		 * @param rawVolumeNameBuffer
-		 * @param rawVolumeNameSize
-		 * @param rawVolumeSerialNumber
-		 * @param rawMaximumComponentLength
-		 * @param rawFileSystemFlags
-		 * @param rawFileSystemNameBuffer
-		 * @param rawFileSystemNameSize
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
-		 * @return {@link NtStatus}
-		 */
-		long callback(
-		          Pointer rawVolumeNameBuffer,
-		        int rawVolumeNameSize,
-		          IntByReference rawVolumeSerialNumber,
-		          IntByReference rawMaximumComponentLength,
-		          IntByReference /* FileSystemFeatures */ rawFileSystemFlags,
-		          Pointer rawFileSystemNameBuffer,
-		        int rawFileSystemNameSize,
-		          DokanFileInfo dokanFileInfo);
-	}
+        /**
+         * @param rawPath
+         * @param rawAttributes
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
+         * @return {@link NtStatus}
+         */
+        long callback(
+                WString rawPath,
+                int rawAttributes,
+                DokanFileInfo dokanFileInfo);
+    }
 
-	/**
-	 *
-	 * Is called when Dokany succeeded mounting the volume.
-	 */
-	@FunctionalInterface
-	interface Mounted extends Callback {
-		long mounted(
-		          DokanFileInfo dokanFileInfo);
-	}
+    /**
+     * Set file times on a specific file.
+     */
+    @FunctionalInterface
+    interface SetFileTime extends Callback {
 
-	/**
-	 *
-	 * Is called when Dokany succeeded unmounting the volume.
-	 */
-	@FunctionalInterface
-	interface Unmounted extends Callback {
-		long unmounted(
-		          final DokanFileInfo dokanFileInfo);
-	}
+        /**
+         * @param rawPath path to file or directory
+         * @param rawCreationTime time of creation
+         * @param rawLastAccessTime time of last access
+         * @param rawLastWriteTime time of last modification
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
+         * @return {@link NtStatus}
+         */
+        long callback(
+                WString rawPath,
+                FILETIME rawCreationTime,
+                FILETIME rawLastAccessTime,
+                FILETIME rawLastWriteTime,
+                DokanFileInfo dokanFileInfo);
+    }
 
-	/**
-	 *
-	 * Get specified information about the security of a file or directory.
-	 *
-	 * Supported since version 0.6.0. You must specify the version in {@link DokanOptions#Version}.
-	 */
-	@FunctionalInterface
-	interface GetFileSecurity extends Callback {
-		/**
-		 *
-		 * @param rawPath
-		 * @param rawSecurityInformation
-		 * @param rawSecurityDescriptor
-		 * @param rawSecurityDescriptorLength
-		 * @param rawSecurityDescriptorLengthNeeded
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
-		 * @return {@link NtStatus}
-		 */
-		long callback(
-		          WString rawPath,
-		        int /* SecurityInformation */ rawSecurityInformation,
-		          Pointer rawSecurityDescriptor,
-		        int rawSecurityDescriptorLength,
-		          IntByReference rawSecurityDescriptorLengthNeeded,
-		          DokanFileInfo dokanFileInfo);
-	}
+    /**
+     * Check if it is possible to delete a file.
+     * <p>
+     * You should NOT delete the file in this method, but instead you must only check whether you can delete the file or not, and return {@link NtStatus#SUCCESS} (when you can delete it) or appropriate error codes such
+     * as {@link NtStatus#ACCESS_DENIED}, {@link NtStatus#OBJECT_NO_LONGER_EXISTS}, {@link NtStatus#OBJECT_NAME_NOT_FOUND}.
+     * <p>
+     * {@link DokanyOperations.DeleteFile} will also be called with {@link DokanFileInfo#DeleteOnClose} set to <i>false</i> to notify the driver when the file is no longer requested to be deleted.
+     * <p>
+     * When you return {@link NtStatus#SUCCESS}, you get a {@link DokanyOperations.Cleanup}> call afterwards with {@link DokanFileInfo#DeleteOnClose} set to <i>true</i> and only then you have to actually delete the file
+     * being closed.
+     *
+     * @see {@link DokanyOperations.DeleteDirectory}
+     */
+    @FunctionalInterface
+    interface DeleteFile extends Callback {
 
-	/**
-	 *
-	 * Sets the security of a file or directory object.
-	 *
-	 * Supported since version 0.6.0. You must specify the version in {@link DokanOptions#Version}.
-	 */
-	@FunctionalInterface
-	interface SetFileSecurity extends Callback {
-		/**
-		 *
-		 * @param rawPath
-		 * @param rawSecurityInformation
-		 * @param rawSecurityDescriptor
-		 * @param rawSecurityDescriptorLength
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
-		 * @return {@link NtStatus}
-		 */
-		long callback(
-		          WString rawPath,
-		        int rawSecurityInformation,
-		        // @TODO: This is a pointer??
-		          Pointer rawSecurityDescriptor,
-		        int rawSecurityDescriptorLength,
-		          DokanFileInfo dokanFileInfo);
-	}
+        /**
+         * @param rawPath
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file.
+         * @return {@link NtStatus}
+         */
+        long callback(
+                WString rawPath,
+                DokanFileInfo dokanFileInfo);
+    }
 
-	@FunctionalInterface
-	public interface FillWin32FindData extends Callback {
-		/**
-		 *
-		 * @param rawFillFindData
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
-		 */
-		void fillWin32FindData(
-		          WIN32_FIND_DATA rawFillFindData,
-		          DokanFileInfo dokanFileInfo);
-	}
+    /**
+     * Check if it is possible to delete a directory.
+     *
+     * @see {@link DokanyOperations.DeleteFile} for more specifics.
+     */
+    @FunctionalInterface
+    interface DeleteDirectory extends Callback {
 
-	/**
-	 *
-	 * Retrieve all NTFS Streams informations on the file. This is only called if {@link MountOption#ALT_STREAM} is enabled.
-	 */
-	@FunctionalInterface
-	interface FindStreams extends Callback {
-		/**
-		 *
-		 * @param rawPath
-		 * @param rawFillFindData
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
-		 * @return {@link NtStatus}
-		 */
-		long callback(
-		          WString rawPath,
-		          FillWin32FindStreamData rawFillFindData,
-		          DokanFileInfo dokanFileInfo);
-	}
+        /**
+         * @param rawPath
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the directory.
+         * @return {@link NtStatus}
+         */
+        long callback(
+                WString rawPath,
+                DokanFileInfo dokanFileInfo);
+    }
 
-	/**
-	 *
-	 *
-	 */
-	@FunctionalInterface
-	public interface FillWin32FindStreamData extends Callback {
-		/**
-		 *
-		 * @param rawFillFindData
-		 * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
-		 */
-		void callback(
-		          Win32FindStreamData rawFillFindData,
-		          DokanFileInfo dokanFileInfo);
-	}
+    /**
+     * Move a file or directory to a new location.
+     */
+    @FunctionalInterface
+    interface MoveFile extends Callback {
 
-	interface Win32FindStreamDataInterface {
-		public void length(long val);
+        /**
+         * @param rawPath
+         * @param rawNewFileName
+         * @param rawReplaceIfExisting
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
+         * @return {@link NtStatus}
+         */
+        long callback(
+                WString rawPath,
+                WString rawNewFileName,
+                boolean rawReplaceIfExisting,
+                DokanFileInfo dokanFileInfo);
+    }
 
-		public char[] cFileName();
-	}
+    /**
+     * SetEndOfFile is used to truncate or extend a file (physical file size).
+     */
+    @FunctionalInterface
+    interface SetEndOfFile extends Callback {
 
-    public DokanyOperations.ZwCreateFile getZwCreateFile() {
-        return ZwCreateFile;
+        /**
+         * @param rawPath
+         * @param rawByteOffset
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
+         * @return {@link NtStatus}
+         */
+        long callback(
+                WString rawPath,
+                long rawByteOffset,
+                DokanFileInfo dokanFileInfo);
+    }
+
+    /**
+     * SetAllocationSize is used to truncate or extend a file.
+     */
+    @FunctionalInterface
+    interface SetAllocationSize extends Callback {
+
+        /**
+         * @param rawPath
+         * @param rawLength
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
+         * @return {@link NtStatus}
+         */
+        long callback(
+                WString rawPath,
+                long rawLength,
+                DokanFileInfo dokanFileInfo);
+    }
+
+    /**
+     * Lock file at a specific offset and data length. This is only used if {@link MountOption#FILELOCK_USER_MODE} is enabled.
+     */
+    @FunctionalInterface
+    interface LockFile extends Callback {
+
+        /**
+         * @param rawPath
+         * @param rawByteOffset
+         * @param rawLength
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
+         * @return {@link NtStatus}
+         */
+        long callback(
+                WString rawPath,
+                long rawByteOffset,
+                long rawLength,
+                DokanFileInfo dokanFileInfo);
+    }
+
+    /**
+     * Unlock file at a specific offset and data length. This is only used if {@link MountOption#FILELOCK_USER_MODE} is enabled.
+     */
+    @FunctionalInterface
+    interface UnlockFile extends Callback {
+
+        /**
+         * @param rawPath
+         * @param rawByteOffset
+         * @param rawLength
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
+         * @return {@link NtStatus}
+         */
+        long callback(
+                WString rawPath,
+                long rawByteOffset,
+                long rawLength,
+                DokanFileInfo dokanFileInfo);
+    }
+
+    /**
+     * Retrieves information about the amount of space that is available on a disk volume, which is the total amount of space, the total amount of free space, and the total amount of free space available to the user that
+     * is associated with the calling thread.
+     * <p>
+     * Neither this method nor {@link DokanyOperations.GetVolumeInformation} save the {@link DokanFileInfo#Context}. Before these methods are called, {@link DokanyOperations.ZwCreateFile} may not be called. (ditto @{link
+     * DokanyOperations.CloseFile} and @{link DokanyOperations.Cleanup}).
+     */
+    @FunctionalInterface
+    interface GetDiskFreeSpace extends Callback {
+
+        /**
+         * @param freeBytesAvailable
+         * @param totalNumberOfBytes
+         * @param totalNumberOfFreeBytes
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
+         * @return {@link NtStatus}
+         */
+        long callback(
+                LongByReference freeBytesAvailable,
+                LongByReference totalNumberOfBytes,
+                LongByReference totalNumberOfFreeBytes,
+                DokanFileInfo dokanFileInfo);
+    }
+
+    /**
+     * Retrieves information about the file system and volume associated with the specified root directory.
+     * <p>
+     * Neither this method nor {@link DokanyOperations.GetVolumeInformation} save the {@link DokanFileInfo#Context}. Before these methods are called, {@link DokanyOperations.ZwCreateFile} may not be called. (ditto @{link
+     * DokanyOperations.CloseFile} and @{link DokanyOperations.Cleanup}).
+     *
+     * @see {@link FileSystemFlag#READ_ONLY_VOLUME} is automatically added to the <paramref name="features"/> if <see cref="DokanOpts.WriteProtection"/> was specified when the volume was mounted.
+     * <p>
+     * If {@link NtStatus#NOT_IMPLEMENTED} is returned, the Dokany kernel driver use following settings by default:
+     *
+     * <ul>
+     * <li>rawVolumeSerialNumber = 0x19831116</li>
+     * <li>rawMaximumComponentLength = 256</li>
+     * <li>rawFileSystemFlags = CaseSensitiveSearch, CasePreservedNames, SupportsRemoteStorage, UnicodeOnDisk</li>
+     * <li>rawFileSystemNameBuffer = NTFS</li>
+     * </ul>
+     */
+    @FunctionalInterface
+    interface GetVolumeInformation extends Callback {
+
+        /**
+         * @param rawVolumeNameBuffer
+         * @param rawVolumeNameSize
+         * @param rawVolumeSerialNumber
+         * @param rawMaximumComponentLength
+         * @param rawFileSystemFlags
+         * @param rawFileSystemNameBuffer
+         * @param rawFileSystemNameSize
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
+         * @return {@link NtStatus}
+         */
+        long callback(
+                Pointer rawVolumeNameBuffer,
+                int rawVolumeNameSize,
+                IntByReference rawVolumeSerialNumber,
+                IntByReference rawMaximumComponentLength,
+                IntByReference /* FileSystemFeatures */ rawFileSystemFlags,
+                Pointer rawFileSystemNameBuffer,
+                int rawFileSystemNameSize,
+                DokanFileInfo dokanFileInfo);
+    }
+
+    /**
+     * Is called when Dokany succeeded mounting the volume.
+     */
+    @FunctionalInterface
+    interface Mounted extends Callback {
+
+        long mounted(
+                DokanFileInfo dokanFileInfo);
+    }
+
+    /**
+     * Is called when Dokany succeeded unmounting the volume.
+     */
+    @FunctionalInterface
+    interface Unmounted extends Callback {
+
+        long unmounted(
+                final DokanFileInfo dokanFileInfo);
+    }
+
+    /**
+     * Get specified information about the security of a file or directory.
+     * <p>
+     * Supported since version 0.6.0. You must specify the version in {@link DokanOptions#Version}.
+     */
+    @FunctionalInterface
+    interface GetFileSecurity extends Callback {
+
+        /**
+         * @param rawPath
+         * @param rawSecurityInformation
+         * @param rawSecurityDescriptor
+         * @param rawSecurityDescriptorLength
+         * @param rawSecurityDescriptorLengthNeeded
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
+         * @return {@link NtStatus}
+         */
+        long callback(
+                WString rawPath,
+                int /* SecurityInformation */ rawSecurityInformation,
+                Pointer rawSecurityDescriptor,
+                int rawSecurityDescriptorLength,
+                IntByReference rawSecurityDescriptorLengthNeeded,
+                DokanFileInfo dokanFileInfo);
+    }
+
+    /**
+     * Sets the security of a file or directory object.
+     * <p>
+     * Supported since version 0.6.0. You must specify the version in {@link DokanOptions#Version}.
+     */
+    @FunctionalInterface
+    interface SetFileSecurity extends Callback {
+
+        /**
+         * @param rawPath
+         * @param rawSecurityInformation
+         * @param rawSecurityDescriptor
+         * @param rawSecurityDescriptorLength
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
+         * @return {@link NtStatus}
+         */
+        long callback(
+                WString rawPath,
+                int rawSecurityInformation,
+                // @TODO: This is a pointer??
+                Pointer rawSecurityDescriptor,
+                int rawSecurityDescriptorLength,
+                DokanFileInfo dokanFileInfo);
+    }
+
+    @FunctionalInterface
+    public interface FillWin32FindData extends Callback {
+
+        /**
+         * @param rawFillFindData
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
+         */
+        void fillWin32FindData(
+                WIN32_FIND_DATA rawFillFindData,
+                DokanFileInfo dokanFileInfo);
+    }
+
+    /**
+     * Retrieve all NTFS Streams informations on the file. This is only called if {@link MountOption#ALT_STREAM} is enabled.
+     */
+    @FunctionalInterface
+    interface FindStreams extends Callback {
+
+        /**
+         * @param rawPath
+         * @param rawFillFindData
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
+         * @return {@link NtStatus}
+         */
+        long callback(
+                WString rawPath,
+                FillWin32FindStreamData rawFillFindData,
+                DokanFileInfo dokanFileInfo);
+    }
+
+    /**
+     *
+     *
+     */
+    @FunctionalInterface
+    public interface FillWin32FindStreamData extends Callback {
+
+        /**
+         * @param rawFillFindData
+         * @param dokanFileInfo {@link DokanFileInfo} with information about the file or directory.
+         */
+        void callback(
+                Win32FindStreamData rawFillFindData,
+                DokanFileInfo dokanFileInfo);
+    }
+
+    interface Win32FindStreamDataInterface {
+
+        public void length(long val);
+
+        public char[] cFileName();
     }
 
     public void setZwCreateFile(DokanyOperations.ZwCreateFile zwCreateFile) {
         ZwCreateFile = zwCreateFile;
     }
 
-    public DokanyOperations.Cleanup getCleanup() {
-        return Cleanup;
-    }
-
     public void setCleanup(DokanyOperations.Cleanup cleanup) {
         Cleanup = cleanup;
-    }
-
-    public DokanyOperations.CloseFile getCloseFile() {
-        return CloseFile;
     }
 
     public void setCloseFile(DokanyOperations.CloseFile closeFile) {
         CloseFile = closeFile;
     }
 
-    public DokanyOperations.ReadFile getReadFile() {
-        return ReadFile;
-    }
-
     public void setReadFile(DokanyOperations.ReadFile readFile) {
         ReadFile = readFile;
-    }
-
-    public DokanyOperations.WriteFile getWriteFile() {
-        return WriteFile;
     }
 
     public void setWriteFile(DokanyOperations.WriteFile writeFile) {
         WriteFile = writeFile;
     }
 
-    public DokanyOperations.FlushFileBuffers getFlushFileBuffers() {
-        return FlushFileBuffers;
-    }
-
     public void setFlushFileBuffers(DokanyOperations.FlushFileBuffers flushFileBuffers) {
         FlushFileBuffers = flushFileBuffers;
-    }
-
-    public DokanyOperations.GetFileInformation getGetFileInformation() {
-        return GetFileInformation;
     }
 
     public void setGetFileInformation(DokanyOperations.GetFileInformation getFileInformation) {
         GetFileInformation = getFileInformation;
     }
 
-    public DokanyOperations.FindFiles getFindFiles() {
-        return FindFiles;
-    }
-
     public void setFindFiles(DokanyOperations.FindFiles findFiles) {
         FindFiles = findFiles;
-    }
-
-    public DokanyOperations.FindFilesWithPattern getFindFilesWithPattern() {
-        return FindFilesWithPattern;
     }
 
     public void setFindFilesWithPattern(DokanyOperations.FindFilesWithPattern findFilesWithPattern) {
         FindFilesWithPattern = findFilesWithPattern;
     }
 
-    public DokanyOperations.SetFileAttributes getSetFileAttributes() {
-        return SetFileAttributes;
-    }
-
     public void setSetFileAttributes(DokanyOperations.SetFileAttributes setFileAttributes) {
         SetFileAttributes = setFileAttributes;
-    }
-
-    public DokanyOperations.SetFileTime getSetFileTime() {
-        return SetFileTime;
     }
 
     public void setSetFileTime(DokanyOperations.SetFileTime setFileTime) {
         SetFileTime = setFileTime;
     }
 
-    public DokanyOperations.DeleteFile getDeleteFile() {
-        return DeleteFile;
-    }
-
     public void setDeleteFile(DokanyOperations.DeleteFile deleteFile) {
         DeleteFile = deleteFile;
-    }
-
-    public DokanyOperations.DeleteDirectory getDeleteDirectory() {
-        return DeleteDirectory;
     }
 
     public void setDeleteDirectory(DokanyOperations.DeleteDirectory deleteDirectory) {
         DeleteDirectory = deleteDirectory;
     }
 
-    public DokanyOperations.MoveFile getMoveFile() {
-        return MoveFile;
-    }
-
     public void setMoveFile(DokanyOperations.MoveFile moveFile) {
         MoveFile = moveFile;
-    }
-
-    public DokanyOperations.SetEndOfFile getSetEndOfFile() {
-        return SetEndOfFile;
     }
 
     public void setSetEndOfFile(DokanyOperations.SetEndOfFile setEndOfFile) {
         SetEndOfFile = setEndOfFile;
     }
 
-    public DokanyOperations.SetAllocationSize getSetAllocationSize() {
-        return SetAllocationSize;
-    }
-
     public void setSetAllocationSize(DokanyOperations.SetAllocationSize setAllocationSize) {
         SetAllocationSize = setAllocationSize;
-    }
-
-    public DokanyOperations.LockFile getLockFile() {
-        return LockFile;
     }
 
     public void setLockFile(DokanyOperations.LockFile lockFile) {
         LockFile = lockFile;
     }
 
-    public DokanyOperations.UnlockFile getUnlockFile() {
-        return UnlockFile;
-    }
-
     public void setUnlockFile(DokanyOperations.UnlockFile unlockFile) {
         UnlockFile = unlockFile;
-    }
-
-    public DokanyOperations.GetDiskFreeSpace getGetDiskFreeSpace() {
-        return GetDiskFreeSpace;
     }
 
     public void setGetDiskFreeSpace(DokanyOperations.GetDiskFreeSpace getDiskFreeSpace) {
         GetDiskFreeSpace = getDiskFreeSpace;
     }
 
-    public DokanyOperations.GetVolumeInformation getGetVolumeInformation() {
-        return GetVolumeInformation;
-    }
-
     public void setGetVolumeInformation(DokanyOperations.GetVolumeInformation getVolumeInformation) {
         GetVolumeInformation = getVolumeInformation;
-    }
-
-    public DokanyOperations.Mounted getMounted() {
-        return Mounted;
     }
 
     public void setMounted(DokanyOperations.Mounted mounted) {
         Mounted = mounted;
     }
 
-    public DokanyOperations.Unmounted getUnmounted() {
-        return Unmounted;
-    }
-
     public void setUnmounted(DokanyOperations.Unmounted unmounted) {
         Unmounted = unmounted;
-    }
-
-    public DokanyOperations.GetFileSecurity getGetFileSecurity() {
-        return GetFileSecurity;
     }
 
     public void setGetFileSecurity(DokanyOperations.GetFileSecurity getFileSecurity) {
         GetFileSecurity = getFileSecurity;
     }
 
-    public DokanyOperations.SetFileSecurity getSetFileSecurity() {
-        return SetFileSecurity;
-    }
-
     public void setSetFileSecurity(DokanyOperations.SetFileSecurity setFileSecurity) {
         SetFileSecurity = setFileSecurity;
-    }
-
-    public DokanyOperations.FindStreams getFindStreams() {
-        return FindStreams;
     }
 
     public void setFindStreams(DokanyOperations.FindStreams findStreams) {
