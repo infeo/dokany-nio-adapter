@@ -1,4 +1,4 @@
-package com.dokany.java.migrated.structure.filesecurity;
+package com.dokany.java.migrated;
 
 public interface Byteable {
 

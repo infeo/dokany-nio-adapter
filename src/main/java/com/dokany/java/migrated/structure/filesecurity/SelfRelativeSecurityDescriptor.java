@@ -1,5 +1,6 @@
 package com.dokany.java.migrated.structure.filesecurity;
 
+import com.dokany.java.migrated.Byteable;
 import com.dokany.java.migrated.constants.microsoft.filesecurity.SecurityDescriptorControlFlag;
 import com.dokany.java.migrated.structure.EnumIntegerSet;
 

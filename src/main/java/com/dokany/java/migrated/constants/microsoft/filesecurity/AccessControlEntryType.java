@@ -1,4 +1,6 @@
-package com.dokany.java.structure.filesecurity;
+package com.dokany.java.migrated.constants.microsoft.filesecurity;
+
+import com.dokany.java.migrated.Byteable;
 
 /**
  * Enumeration of possible ACE-Types. See also in the <a href="https://msdn.microsoft.com/en-us/library/cc230296.aspx">Microsoft documentation.</a>
