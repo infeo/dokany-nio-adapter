@@ -1,6 +1,5 @@
 package com.dokany.java.migrated;
 
-import com.dokany.java.DokanyException;
 import com.dokany.java.DokanyUtils;
 import com.dokany.java.LibraryNotFoundException;
 import com.dokany.java.migrated.constants.dokany.MountError;
