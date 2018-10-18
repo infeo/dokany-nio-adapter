@@ -1,8 +1,11 @@
 package com.dokany.java;
 
 import com.dokany.java.migrated.constants.microsoft.AccessMask;
+import com.dokany.java.migrated.constants.microsoft.filesecurity.AccessControlEntryFlag;
+import com.dokany.java.migrated.constants.microsoft.filesecurity.SecurityDescriptorControlFlag;
+import com.dokany.java.migrated.constants.microsoft.filesecurity.SidIdentifierAuthority;
 import com.dokany.java.migrated.structure.EnumIntegerSet;
-import com.dokany.java.structure.filesecurity.*;
+import com.dokany.java.migrated.structure.filesecurity.*;
 import org.junit.Assert;
 import org.junit.Test;
 

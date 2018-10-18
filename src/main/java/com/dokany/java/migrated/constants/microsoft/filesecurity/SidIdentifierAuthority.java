@@ -1,4 +1,6 @@
-package com.dokany.java.structure.filesecurity;
+package com.dokany.java.migrated.constants.microsoft.filesecurity;
+
+import com.dokany.java.migrated.structure.filesecurity.Byteable;
 
 /**
  * Enumeration of Well known SidIdentifierAuthoritys

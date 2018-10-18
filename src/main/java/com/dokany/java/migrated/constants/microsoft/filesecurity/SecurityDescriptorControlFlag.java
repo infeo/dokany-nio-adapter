@@ -1,4 +1,4 @@
-package com.dokany.java.structure.filesecurity;
+package com.dokany.java.migrated.constants.microsoft.filesecurity;
 
 import com.dokany.java.migrated.constants.EnumInteger;
 

@@ -1,5 +1,7 @@
-package com.dokany.java.structure.filesecurity;
+package com.dokany.java.migrated.structure.filesecurity;
 
+import com.dokany.java.migrated.constants.microsoft.filesecurity.AccessControlEntryFlag;
+import com.dokany.java.migrated.constants.microsoft.filesecurity.AccessControlEntryType;
 import com.dokany.java.migrated.structure.EnumIntegerSet;
 
 public abstract class AccessControlEntry implements Byteable {
