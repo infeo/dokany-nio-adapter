@@ -39,6 +39,7 @@ public abstract class AbstractDokanyFileSystem implements DokanyFileSystem {
         this.fileSystemInformation = fileSystemInformation;
         this.usesKernelFlagsAndCodes = usesKernelFlagsAndCodes;
         this.dokanyOperations = new DokanyOperations();
+        init(dokanyOperations);
     }
 
     private void init(DokanyOperations dokanyOperations) {
