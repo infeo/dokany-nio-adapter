@@ -1,8 +1,8 @@
 package com.dokany.java.legacy.structure;
 
-import com.dokany.java.migrated.DokanyOperations;
-import com.dokany.java.migrated.constants.microsoft.FileSystemFlag;
-import com.dokany.java.migrated.structure.EnumIntegerSet;
+import com.dokany.java.DokanyOperations;
+import com.dokany.java.constants.microsoft.FileSystemFlag;
+import com.dokany.java.structure.EnumIntegerSet;
 
 /**
  * Supplementary class to bundle information of the mounted volume and its filesystem.

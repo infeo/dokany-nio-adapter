@@ -1,6 +1,6 @@
 package com.dokany.java.legacy.constants;
 
-import com.dokany.java.migrated.constants.EnumInteger;
+import com.dokany.java.constants.EnumInteger;
 
 public enum WinError implements EnumInteger {
     ERROR_INVALID_FUNCTION(1),
