@@ -25,7 +25,7 @@ public class ReadWriteCryptoFsTest {
 			return;
 		}
 
-		Path pathToVault = Paths.get("D:\\Arbeit\\Skymatic\\tmp\\empty");
+		Path pathToVault = Paths.get("M:\\tresor\\");
 		CryptoFileSystemProperties props = CryptoFileSystemProperties.withPassphrase("asd").withMasterkeyFilename("masterkey.cryptomator").build();
 		CryptoFileSystem cfs = CryptoFileSystemProvider.newFileSystem(pathToVault, props);
 		Path path = cfs.getPath("/");

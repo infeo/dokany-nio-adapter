@@ -1,12 +1,9 @@
 package org.cryptomator.frontend.dokany;
 
-import com.dokany.java.constants.AccessMask;
-import com.dokany.java.constants.CreateOptions;
-import com.dokany.java.constants.CreationDisposition;
-import com.dokany.java.constants.FileAccessMask;
-import com.dokany.java.constants.FileAttribute;
-import com.dokany.java.structure.EnumIntegerSet;
 import com.google.common.collect.Sets;
+import com.sun.jna.platform.win32.WinNT;
+import dev.dokan.dokan_java.constants.microsoft.*;
+import dev.dokan.dokan_java.structure.EnumIntegerSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,20 +99,20 @@ public class FileUtil {
 		}).collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
 	}
 
-	public static Set<OpenOption> buildOpenOptions(EnumIntegerSet<AccessMask> accessMasks, EnumIntegerSet<FileAccessMask> fileAccessMasks, EnumIntegerSet<FileAttribute> fileAttributes, EnumIntegerSet<CreateOptions> createOptions, CreationDisposition creationDisposition, boolean append, boolean fileExists) {
+	public static Set<OpenOption> buildOpenOptions(int accessMasks, EnumIntegerSet<FileAttribute> fileAttributes, EnumIntegerSet<CreateOption> createOptions, CreationDisposition creationDisposition, boolean append, boolean fileExists) {
 		Set<OpenOption> openOptions = Sets.newHashSet();
-		if (accessMasks.contains(AccessMask.GENERIC_WRITE) || accessMasks.contains(AccessMask.DELETE) || fileAccessMasks.contains(FileAccessMask.READ_DATA)) {
+		if (((accessMasks & WinNT.GENERIC_WRITE) | (accessMasks & WinNT.DELETE) | (accessMasks & WinNT.FILE_READ_DATA)) != 0) {
 			openOptions.add(StandardOpenOption.WRITE);
 		}
-		if (accessMasks.contains(AccessMask.GENERIC_READ) || fileAccessMasks.contains(FileAccessMask.READ_DATA)) {
+		if (((accessMasks & WinNT.GENERIC_READ) | (accessMasks & WinNT.FILE_READ_DATA)) != 0) {
 			openOptions.add(StandardOpenOption.READ);
 			//openOptions.add(StandardOpenOption.SYNC); TODO: research to what flags GENERIC_READ, GENERIC_WRITE and GENERIC_ALL translate!
 		}
-		if (accessMasks.contains(AccessMask.MAXIMUM_ALLOWED) || accessMasks.contains(AccessMask.GENERIC_ALL)) {
+		if (((accessMasks & AccessMask.MAXIMUM_ALLOWED.getMask()) | (accessMasks & WinNT.GENERIC_ALL)) != 0) {
 			openOptions.add(StandardOpenOption.READ);
 			openOptions.add(StandardOpenOption.WRITE);
 		}
-		if (accessMasks.contains(AccessMask.SYNCHRONIZE)) {
+		if ((accessMasks & WinNT.SYNCHRONIZE) != 0) {
 			openOptions.add(StandardOpenOption.SYNC);
 		}
 		if (append) {

@@ -7,7 +7,7 @@ import java.nio.file.FileSystemException;
 import java.nio.file.Path;
 
 /**
- * A File where no FileChannel to the data is opened. Should be useed, if the file is e.g. invalid but should be deleteable.
+ * A File where no FileChannel to the data is opened. Should be used, if the file is e.g. invalid but should be deleteable.
  */
 public class OpenRestrictedFile extends OpenFile {
 

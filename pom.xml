@@ -26,6 +26,13 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
+	<repositories>
+		<repository>
+		  <id>jcenter</id>
+		  <url>https://jcenter.bintray.com/</url>
+		</repository>
+	</repositories>
+
 	<licenses>
 		<license>
 			<name>GNU Affero General Public License (AGPL) version 3.0</name>
@@ -117,11 +124,17 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>dev.dokan</groupId>
+			<artifactId>dokan_java</artifactId>
+			<version>1.1.0-SNAPSHOT</version>
+	 	</dependency>
+
 		<!-- Test File System Backends -->
 		<dependency>
 			<groupId>org.cryptomator</groupId>
 			<artifactId>cryptofs</artifactId>
-			<version>1.6.2</version>
+			<version>1.7.0</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

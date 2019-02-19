@@ -1,14 +1,10 @@
 package org.cryptomator.frontend.dokany;
 
-import com.dokany.java.DokanyDriver;
-import com.dokany.java.DokanyFileSystem;
-import com.dokany.java.constants.FileSystemFeature;
-import com.dokany.java.constants.MountOption;
-import com.dokany.java.structure.DeviceOptions;
-import com.dokany.java.structure.EnumIntegerSet;
-import com.dokany.java.structure.VolumeInformation;
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Preconditions;
+import dev.dokan.dokan_java.DokanyFileSystem;
+import dev.dokan.dokan_java.FileSystemInformation;
+import dev.dokan.dokan_java.constants.dokany.MountOption;
+import dev.dokan.dokan_java.constants.microsoft.FileSystemFlag;
+import dev.dokan.dokan_java.structure.EnumIntegerSet;
 import org.cryptomator.frontend.dokany.locks.LockManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,12 +12,11 @@ import org.slf4j.LoggerFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
+/**
+ * TODO: fix this class
+ */
 public class MountFactory {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MountFactory.class);
@@ -32,23 +27,21 @@ public class MountFactory {
 			// MountOption.STD_ERR_OUTPUT, //
 			// MountOption.REMOVABLE_DRIVE, //
 			MountOption.CURRENT_SESSION);
-	private static final EnumIntegerSet<FileSystemFeature> FILE_SYSTEM_FEATURES = new EnumIntegerSet<>( //
-			FileSystemFeature.CASE_PRESERVED_NAMES, //
-			FileSystemFeature.CASE_SENSITIVE_SEARCH, //
+	private static final EnumIntegerSet<FileSystemFlag> FILE_SYSTEM_FEATURES = new EnumIntegerSet<>( //
+			FileSystemFlag.CASE_PRESERVED_NAMES, //
+			FileSystemFlag.CASE_SENSITIVE_SEARCH, //
 			// FileSystemFeature.PERSISTENT_ACLS, //
 			// FileSystemFeature.SUPPORTS_REMOTE_STORAGE, //
-			FileSystemFeature.UNICODE_ON_DISK);
+			FileSystemFlag.UNICODE_ON_DISK);
 	private static final String UNC_NAME = "";
 	private static final int TIMEOUT = 10000;
 	private static final int ALLOC_UNIT_SIZE = 4096;
 	private static final int SECTOR_SIZE = 4096;
 
-	private final ExecutorService executorService;
 
-	public MountFactory(ExecutorService executorService) {
-		this.executorService = executorService;
+	public MountFactory(ExecutorService executorService){
+
 	}
-
 	/**
 	 * Mounts a drive with the given drive letter containing contents of the given path.
 	 * This method blocks until the mount succeeds or times out.
@@ -62,26 +55,16 @@ public class MountFactory {
 	 */
 	public Mount mount(Path fileSystemRoot, Path mountPoint, String volumeName, String fileSystemName) throws MountFailedException {
 		Path absMountPoint = mountPoint.toAbsolutePath();
-		DeviceOptions deviceOptions = new DeviceOptions(absMountPoint.toString(), THREAD_COUNT, MOUNT_OPTIONS, UNC_NAME, TIMEOUT, ALLOC_UNIT_SIZE, SECTOR_SIZE);
-		VolumeInformation volumeInfo = new VolumeInformation(VolumeInformation.DEFAULT_MAX_COMPONENT_LENGTH, volumeName, 0x98765432, fileSystemName, FILE_SYSTEM_FEATURES);
+		FileSystemInformation fsInfo = new FileSystemInformation(FILE_SYSTEM_FEATURES);
 		CompletableFuture<Void> mountDidSucceed = new CompletableFuture<>();
 		LockManager lockManager = new LockManager();
-		DokanyFileSystem dokanyFs = new ReadWriteAdapter(fileSystemRoot, lockManager, volumeInfo, mountDidSucceed);
-		DokanyDriver dokanyDriver = new DokanyDriver(deviceOptions, dokanyFs);
+		DokanyFileSystem dokanyFs = new ReadWriteAdapter(fileSystemRoot, lockManager, mountDidSucceed, fsInfo);
 		LOG.debug("Mounting on {}: ...", absMountPoint);
-		Mount mount = new Mount(absMountPoint, dokanyDriver);
-		try {
-			mount.mount(executorService);
-			mountDidSucceed.get(MOUNT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-			LOG.debug("Mounted directory at {} successfully.", absMountPoint.toString());
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		} catch (ExecutionException e) {
-			LOG.error("Mounting failed.", e);
-			throw new MountFailedException(e.getCause());
-		} catch (TimeoutException e) {
-			LOG.warn("Mounting timed out.");
-		}
+		Mount mount = new Mount(absMountPoint, dokanyFs);
+		dokanyFs.mount(absMountPoint, volumeName, 30974, false, TIMEOUT, ALLOC_UNIT_SIZE, SECTOR_SIZE, null, THREAD_COUNT, MOUNT_OPTIONS);
+		//mount.mount(absMountPoint,);
+		//mountDidSucceed.get(MOUNT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+		LOG.debug("Mounted directory at {} successfully.", absMountPoint.toString());
 		return mount;
 	}
 

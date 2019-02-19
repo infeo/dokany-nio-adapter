@@ -1,13 +1,9 @@
 package org.cryptomator.frontend.dokany;
 
-import com.dokany.java.DokanyDriver;
-import com.dokany.java.DokanyFileSystem;
-import com.dokany.java.constants.FileSystemFeature;
-import com.dokany.java.constants.MountOption;
-import com.dokany.java.structure.DeviceOptions;
-import com.dokany.java.structure.EnumIntegerSet;
-import com.dokany.java.structure.FreeSpace;
-import com.dokany.java.structure.VolumeInformation;
+import dev.dokan.dokan_java.FileSystemInformation;
+import dev.dokan.dokan_java.constants.dokany.MountOption;
+import dev.dokan.dokan_java.constants.microsoft.FileSystemFlag;
+import dev.dokan.dokan_java.structure.EnumIntegerSet;
 import org.cryptomator.frontend.dokany.locks.LockManager;
 
 import java.nio.file.Path;
@@ -17,43 +13,32 @@ public class MirrorReadOnlyThread implements Runnable {
 
 	private static final long TIMEOUT = 1000;
 
+	private ReadWriteAdapter fs;
+	private EnumIntegerSet<MountOption> mountOptions;
 	private final Path mountPoint;
 	private final Path dirToMirror;
-	private final DeviceOptions devOps;
-	private final DokanyDriver dokany;
 
 	public MirrorReadOnlyThread(Path dirToMirror, Path mountPoint) {
 		System.out.println("Initializing Dokany MirrorFS with MountPoint " + mountPoint.toString() + " and directory to mirror " + dirToMirror.toString());
 		this.mountPoint = mountPoint;
 		this.dirToMirror = dirToMirror;
 
-		final short threadCount = 1;
-		EnumIntegerSet mountOptions = new EnumIntegerSet<>(MountOption.class);
-		mountOptions.add(MountOption.DEBUG_MODE, MountOption.STD_ERR_OUTPUT, MountOption.MOUNT_MANAGER);
-		String uncName = "";
-		int timeout = 10000;
-		int allocationUnitSize = 4096;
-		int sectorSize = 4096;
+		this.mountOptions = new EnumIntegerSet<>(MountOption.class);
+		this.mountOptions.add(MountOption.DEBUG_MODE, MountOption.STD_ERR_OUTPUT, MountOption.MOUNT_MANAGER, MountOption.WRITE_PROTECTION);
 
-		devOps = new DeviceOptions(mountPoint.toString(), threadCount, mountOptions, uncName, timeout, allocationUnitSize, sectorSize);
+		EnumIntegerSet<FileSystemFlag> fsFeatures = new EnumIntegerSet<>(FileSystemFlag.class);
+		fsFeatures.add(FileSystemFlag.CASE_PRESERVED_NAMES, FileSystemFlag.CASE_SENSITIVE_SEARCH,
+				FileSystemFlag.PERSISTENT_ACLS, FileSystemFlag.UNICODE_ON_DISK, FileSystemFlag.READ_ONLY_VOLUME);
+		FileSystemInformation fsInfo = new FileSystemInformation(fsFeatures);
 
-		EnumIntegerSet fsFeatures = new EnumIntegerSet<>(FileSystemFeature.class);
-		fsFeatures.add(FileSystemFeature.CASE_PRESERVED_NAMES, FileSystemFeature.CASE_SENSITIVE_SEARCH,
-				FileSystemFeature.PERSISTENT_ACLS, FileSystemFeature.SUPPORTS_REMOTE_STORAGE, FileSystemFeature.UNICODE_ON_DISK);
+		this.fs = new ReadWriteAdapter(dirToMirror, new LockManager(), new CompletableFuture<>(), fsInfo);
 
-		VolumeInformation volumeInfo = new VolumeInformation(VolumeInformation.DEFAULT_MAX_COMPONENT_LENGTH, "Mirror", 0x98765432, "Dokany MirrorFS", fsFeatures);
-
-		DokanyFileSystem myFs = new ReadWriteAdapter(dirToMirror, new LockManager(), volumeInfo, new CompletableFuture());
-		dokany = new DokanyDriver(devOps, myFs);
 	}
 
 	@Override
 	public void run() {
-		dokany.start();
 		System.out.println("Starting new dokany thread with mount point " + mountPoint.toString());
+		fs.mount(mountPoint,"DOKAN_ONE",30975,true,3000,4096,512,null,(short) 5, mountOptions);
 	}
 
-	public DokanyDriver getDokanyDriver() {
-		return dokany;
-	}
 }
