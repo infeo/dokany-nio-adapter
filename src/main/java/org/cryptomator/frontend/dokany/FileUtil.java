@@ -82,23 +82,6 @@ public class FileUtil {
 		}
 	}
 
-	/**
-	 * Method for preprocessing a string containing glob patterns for a {@link java.nio.file.PathMatcher}. These characters must be escaped to not cause a different matching expression.
-	 * This method escapes the characters defined in {@link FileUtil#globOperatorsToEscapeCodePoints}.
-	 *
-	 * @param rawPattern a string possibly containing unwanted glob operators
-	 * @return a String where some glob operators are escaped
-	 */
-	public static String addEscapeSequencesForPathPattern(String rawPattern) {
-		return rawPattern.codePoints().flatMap(c -> {
-			if (Character.isBmpCodePoint(c) && globOperatorsToEscapeCodePoints.contains(c)) {
-				return IntStream.of((int) '\\', c);
-			} else {
-				return IntStream.of(c);
-			}
-		}).collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
-	}
-
 	public static Set<OpenOption> buildOpenOptions(int accessMasks, EnumIntegerSet<FileAttribute> fileAttributes, EnumIntegerSet<CreateOption> createOptions, CreationDisposition creationDisposition, boolean append, boolean fileExists) {
 		Set<OpenOption> openOptions = Sets.newHashSet();
 		if (((accessMasks & WinNT.GENERIC_WRITE) | (accessMasks & WinNT.DELETE) | (accessMasks & WinNT.FILE_READ_DATA)) != 0) {

@@ -11,8 +11,12 @@ import dev.dokan.dokan_java.DokanyFileSystemStub;
 import dev.dokan.dokan_java.DokanyOperations;
 import dev.dokan.dokan_java.DokanyUtils;
 import dev.dokan.dokan_java.FileSystemInformation;
-import dev.dokan.dokan_java.constants.microsoft.*;
+import dev.dokan.dokan_java.constants.microsoft.CreateOption;
+import dev.dokan.dokan_java.constants.microsoft.CreateOptions;
+import dev.dokan.dokan_java.constants.microsoft.CreationDisposition;
+import dev.dokan.dokan_java.constants.microsoft.FileAccessMask;
 import dev.dokan.dokan_java.constants.microsoft.FileAttribute;
+import dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes;
 import dev.dokan.dokan_java.structure.ByHandleFileInformation;
 import dev.dokan.dokan_java.structure.DokanFileInfo;
 import dev.dokan.dokan_java.structure.EnumIntegerSet;
@@ -24,15 +28,52 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.file.*;
-import java.nio.file.attribute.*;
-import java.text.Normalizer;
-import java.util.*;
+import java.nio.file.AccessDeniedException;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.FileStore;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.LinkOption;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.DosFileAttributeView;
+import java.nio.file.attribute.DosFileAttributes;
+import java.nio.file.attribute.FileTime;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.*;
+import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_ACCESS_DENIED;
+import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_ALREADY_EXISTS;
+import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_BUSY;
+import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_CANNOT_MAKE;
+import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_CANT_ACCESS_FILE;
+import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_CURRENT_DIRECTORY;
+import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_DIR_NOT_EMPTY;
+import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_FILE_CORRUPT;
+import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_FILE_EXISTS;
+import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_FILE_NOT_FOUND;
+import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_FILE_READ_ONLY;
+import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_GEN_FAILURE;
+import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_INVALID_HANDLE;
+import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_IO_DEVICE;
+import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_OPEN_FAILED;
+import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_READ_FAULT;
+import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_SUCCESS;
+import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_WRITE_FAULT;
 
 /**
  * TODO: Beware of DokanyUtils.enumSetFromInt()!!!
@@ -62,7 +103,12 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 
 	@Override
 	public int zwCreateFile(WString rawPath, WinBase.SECURITY_ATTRIBUTES securityContext, int rawDesiredAccess, int rawFileAttributes, int rawShareAccess, int rawCreateDisposition, int rawCreateOptions, DokanFileInfo dokanFileInfo) {
-		Path path = getRootedPath(rawPath);
+		Path path;
+		try {
+			path = getRootedPath(rawPath);
+		} catch (InvalidPathException e) {
+			return Win32ErrorCodes.ERROR_BAD_PATHNAME;
+		}
 		CreationDisposition creationDisposition = CreationDisposition.fromInt(rawCreateDisposition);
 		LOG.trace("zwCreateFile() is called for {} with CreationDisposition {}.", path, creationDisposition.name());
 
@@ -136,17 +182,20 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 			LOG.trace("Attempt to open file {} as a directory.", path);
 			return ERROR_ACCESS_DENIED;
 		} else {
+			// we open the directory in some kinda way
 			try {
-				// we open the directory in some kinda way
 				setFileAttributes(path, rawFileAttributes);
 				dokanyFileInfo.Context = fac.openDir(path);
 				LOG.trace("({}) {} opened successful with handle {}.", dokanyFileInfo.Context, path, dokanyFileInfo.Context);
-				return ERROR_SUCCESS;
+			} catch (NoSuchFileException e) {
+				LOG.trace("{} not found.", path);
+				return Win32ErrorCodes.ERROR_PATH_NOT_FOUND;
 			} catch (IOException e) {
-				//TODO: maybe decouple this from the attribute setting. And find a better error code
-				LOG.debug("zwCreateFile(): IO error occurred during the opening of directory {}.", path);
-				return ERROR_GEN_FAILURE;
+				LOG.debug("zwCreateFile(): IO error occurred during opening handle to {}.", path);
+				LOG.debug("zwCreateFile(): ", e);
+				return Win32ErrorCodes.ERROR_OPEN_FAILED;
 			}
+			return Win32ErrorCodes.ERROR_SUCCESS;
 		}
 	}
 
@@ -459,61 +508,49 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 
 	@Override
 	public int findFiles(WString rawPath, DokanyOperations.FillWin32FindData rawFillFindData, DokanFileInfo dokanyFileInfo) {
-		LOG.trace("({}) findFiles() is called for {}.", dokanyFileInfo.Context, getRootedPath(rawPath));
-		return findFilesWithPattern(rawPath, new WString("*"), rawFillFindData, dokanyFileInfo);
-	}
-
-	@Override
-	public int findFilesWithPattern(WString fileName, WString searchPattern, DokanyOperations.FillWin32FindData rawFillFindData, DokanFileInfo dokanyFileInfo) {
-		Path path = getRootedPath(fileName);
+		Path path = getRootedPath(rawPath);
 		assert path.isAbsolute();
-		LOG.trace("({}) findFilesWithPattern() is called for {} with search pattern {}.", dokanyFileInfo.Context, path, searchPattern.toString());
+		LOG.trace("({}) findFiles() is called for {}.", dokanyFileInfo.Context, path);
 		if (dokanyFileInfo.Context == 0) {
 			LOG.debug("findFilesWithPattern(): Invalid handle to {}.", path);
-			return ERROR_INVALID_HANDLE;
+			return Win32ErrorCodes.ERROR_INVALID_HANDLE;
 		} else {
-			final DirectoryStream.Filter<Path> filter;
-			if (searchPattern == null || searchPattern.toString().equals("*")) {
-				filter = (Path p) -> true;  // match all
-			} else {
-				// we want to filter by glob
-				// since the Java API does NOT specify on which string representation a pathMatcher compares a path to a given expression, we assume NFC
-				String nfcSearchPattern = Normalizer.normalize(FileUtil.addEscapeSequencesForPathPattern(searchPattern.toString()), Normalizer.Form.NFC);
-				PathMatcher matcher = path.getFileSystem().getPathMatcher("glob:" + nfcSearchPattern);
-				filter = (Path p) -> matcher.matches(p.getFileName());
-			}
-			try (DirectoryStream<Path> ds = Files.newDirectoryStream(path, filter)) {
+			try (PathLock pathLock = lockManager.createPathLock(path.toString()).forReading();
+				 DataLock dataLock = pathLock.lockDataForReading();
+				 DirectoryStream<Path> ds = Files.newDirectoryStream(path)) {
 				Spliterator<Path> spliterator = Spliterators.spliteratorUnknownSize(ds.iterator(), Spliterator.DISTINCT);
 				Stream<Path> stream = StreamSupport.stream(spliterator, false);
 				stream.map(p -> {
 					assert p.isAbsolute();
-					try (PathLock pathLock = lockManager.createPathLock(path.toString()).forReading();
-						 DataLock dataLock = pathLock.lockDataForReading()) {
-						DosFileAttributes attr = Files.readAttributes(p, DosFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
-						if (attr.isDirectory() || attr.isRegularFile()) {
-							return getFileInformation(p).toWin32FindData();
-						} else {
-							LOG.warn("({}) findFilesWithPattern(): Found ressource that is neither directory nor file: {}. Will be ignored in file listing.", dokanyFileInfo.Context, p);
-							return null;
-						}
+					try {
+						//DosFileAttributes attr = Files.readAttributes(p, DosFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+						//if (attr.isDirectory() || attr.isRegularFile()) {
+						return getFileInformation(p).toWin32FindData();
+						//} else {
+						//LOG.warn("({}) findFilesWithPattern(): Found node that is neither directory nor file: {}. Will be ignored in file listing.", dokanyFileInfo.Context, p);
+						//return null;
+						//}
 					} catch (IOException e) {
 						LOG.debug("({}) findFilesWithPattern(): IO error accessing {}. Will be ignored in file listing.", dokanyFileInfo.Context, p);
 						return null;
 					}
-				}).filter(Objects::nonNull)
+				})
+						.filter(Objects::nonNull)
 						.forEach(file -> {
 							assert file != null;
-								LOG.trace("({}) findFilesWithPattern(): found file {}", dokanyFileInfo.Context, file.getFileName());
-								rawFillFindData.fillWin32FindData(file, dokanyFileInfo);
+							LOG.trace("({}) findFilesWithPattern(): found file {}", dokanyFileInfo.Context, file.getFileName());
+							rawFillFindData.fillWin32FindData(file, dokanyFileInfo);
 						});
 				LOG.trace("({}) Successful searched content in {}.", dokanyFileInfo.Context, path);
-				return ERROR_SUCCESS;
+				return Win32ErrorCodes.ERROR_SUCCESS;
 			} catch (IOException e) {
-				LOG.error("({}) findFilesWithPattern(): Unable to list content of directory {}. Error is {}", dokanyFileInfo.Context, path, e);
-				return ERROR_READ_FAULT;
+				LOG.error("({}) findFilesWithPattern(): Unable to list content of directory {}.", dokanyFileInfo.Context, path);
+				LOG.error("(" + dokanyFileInfo.Context + ") findFilesWithPattern(): Message and Stacktrace.", e);
+				return Win32ErrorCodes.ERROR_READ_FAULT;
 			}
 		}
 	}
+
 
 	@Override
 	public int setFileAttributes(WString rawPath, int rawAttributes, DokanFileInfo dokanyFileInfo) {
