@@ -68,6 +68,7 @@ import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_FIL
 import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_FILE_NOT_FOUND;
 import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_FILE_READ_ONLY;
 import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_GEN_FAILURE;
+import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_INVALID_DATA;
 import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_INVALID_HANDLE;
 import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_IO_DEVICE;
 import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_OPEN_FAILED;
@@ -112,9 +113,9 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 		CreationDisposition creationDisposition = CreationDisposition.fromInt(rawCreateDisposition);
 		LOG.trace("zwCreateFile() is called for {} with CreationDisposition {}.", path, creationDisposition.name());
 
-		Optional<BasicFileAttributes> attr;
+		Optional<DosFileAttributes> attr;
 		try {
-			attr = Optional.of(Files.readAttributes(path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS));
+			attr = Optional.of(Files.readAttributes(path, DosFileAttributes.class, LinkOption.NOFOLLOW_LINKS));
 		} catch (NoSuchFileException e) {
 			attr = Optional.empty();
 		} catch (IOException e) {
@@ -128,8 +129,8 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 				//TODO: set the share access like in the dokany mirror example
 			} else {
 				LOG.debug("Ressource {} is a Directory and cannot be opened as a file.", path);
-				//TODO: maybe other error code? e.g. ACCESS DENIED
-				return ERROR_ACCESS_DENIED;
+				//TODO: which win32 error code should be returned? NTSTATUS is FILE_IS_DIRECTORY, here we use a cheat in the dokan-java project!
+				return ERROR_INVALID_DATA;
 			}
 		} else if (attr.isPresent() && !attr.get().isRegularFile()) {
 			return ERROR_CANT_ACCESS_FILE; // or ERROR_OPEN_FAILED or ERROR_CALL_NOT_IMPLEMENTED?
@@ -144,7 +145,7 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 				EnumIntegerSet<FileAccessMask> fileAccessMasks = EnumIntegerSet.enumSetFromInt(rawDesiredAccess, FileAccessMask.values());
 				EnumIntegerSet<FileAttribute> fileAttributes = EnumIntegerSet.enumSetFromInt(rawFileAttributes, FileAttribute.values());
 				Set<OpenOption> openOptions = FileUtil.buildOpenOptions(rawDesiredAccess, fileAttributes, createOptions, creationDisposition, dokanFileInfo.writeToEndOfFile(), attr.isPresent());
-				return createFile(path, creationDisposition, openOptions, rawFileAttributes, dokanFileInfo);
+				return createFile(path, attr, creationDisposition, openOptions, rawFileAttributes, dokanFileInfo);
 			}
 		}
 	}
@@ -199,25 +200,19 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 		}
 	}
 
-	private int createFile(Path path, CreationDisposition creationDisposition, Set<OpenOption> openOptions, int rawFileAttributes, DokanFileInfo dokanyFileInfo) {
+	private int createFile(Path path, Optional<DosFileAttributes> attr, CreationDisposition creationDisposition, Set<OpenOption> openOptions, int rawFileAttributes, DokanFileInfo dokanyFileInfo) {
 		LOG.trace("Try to open {} as File.", path);
 		final int mask = creationDisposition.getMask();
-		DosFileAttributes attr = null;
-		try {
-			attr = Files.readAttributes(path, DosFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
-		} catch (IOException e) {
-			LOG.trace("Could not read file attributes.");
-		}
 		//we want to create a file
 		//system or hidden file?
-		if (attr != null
+		if (attr.isPresent()
 				&&
 				(mask == CreationDisposition.TRUNCATE_EXISTING.getMask() || mask == CreationDisposition.CREATE_ALWAYS.getMask())
 				&&
 				(
-						((rawFileAttributes & FileAttribute.HIDDEN.getMask()) == 0 && attr.isHidden())
+						((rawFileAttributes & FileAttribute.HIDDEN.getMask()) == 0 && attr.get().isHidden())
 								||
-								((rawFileAttributes & FileAttribute.SYSTEM.getMask()) == 0 && attr.isSystem())
+								((rawFileAttributes & FileAttribute.SYSTEM.getMask()) == 0 && attr.get().isSystem())
 				)
 		) {
 			//cannot overwrite hidden or system file
@@ -225,7 +220,7 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 			return ERROR_ACCESS_DENIED;
 		}
 		//read-only?
-		else if ((attr != null && attr.isReadOnly() || ((rawFileAttributes & FileAttribute.READONLY.getMask()) != 0))
+		else if ((attr.isPresent()  && attr.get().isReadOnly() || ((rawFileAttributes & FileAttribute.READONLY.getMask()) != 0))
 				&& dokanyFileInfo.DeleteOnClose != 0
 		) {
 			//cannot overwrite file
@@ -234,13 +229,13 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 		} else {
 			try {
 				dokanyFileInfo.Context = fac.openFile(path, openOptions);
-				if (attr == null || mask == CreationDisposition.TRUNCATE_EXISTING.getMask() || mask == CreationDisposition.CREATE_ALWAYS.getMask()) {
+				if (!attr.isPresent()  || mask == CreationDisposition.TRUNCATE_EXISTING.getMask() || mask == CreationDisposition.CREATE_ALWAYS.getMask()) {
 					//according to zwCreateFile() documentation FileAttributes are ignored if no file is created or overwritten
 					setFileAttributes(path, rawFileAttributes);
 				}
 				LOG.trace("({}) {} opened successful with handle {}.", dokanyFileInfo.Context, path, dokanyFileInfo.Context);
 				//required by contract
-				if (attr != null && (mask == CreationDisposition.OPEN_ALWAYS.getMask() || mask == CreationDisposition.CREATE_ALWAYS.getMask())) {
+				if (attr.isPresent()  && (mask == CreationDisposition.OPEN_ALWAYS.getMask() || mask == CreationDisposition.CREATE_ALWAYS.getMask())) {
 					return ERROR_ALREADY_EXISTS;
 				} else {
 					return ERROR_SUCCESS;
@@ -256,7 +251,7 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 				LOG.trace("Cause:", e);
 				return ERROR_ACCESS_DENIED;
 			} catch (IOException e) {
-				if (attr != null) {
+				if (attr.isPresent()) {
 					LOG.debug("zwCreateFile(): IO error occurred during opening handle to {}.", path);
 					LOG.debug("zwCreateFile(): ", e);
 					return ERROR_OPEN_FAILED;
