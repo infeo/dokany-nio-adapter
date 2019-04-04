@@ -507,7 +507,7 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 		assert path.isAbsolute();
 		LOG.trace("({}) findFiles() is called for {}.", dokanyFileInfo.Context, path);
 		if (dokanyFileInfo.Context == 0) {
-			LOG.debug("findFilesWithPattern(): Invalid handle to {}.", path);
+			LOG.debug("findFiles(): Invalid handle to {}.", path);
 			return Win32ErrorCodes.ERROR_INVALID_HANDLE;
 		} else {
 			try (PathLock pathLock = lockManager.createPathLock(path.toString()).forReading();
@@ -526,21 +526,21 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 						//return null;
 						//}
 					} catch (IOException e) {
-						LOG.debug("({}) findFilesWithPattern(): IO error accessing {}. Will be ignored in file listing.", dokanyFileInfo.Context, p);
+						LOG.debug("({}) findFiles(): IO error accessing {}. Will be ignored in file listing.", dokanyFileInfo.Context, p);
 						return null;
 					}
 				})
 						.filter(Objects::nonNull)
 						.forEach(file -> {
 							assert file != null;
-							LOG.trace("({}) findFilesWithPattern(): found file {}", dokanyFileInfo.Context, file.getFileName());
+							LOG.trace("({}) findFiles(): found file {}", dokanyFileInfo.Context, file.getFileName());
 							rawFillFindData.fillWin32FindData(file, dokanyFileInfo);
 						});
 				LOG.trace("({}) Successful searched content in {}.", dokanyFileInfo.Context, path);
 				return Win32ErrorCodes.ERROR_SUCCESS;
 			} catch (IOException e) {
-				LOG.error("({}) findFilesWithPattern(): Unable to list content of directory {}.", dokanyFileInfo.Context, path);
-				LOG.error("(" + dokanyFileInfo.Context + ") findFilesWithPattern(): Message and Stacktrace.", e);
+				LOG.error("({}) findFiles(): Unable to list content of directory {}.", dokanyFileInfo.Context, path);
+				LOG.error("(" + dokanyFileInfo.Context + ") findFiles(): Message and Stacktrace.", e);
 				return Win32ErrorCodes.ERROR_READ_FAULT;
 			}
 		}
