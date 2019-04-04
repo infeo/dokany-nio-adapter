@@ -129,7 +129,7 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 				//TODO: set the share access like in the dokany mirror example
 			} else {
 				LOG.debug("Ressource {} is a Directory and cannot be opened as a file.", path);
-				//TODO: which win32 error code should be returned? NTSTATUS is FILE_IS_DIRECTORY, here we use a cheat in the dokan-java project!
+				//TODO: which win32 error code should be returned? NTSTATUS is FILE_IS_NOT_DIRECTORY, here we use a cheat in the dokan-java project!
 				return ERROR_INVALID_DATA;
 			}
 		} else if (attr.isPresent() && !attr.get().isRegularFile()) {
