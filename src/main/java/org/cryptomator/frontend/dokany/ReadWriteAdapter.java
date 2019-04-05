@@ -39,7 +39,6 @@ import java.nio.file.LinkOption;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.nio.file.PathMatcher;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributeView;
@@ -47,7 +46,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.DosFileAttributeView;
 import java.nio.file.attribute.DosFileAttributes;
 import java.nio.file.attribute.FileTime;
-import java.text.Normalizer;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
@@ -529,61 +527,7 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 	@Override
 	@Deprecated
 	public int findFilesWithPattern(WString fileName, WString searchPattern, DokanyOperations.FillWin32FindData rawFillFindData, DokanyFileInfo dokanyFileInfo) {
-		Path path = getRootedPath(fileName);
-		assert path.isAbsolute();
-		LOG.trace("({}) findFilesWithPattern() is called for {} with search pattern {}.", dokanyFileInfo.Context, path, searchPattern.toString());
-		if (dokanyFileInfo.Context == 0) {
-			LOG.debug("findFilesWithPattern(): Invalid handle to {}.", path);
-			return Win32ErrorCode.ERROR_INVALID_HANDLE.getMask();
-		} else {
-			final DirectoryStream.Filter<Path> filter;
-			if (searchPattern == null || searchPattern.toString().equals("*")) {
-				filter = (Path p) -> true;  // match all
-			} else {
-				// we want to filter by glob
-				// since the Java API does NOT specify on which string representation a pathMatcher compares a path to a given expression, we assume NFC
-				String nfcSearchPattern = Normalizer.normalize(FileUtil.convertToGlobPattern(searchPattern.toString()), Normalizer.Form.NFC);
-				PathMatcher matcher = path.getFileSystem().getPathMatcher("glob:" + nfcSearchPattern);
-				filter = (Path p) -> matcher.matches(p.getFileName());
-			}
-			try (DirectoryStream<Path> ds = Files.newDirectoryStream(path, filter)) {
-				Spliterator<Path> spliterator = Spliterators.spliteratorUnknownSize(ds.iterator(), Spliterator.DISTINCT);
-				Stream<Path> stream = StreamSupport.stream(spliterator, false);
-				stream.map(p -> {
-					assert p.isAbsolute();
-					try (PathLock pathLock = lockManager.createPathLock(path.toString()).forReading();
-						 DataLock dataLock = pathLock.lockDataForReading()) {
-						DosFileAttributes attr = Files.readAttributes(p, DosFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
-						if (attr.isDirectory() || attr.isRegularFile()) {
-							return toFullFileInfo(p, attr).toWin32FindData();
-						} else {
-							LOG.warn("({}) findFilesWithPattern(): Found node that is neither directory nor file: {}. Will be ignored in file listing.", dokanyFileInfo.Context, p);
-							return null;
-						}
-					} catch (IOException e) {
-						LOG.debug("({}) findFilesWithPattern(): IO error accessing {}. Will be ignored in file listing.", dokanyFileInfo.Context, p);
-						return null;
-					}
-				}).filter(Objects::nonNull)
-						.forEach(file -> {
-							assert file != null;
-							try {
-								LOG.trace("({}) findFilesWithPattern(): found file {}", dokanyFileInfo.Context, file.getFileName());
-								rawFillFindData.fillWin32FindData(file, dokanyFileInfo);
-							} catch (Error e) {
-								//TODO: invalid memory access can happen, which is an Java.Lang.Error
-								LOG.error("({}) Error filling Win32FindData with file {}. Occurred error is {}", dokanyFileInfo.Context, file.getFileName());
-								LOG.error("(" + dokanyFileInfo.Context + ") findFilesWithPattern(): Stacktrace.", e);
-							}
-						});
-				LOG.trace("({}) Successful searched content in {}.", dokanyFileInfo.Context, path);
-				return Win32ErrorCode.ERROR_SUCCESS.getMask();
-			} catch (IOException e) {
-				LOG.error("({}) findFilesWithPattern(): Unable to list content of directory {}.", dokanyFileInfo.Context, path);
-				LOG.error("(" + dokanyFileInfo.Context + ") findFilesWithPattern(): Message and Stacktrace.", e);
-				return Win32ErrorCode.ERROR_READ_FAULT.getMask();
-			}
-		}
+		return NtStatus.NOT_IMPLEMENTED.getMask();
 	}
 
 	@Override
