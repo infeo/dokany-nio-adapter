@@ -503,7 +503,7 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 				.filter(Objects::nonNull)
 				.forEach(file -> {
 					 assert file != null;
-					 LOG.trace("({}) findFiles(): found file {}", dokanyFileInfo.Context, file.getFileName());
+					 LOG.trace("({}) findFiles(): found file {} with attribute value {}.", dokanyFileInfo.Context, file.getFileName(), file.dwFileAttributes);
 					 rawFillFindData.fillWin32FindData(file, dokanyFileInfo);
 				});
 				LOG.trace("({}) Successful searched content in {}.", dokanyFileInfo.Context, path);
