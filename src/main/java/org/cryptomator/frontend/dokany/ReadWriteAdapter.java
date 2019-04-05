@@ -8,11 +8,11 @@ import com.dokany.java.constants.CreateOptions;
 import com.dokany.java.constants.CreationDisposition;
 import com.dokany.java.constants.FileAccessMask;
 import com.dokany.java.constants.FileAttribute;
+import com.dokany.java.constants.NtStatus;
 import com.dokany.java.constants.Win32ErrorCode;
-import com.dokany.java.structure.ByHandleFileInfo;
+import com.dokany.java.structure.ByHandleFileInformation;
 import com.dokany.java.structure.DokanyFileInfo;
 import com.dokany.java.structure.EnumIntegerSet;
-import com.dokany.java.structure.FullFileInfo;
 import com.dokany.java.structure.VolumeInformation;
 import com.google.common.base.CharMatcher;
 import com.sun.jna.Pointer;
@@ -439,7 +439,7 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 	 * @return
 	 */
 	@Override
-	public int getFileInformation(WString fileName, ByHandleFileInfo handleFileInfo, DokanyFileInfo dokanyFileInfo) {
+	public int getFileInformation(WString fileName, ByHandleFileInformation handleFileInfo, DokanyFileInfo dokanyFileInfo) {
 		Path path = getRootedPath(fileName);
 		LOG.trace("({}) getFileInformation() is called for {}.", dokanyFileInfo.Context, path);
 		if (dokanyFileInfo.Context == 0) {
@@ -449,7 +449,7 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 			try (PathLock pathLock = lockManager.createPathLock(path.toString()).forReading();
 				 DataLock dataLock = pathLock.lockDataForReading()) {
 				DosFileAttributes attr = Files.readAttributes(path, DosFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
-				FullFileInfo data = toFullFileInfo(path, attr);
+				ByHandleFileInformation data = toByHandleFileInformation(path, attr);
 				data.copyTo(handleFileInfo);
 				LOG.trace("({}) File Information successful read from {}.", dokanyFileInfo.Context, path);
 				return Win32ErrorCode.ERROR_SUCCESS.getMask();
@@ -464,20 +464,13 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 		}
 	}
 
-	private FullFileInfo toFullFileInfo(Path path, DosFileAttributes attr) {
+	private ByHandleFileInformation toByHandleFileInformation(Path path, DosFileAttributes attr){
 		long index = 0;
 		if (attr.fileKey() != null) {
 			index = (long) attr.fileKey(); // known to be a long for DosFileAttributes
 		}
 		Path filename = path.getFileName();
-		FullFileInfo data = new FullFileInfo(filename != null ? filename.toString() : "", //case distinction necessary, because the root has no name!
-				index,
-				FileUtil.dosAttributesToEnumIntegerSet(attr),
-				0, //currently just a stub
-				DokanyUtils.getTime(attr.creationTime().toMillis()),
-				DokanyUtils.getTime(attr.lastAccessTime().toMillis()),
-				DokanyUtils.getTime(attr.lastModifiedTime().toMillis()));
-		data.setSize(attr.size());
+		ByHandleFileInformation data = new ByHandleFileInformation(path, FileUtil.dosAttributesToEnumIntegerSet(attr),attr.creationTime(), attr.lastAccessTime(), attr.lastModifiedTime(),0,attr.size(),index);
 		return data;
 	}
 
@@ -500,7 +493,7 @@ public class ReadWriteAdapter implements DokanyFileSystem {
 					try {
 						DosFileAttributes attr = Files.readAttributes(p, DosFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
 						if (attr.isDirectory() || attr.isRegularFile()) {
-							return toFullFileInfo(p, attr).toWin32FindData();
+							return toByHandleFileInformation(p, attr).toWin32FindData();
 						} else {
 							LOG.warn("({}) findFiles(): Found node that is neither directory nor file: {}. Will be ignored in file listing.", dokanyFileInfo.Context, p);
 							return null;

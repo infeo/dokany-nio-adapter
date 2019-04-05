@@ -224,6 +224,6 @@ public class ByHandleFileInformation extends Structure implements Structure.ByRe
 
     @Override
     public String toString() {
-        return "ByHandleFileInfo(filePath=" + this.filePath + ", fileIndex=" + this.fileIndex + ", fileSize=" + this.fileSize + ", nFileIndexHigh=" + this.nFileIndexHigh + ", nFileIndexLow=" + this.nFileIndexLow + ", dwFileAttributes=" + this.dwFileAttributes + ", ftCreationTime=" + this.ftCreationTime + ", ftLastAccessTime=" + this.ftLastAccessTime + ", ftLastWriteTime=" + this.ftLastWriteTime + ", nFileSizeHigh=" + this.nFileSizeHigh + ", nFileSizeLow=" + this.nFileSizeLow + ", dwVolumeSerialNumber=" + this.dwVolumeSerialNumber + ", nNumberOfLinks=" + this.nNumberOfLinks + ")";
+        return "ByHandleFileInformation(filePath=" + this.filePath + ", fileIndex=" + this.fileIndex + ", fileSize=" + this.fileSize + ", nFileIndexHigh=" + this.nFileIndexHigh + ", nFileIndexLow=" + this.nFileIndexLow + ", dwFileAttributes=" + this.dwFileAttributes + ", ftCreationTime=" + this.ftCreationTime + ", ftLastAccessTime=" + this.ftLastAccessTime + ", ftLastWriteTime=" + this.ftLastWriteTime + ", nFileSizeHigh=" + this.nFileSizeHigh + ", nFileSizeLow=" + this.nFileSizeLow + ", dwVolumeSerialNumber=" + this.dwVolumeSerialNumber + ", nNumberOfLinks=" + this.nNumberOfLinks + ")";
     }
 }

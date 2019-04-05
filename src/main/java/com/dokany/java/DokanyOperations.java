@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.dokany.java.constants.FileSystemFeature;
 import com.dokany.java.constants.NtStatus;
-import com.dokany.java.structure.ByHandleFileInfo;
+import com.dokany.java.structure.ByHandleFileInformation;
 import com.dokany.java.structure.DokanyFileInfo;
 import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
@@ -252,7 +252,7 @@ public class DokanyOperations extends Structure {
 		 */
 		long callback(
 		          WString fileName,
-		          ByHandleFileInfo handleFileInfo,
+		          ByHandleFileInformation handleFileInfo,
 		          DokanyFileInfo dokanyFileInfo);
 	}
 

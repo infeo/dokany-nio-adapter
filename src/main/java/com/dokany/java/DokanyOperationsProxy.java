@@ -1,7 +1,7 @@
 package com.dokany.java;
 
 
-import com.dokany.java.structure.ByHandleFileInfo;
+import com.dokany.java.structure.ByHandleFileInformation;
 import com.dokany.java.structure.DokanyFileInfo;
 import com.sun.jna.Pointer;
 import com.sun.jna.WString;
@@ -92,7 +92,7 @@ final class DokanyOperationsProxy extends com.dokany.java.DokanyOperations {
 	class GetFileInformationProxy implements GetFileInformation {
 
 		@Override
-		public long callback(WString fileName, ByHandleFileInfo handleFileInfo, DokanyFileInfo dokanyFileInfo) {
+		public long callback(WString fileName, ByHandleFileInformation handleFileInfo, DokanyFileInfo dokanyFileInfo) {
 			return NativeMethods.DokanNtStatusFromWin32(fileSystem.getFileInformation(fileName, handleFileInfo, dokanyFileInfo));
 		}
 	}

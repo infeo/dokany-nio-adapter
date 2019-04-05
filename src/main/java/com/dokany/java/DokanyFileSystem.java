@@ -2,7 +2,7 @@ package com.dokany.java;
 
 import com.dokany.java.constants.FileSystemFeature;
 import com.dokany.java.constants.NtStatus;
-import com.dokany.java.structure.ByHandleFileInfo;
+import com.dokany.java.structure.ByHandleFileInformation;
 import com.dokany.java.structure.DokanyFileInfo;
 import com.sun.jna.Pointer;
 import com.sun.jna.WString;
@@ -140,7 +140,7 @@ public interface DokanyFileSystem {
 	 */
 	int getFileInformation(
 			WString fileName,
-			ByHandleFileInfo handleFileInfo,
+			ByHandleFileInformation handleFileInfo,
 			DokanyFileInfo dokanyFileInfo);
 
 	/**
