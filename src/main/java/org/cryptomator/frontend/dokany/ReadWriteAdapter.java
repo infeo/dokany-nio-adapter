@@ -361,7 +361,7 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 		} finally {
 			if (reopened) {
 				try {
-					handle.close();
+					fac.close(handleID);
 					LOG.trace("({}) readFile(): Successful closed REOPENED file {}.", handleID, path);
 				} catch (IOException e) {
 					LOG.debug("({}) readFile(): IO error while closing REOPENED file {}. File will be closed on exit.", handleID, path);
@@ -409,7 +409,7 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 		} finally {
 			if (reopened) {
 				try {
-					handle.close();
+					fac.close(handleID);
 					LOG.trace("({}) writeFile(): Successful closed REOPENED file {}.", handleID, path);
 				} catch (IOException e) {
 					LOG.debug("({}) writeFile(): IO error while closing REOPENED file {}. File will be closed on exit.", handleID, path);
