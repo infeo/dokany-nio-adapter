@@ -84,7 +84,7 @@ public class FileUtil {
 
 	public static Set<OpenOption> buildOpenOptions(int accessMasks, EnumIntegerSet<FileAttribute> fileAttributes, EnumIntegerSet<CreateOption> createOptions, CreationDisposition creationDisposition, boolean append, boolean fileExists) {
 		Set<OpenOption> openOptions = Sets.newHashSet();
-		if (((accessMasks & WinNT.GENERIC_WRITE) | (accessMasks & WinNT.DELETE) | (accessMasks & WinNT.FILE_READ_DATA)) != 0) {
+		if (((accessMasks & WinNT.GENERIC_WRITE) | (accessMasks & WinNT.FILE_READ_DATA)) != 0) {
 			openOptions.add(StandardOpenOption.WRITE);
 		}
 		if (((accessMasks & WinNT.GENERIC_READ) | (accessMasks & WinNT.FILE_READ_DATA)) != 0) {
@@ -122,7 +122,7 @@ public class FileUtil {
 				}
 				break;
 			case OPEN_EXISTING:
-				//SUCCESS
+				openOptions.add(StandardOpenOption.READ);
 				break;
 			case OPEN_ALWAYS:
 				openOptions.add(StandardOpenOption.CREATE);
