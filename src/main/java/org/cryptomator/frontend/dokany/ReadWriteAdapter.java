@@ -104,22 +104,19 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 	}
 
 	@Override
-	public int zwCreateFile(WString rawPath, WinBase.SECURITY_ATTRIBUTES securityContext, int rawDesiredAccess, int rawFileAttributes, int rawShareAccess, int rawCreateDisposition, int rawCreateOptions, DokanFileInfo dokanFileInfo) {
+	public int zwCreateFile(WString rawPath, WinBase.SECURITY_ATTRIBUTES securityContext, int rawDesiredAccessOnlyGeneric, int rawFileAttributesAndFlags, int rawShareAccess, int rawCreationDisposition, int rawCreateOptions, DokanFileInfo dokanFileInfo) {
 		Path path;
 		try {
 			path = getRootedPath(rawPath);
 		} catch (InvalidPathException e) {
 			return Win32ErrorCodes.ERROR_BAD_PATHNAME;
 		}
-		//Currently works only because I changed dokan-java (otherwise i'd already have the user space attributes)
-		//int rawCreationDispostion = FileUtil.convertCreateDispositionToCreationDispostion(rawCreateDisposition);
-		//int rawDesiredAccessWin32 = FileUtil.mapFileGenericAccessToGenericAccess(rawDesiredAccess);
 
 		EnumIntegerSet<CreateOption> createOptions = EnumIntegerSet.enumSetFromInt(rawCreateOptions, CreateOption.values());
-		EnumIntegerSet<AccessMask> accessMasks = EnumIntegerSet.enumSetFromInt(rawDesiredAccess, AccessMask.values());
-		EnumIntegerSet<FileAccessMask> fileAccessMasks = EnumIntegerSet.enumSetFromInt(rawDesiredAccess, FileAccessMask.values());
-		EnumIntegerSet<FileAttribute> fileAttributes = EnumIntegerSet.enumSetFromInt(rawFileAttributes, FileAttribute.values());
-		CreationDisposition creationDisposition = CreationDisposition.fromInt(rawCreateDisposition);
+		EnumIntegerSet<AccessMask> accessMasks = EnumIntegerSet.enumSetFromInt(rawDesiredAccessOnlyGeneric, AccessMask.values());
+		EnumIntegerSet<FileAccessMask> fileAccessMasks = EnumIntegerSet.enumSetFromInt(rawDesiredAccessOnlyGeneric, FileAccessMask.values());
+		EnumIntegerSet<FileAttribute> fileAttributes = EnumIntegerSet.enumSetFromInt(rawFileAttributesAndFlags, FileAttribute.values());
+		CreationDisposition creationDisposition = CreationDisposition.fromInt(rawCreationDisposition);
 		LOG.trace("zwCreateFile() is called for {} with the following parameters:\n\tCreateDisposition -- {}\n\tcreateOptions -- {}\n\taccessMasks -- {}\n\tfileAccessMasks -- {}\n\tfileAttributes -- {}.", path, creationDisposition, createOptions, accessMasks, fileAttributes, fileAttributes);
 		Optional<DosFileAttributes> attr;
 		try {
@@ -147,10 +144,10 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 		try (PathLock pathLock = lockManager.createPathLock(path.toString()).forWriting();
 			 DataLock dataLock = pathLock.lockDataForWriting()) {
 			if (dokanFileInfo.isDirectory()) {
-				return createDirectory(path, creationDisposition, rawFileAttributes, dokanFileInfo);
+				return createDirectory(path, creationDisposition, rawFileAttributesAndFlags, dokanFileInfo);
 			} else {
-				Set<OpenOption> openOptions = FileUtil.buildOpenOptions(rawDesiredAccess, fileAttributes, createOptions, creationDisposition, dokanFileInfo.writeToEndOfFile(), attr.isPresent());
-				return createFile(path, attr, creationDisposition, openOptions, rawFileAttributes, dokanFileInfo);
+				Set<OpenOption> openOptions = FileUtil.buildOpenOptions(rawDesiredAccessOnlyGeneric, fileAttributes, createOptions, creationDisposition, dokanFileInfo.writeToEndOfFile(), attr.isPresent());
+				return createFile(path, attr, creationDisposition, openOptions, rawFileAttributesAndFlags, dokanFileInfo);
 			}
 		}
 	}
