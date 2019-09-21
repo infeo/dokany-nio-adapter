@@ -30,7 +30,7 @@ public class ReadWriteCryptoFsTest {
 		CryptoFileSystem cfs = CryptoFileSystemProvider.newFileSystem(pathToVault, props);
 		Path path = cfs.getPath("/");
 		Path mountPoint = Paths.get("T:\\");
-		MountFactory mountFactory = new MountFactory(Executors.newCachedThreadPool());
+		MountFactory mountFactory = new MountFactory();
 		try (Mount mount = mountFactory.mount(path, mountPoint, "1&1 Tresor", "NTFS")) {
 			mount.reveal();
 			System.in.read();

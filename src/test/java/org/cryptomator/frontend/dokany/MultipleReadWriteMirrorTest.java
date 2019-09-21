@@ -45,7 +45,7 @@ public class MultipleReadWriteMirrorTest {
 		try {
 			for (int volumeIndex = 0; volumeIndex < numOfVolumes; volumeIndex++) {
 				Path path = root.resolve(Integer.toString(volumeIndex));
-				MountFactory mountFactory = new MountFactory(Executors.newCachedThreadPool());
+				MountFactory mountFactory = new MountFactory();
 				mounts[volumeIndex] = mountFactory.mount(path, Paths.get(itDriveLetters.next() + ":\\"), "Test" + volumeIndex, "Mirror FS");
 			}
 			System.in.read();

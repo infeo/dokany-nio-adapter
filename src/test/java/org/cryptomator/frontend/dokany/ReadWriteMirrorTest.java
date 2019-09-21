@@ -24,7 +24,7 @@ public class ReadWriteMirrorTest {
 
 		Path path = Paths.get("M:\\test\\Wallpaper");
 		Path mountPoint = Paths.get("T:\\");
-		MountFactory mountFactory = new MountFactory(Executors.newCachedThreadPool());
+		MountFactory mountFactory = new MountFactory();
 		try (Mount mount = mountFactory.mount(path, mountPoint, "Test", "Cryptomator FS")) {
 			mount.reveal();
 			System.in.read();

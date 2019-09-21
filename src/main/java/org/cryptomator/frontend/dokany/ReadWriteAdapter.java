@@ -11,6 +11,7 @@ import dev.dokan.dokan_java.DokanyFileSystemStub;
 import dev.dokan.dokan_java.DokanyOperations;
 import dev.dokan.dokan_java.DokanyUtils;
 import dev.dokan.dokan_java.FileSystemInformation;
+import dev.dokan.dokan_java.constants.microsoft.AccessMask;
 import dev.dokan.dokan_java.constants.microsoft.CreateOption;
 import dev.dokan.dokan_java.constants.microsoft.CreateOptions;
 import dev.dokan.dokan_java.constants.microsoft.CreationDisposition;
@@ -28,6 +29,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.channels.NonReadableChannelException;
+import java.nio.channels.NonWritableChannelException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.DirectoryStream;
@@ -42,7 +45,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributeView;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.DosFileAttributeView;
 import java.nio.file.attribute.DosFileAttributes;
 import java.nio.file.attribute.FileTime;
@@ -53,7 +55,6 @@ import java.util.Set;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static dev.dokan.dokan_java.constants.microsoft.Win32ErrorCodes.ERROR_ACCESS_DENIED;
@@ -110,9 +111,15 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 		} catch (InvalidPathException e) {
 			return Win32ErrorCodes.ERROR_BAD_PATHNAME;
 		}
-		CreationDisposition creationDisposition = CreationDisposition.fromInt(rawCreateDisposition);
-		LOG.trace("zwCreateFile() is called for {} with CreationDisposition {}.", path, creationDisposition.name());
+		int rawCreationDispostion = FileUtil.convertCreateDispositionToCreationDispostion(rawCreateDisposition);
+		int rawDesiredAccessWin32 = FileUtil.mapFileGenericAccessToGenericAccess(rawDesiredAccess);
 
+		EnumIntegerSet<CreateOption> createOptions = EnumIntegerSet.enumSetFromInt(rawCreateOptions, CreateOption.values());
+		EnumIntegerSet<AccessMask> accessMasks = EnumIntegerSet.enumSetFromInt(rawDesiredAccessWin32, AccessMask.values());
+		EnumIntegerSet<FileAccessMask> fileAccessMasks = EnumIntegerSet.enumSetFromInt(rawDesiredAccessWin32, FileAccessMask.values());
+		EnumIntegerSet<FileAttribute> fileAttributes = EnumIntegerSet.enumSetFromInt(rawFileAttributes, FileAttribute.values());
+		CreationDisposition creationDisposition = CreationDisposition.fromInt(rawCreationDispostion);
+		LOG.trace("zwCreateFile() is called for {} with the following parameters:\n\tCreateDisposition -- {}\n\tcreateOptions -- {}\n\taccessMasks -- {}\n\tfileAccessMasks -- {}\n\tfileAttributes -- {}.", path, creationDisposition, createOptions, accessMasks, fileAttributes, fileAttributes);
 		Optional<DosFileAttributes> attr;
 		try {
 			attr = Optional.of(Files.readAttributes(path, DosFileAttributes.class, LinkOption.NOFOLLOW_LINKS));
@@ -141,9 +148,6 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 			if (dokanFileInfo.isDirectory()) {
 				return createDirectory(path, creationDisposition, rawFileAttributes, dokanFileInfo);
 			} else {
-				EnumIntegerSet<CreateOption> createOptions = EnumIntegerSet.enumSetFromInt(rawCreateOptions, CreateOption.values());
-				EnumIntegerSet<FileAccessMask> fileAccessMasks = EnumIntegerSet.enumSetFromInt(rawDesiredAccess, FileAccessMask.values());
-				EnumIntegerSet<FileAttribute> fileAttributes = EnumIntegerSet.enumSetFromInt(rawFileAttributes, FileAttribute.values());
 				Set<OpenOption> openOptions = FileUtil.buildOpenOptions(rawDesiredAccess, fileAttributes, createOptions, creationDisposition, dokanFileInfo.writeToEndOfFile(), attr.isPresent());
 				return createFile(path, attr, creationDisposition, openOptions, rawFileAttributes, dokanFileInfo);
 			}
@@ -220,7 +224,7 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 			return ERROR_ACCESS_DENIED;
 		}
 		//read-only?
-		else if ((attr.isPresent()  && attr.get().isReadOnly() || ((rawFileAttributes & FileAttribute.READONLY.getMask()) != 0))
+		else if ((attr.isPresent() && attr.get().isReadOnly() || ((rawFileAttributes & FileAttribute.READONLY.getMask()) != 0))
 				&& dokanyFileInfo.DeleteOnClose != 0
 		) {
 			//cannot overwrite file
@@ -229,22 +233,22 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 		} else {
 			try {
 				dokanyFileInfo.Context = fac.openFile(path, openOptions);
-				if (!attr.isPresent()  || mask == CreationDisposition.TRUNCATE_EXISTING.getMask() || mask == CreationDisposition.CREATE_ALWAYS.getMask()) {
+				if (!attr.isPresent() || mask == CreationDisposition.TRUNCATE_EXISTING.getMask() || mask == CreationDisposition.CREATE_ALWAYS.getMask()) {
 					//according to zwCreateFile() documentation FileAttributes are ignored if no file is created or overwritten
 					setFileAttributes(path, rawFileAttributes);
 				}
 				LOG.trace("({}) {} opened successful with handle {}.", dokanyFileInfo.Context, path, dokanyFileInfo.Context);
 				//required by contract
-				if (attr.isPresent()  && (mask == CreationDisposition.OPEN_ALWAYS.getMask() || mask == CreationDisposition.CREATE_ALWAYS.getMask())) {
+				if (attr.isPresent() && (mask == CreationDisposition.OPEN_ALWAYS.getMask() || mask == CreationDisposition.CREATE_ALWAYS.getMask())) {
 					return ERROR_ALREADY_EXISTS;
 				} else {
 					return ERROR_SUCCESS;
 				}
 			} catch (FileAlreadyExistsException e) {
-				LOG.trace("Unable to open {}.", path);
+				LOG.trace("File {} already exists.", path);
 				return ERROR_FILE_EXISTS;
 			} catch (NoSuchFileException e) {
-				LOG.trace("{} not found.", path);
+				LOG.trace("File {} not found.", path);
 				return ERROR_FILE_NOT_FOUND;
 			} catch (AccessDeniedException e) {
 				LOG.trace("zwCreateFile(): Access to file {} was denied.", path);
@@ -356,6 +360,9 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 			rawReadLength.setValue(handle.read(rawBuffer, rawBufferLength, rawOffset));
 			LOG.trace("({}) Data successful read from {}.", dokanyFileInfo.Context, path);
 			return ERROR_SUCCESS;
+		} catch (NonReadableChannelException e) {
+			LOG.trace("({}) readFile(): File {} not opened for reading.", dokanyFileInfo.Context, path);
+			return ERROR_ACCESS_DENIED;
 		} catch (IOException e) {
 			LOG.debug("({}) readFile(): IO error while reading file {}.", dokanyFileInfo.Context, path);
 			LOG.debug("Error is:", e);
@@ -402,9 +409,16 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 
 		try (PathLock pathLock = lockManager.createPathLock(path.toString()).forReading();
 			 DataLock dataLock = pathLock.lockDataForWriting()) {
-			rawNumberOfBytesWritten.setValue(handle.write(rawBuffer, rawNumberOfBytesToWrite, rawOffset));
+			if (dokanyFileInfo.writeToEndOfFile()) {
+				rawNumberOfBytesWritten.setValue(handle.append(rawBuffer, rawNumberOfBytesToWrite));
+			} else {
+				rawNumberOfBytesWritten.setValue(handle.write(rawBuffer, rawNumberOfBytesToWrite, rawOffset));
+			}
 			LOG.trace("({}) Data successful written to {}.", dokanyFileInfo.Context, path);
 			return ERROR_SUCCESS;
+		} catch (NonWritableChannelException e) {
+			LOG.trace("({}) File {} not opened for writing.", dokanyFileInfo.Context, path);
+			return ERROR_ACCESS_DENIED;
 		} catch (IOException e) {
 			LOG.debug("({}) writeFile(): IO Error while writing to {}.", dokanyFileInfo.Context, path);
 			LOG.debug("Error is:", e);
@@ -516,23 +530,23 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 			try (PathLock pathLock = lockManager.createPathLock(path.toString()).forReading();
 				 DataLock dataLock = pathLock.lockDataForReading();
 				 DirectoryStream<Path> ds = Files.newDirectoryStream(path)) {
-				Spliterator<Path> spliterator = Spliterators.spliteratorUnknownSize(ds.iterator(),Spliterator.DISTINCT);
+				Spliterator<Path> spliterator = Spliterators.spliteratorUnknownSize(ds.iterator(), Spliterator.DISTINCT);
 				StreamSupport.stream(spliterator, false)
-				.map(p -> {
-					assert p.isAbsolute();
-					try {
-						//DosFileAttributes attr = Files.readAttributes(p, DosFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
-						//if (attr.isDirectory() || attr.isRegularFile()) {
-						return getFileInformation(p).toWin32FindData();
-						//} else {
-						//LOG.warn("({}) findFilesWithPattern(): Found node that is neither directory nor file: {}. Will be ignored in file listing.", dokanyFileInfo.Context, p);
-						//return null;
-						//}
-					} catch (IOException e) {
-						LOG.debug("({}) findFiles(): IO error accessing {}. Will be ignored in file listing.", dokanyFileInfo.Context, p);
-						return null;
-					}
-				})
+						.map(p -> {
+							assert p.isAbsolute();
+							try {
+								//DosFileAttributes attr = Files.readAttributes(p, DosFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+								//if (attr.isDirectory() || attr.isRegularFile()) {
+								return getFileInformation(p).toWin32FindData();
+								//} else {
+								//LOG.warn("({}) findFilesWithPattern(): Found node that is neither directory nor file: {}. Will be ignored in file listing.", dokanyFileInfo.Context, p);
+								//return null;
+								//}
+							} catch (IOException e) {
+								LOG.debug("({}) findFiles(): IO error accessing {}. Will be ignored in file listing.", dokanyFileInfo.Context, p);
+								return null;
+							}
+						})
 						.filter(Objects::nonNull)
 						.forEach(file -> {
 							assert file != null;
@@ -579,10 +593,10 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 		DosFileAttributeView attrView = Files.getFileAttributeView(path, DosFileAttributeView.class);
 		EnumIntegerSet<FileAttribute> attrsToUnset = EnumIntegerSet.enumSetFromInt(Integer.MAX_VALUE, FileUtil.supportedAttributeValuesToSet);
 		EnumIntegerSet<FileAttribute> attrsToSet = EnumIntegerSet.enumSetFromInt(rawAttributes, FileAttribute.values());
-		// if (rawAttributes == 0) {
+		// case FileAttributes == 0 :
 		// MS-FSCC 2.6 File Attributes : There is no file attribute with the value 0x00000000
 		// because a value of 0x00000000 in the FileAttributes field means that the file attributes for this file MUST NOT be changed when setting basic information for the file
-		// do nuthin'
+		// NO-OP
 		if ((rawAttributes & FileAttribute.NORMAL.getMask()) != 0 && (rawAttributes - FileAttribute.NORMAL.getMask() == 0)) {
 			//contains only the NORMAL attribute
 			//removes all removable fields
@@ -613,9 +627,9 @@ public class ReadWriteAdapter extends DokanyFileSystemStub {
 		} else {
 			try (PathLock pathLock = lockManager.createPathLock(path.toString()).forReading();
 				 DataLock dataLock = pathLock.lockDataForWriting()) {
-				FileTime lastModifiedTime = FileTime.fromMillis(rawLastWriteTime.toDate().getTime());
-				FileTime lastAccessTime = FileTime.fromMillis(rawLastAccessTime.toDate().getTime());
-				FileTime createdTime = FileTime.fromMillis(rawCreationTime.toDate().getTime());
+				FileTime lastModifiedTime = FileUtil.toFileTime(rawLastWriteTime).orElse(null);
+				FileTime lastAccessTime = FileUtil.toFileTime(rawLastAccessTime).orElse(null);
+				FileTime createdTime = FileUtil.toFileTime(rawCreationTime).orElse(null);
 				Files.getFileAttributeView(path, BasicFileAttributeView.class).setTimes(lastModifiedTime, lastAccessTime, createdTime);
 				LOG.trace("({}) Successful updated Filetime for {}.", dokanyFileInfo.Context, path);
 				return ERROR_SUCCESS;
