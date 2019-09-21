@@ -3,7 +3,11 @@ package org.cryptomator.frontend.dokany;
 import com.google.common.collect.Sets;
 import com.sun.jna.platform.win32.WinBase;
 import com.sun.jna.platform.win32.WinNT;
-import dev.dokan.dokan_java.constants.microsoft.*;
+import dev.dokan.dokan_java.constants.microsoft.AccessMask;
+import dev.dokan.dokan_java.constants.microsoft.CreateOption;
+import dev.dokan.dokan_java.constants.microsoft.CreateOptions;
+import dev.dokan.dokan_java.constants.microsoft.CreationDisposition;
+import dev.dokan.dokan_java.constants.microsoft.FileAttribute;
 import dev.dokan.dokan_java.structure.EnumIntegerSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +22,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.Set;
 
-import static dev.dokan.dokan_java.constants.microsoft.CreationDisposition.CREATE_ALWAYS;
-import static dev.dokan.dokan_java.constants.microsoft.CreationDisposition.CREATE_NEW;
-import static dev.dokan.dokan_java.constants.microsoft.CreationDisposition.OPEN_ALWAYS;
-import static dev.dokan.dokan_java.constants.microsoft.CreationDisposition.OPEN_EXISTING;
-import static dev.dokan.dokan_java.constants.microsoft.CreationDisposition.TRUNCATE_EXISTING;
+import static dev.dokan.dokan_java.constants.microsoft.CreationDisposition.*;
 
 public class FileUtil {
 
